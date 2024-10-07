@@ -1,2 +1,9 @@
 venv/
 .venv
+__pycache__
+.ipynb_checkpoints
+venv/
+.pytest_cache
+.DS_Store
+.env
+/coverage
