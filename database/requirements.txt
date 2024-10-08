@@ -1,0 +1,5 @@
+python-dotenv
+pylint
+pytest
+psycopg2
+faker
