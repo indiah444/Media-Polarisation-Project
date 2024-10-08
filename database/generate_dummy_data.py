@@ -144,4 +144,4 @@ if __name__ == "__main__":
     articles = generate_fake_articles(f, 12, 1, fox_headlines)
     article_assignments = generate_article_topic_assignment(fox_headlines)
     with connect() as connection:
-        insert_data_to_db(connection,topics,subs, articles, fox_headlines)
+        insert_data_to_db(connection,topics,subs, articles, article_assignments)
