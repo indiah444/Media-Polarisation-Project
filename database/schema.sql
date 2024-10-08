@@ -50,3 +50,41 @@ CREATE TABLE subscriber_topic_assignment (
     FOREIGN KEY (subscriber_id) REFERENCES subscriber(subscriber_id),
     FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
+
+INSERT INTO topic (topic_name) VALUES
+("Immigration"),
+("Justice System"),
+("Diddy"),
+("Supreme Court Decisions"),
+("Religion"),
+("Natural Disasters"),
+("Hurricane Helene"),
+("World News"),
+("Climate Change"),
+("China"),
+("Education"),
+("Woke activism"),
+("Crime and law enforcement"),
+("Guns"),
+("Economics"),
+("Recession"),
+("Inflation"),
+("Cost of Living"),
+("Politics"),
+("Donald Trump"),
+("Kamala Harris"),
+("Voting"),
+("JD Vance"),
+("Tim Walz"),
+("War"),
+("Israel-Gaza"),
+("Russia-Ukraine"),
+("Iran"),
+("Lebanon"),
+("Race relations"),
+("LGBTQ+ issues"),
+("Abortion");
+
+INSERT INTO source (source_name, source_url, source_image_url, source_political_leaning) VALUES
+("Fox News", "https://www.foxnews.com/", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png", "Right"),
+("Democracy Now!", "https://www.democracynow.org/", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6MVq_iSYjCvMqfZHJNb8PIdCGkqZZwOnyEw&s", "Left");
