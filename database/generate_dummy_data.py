@@ -10,7 +10,8 @@ from psycopg2 import extras
 TOPICS = ["Immigration", "Justice system", "P Diddy",
           "Supreme Court decisions", "Religion",
           "Natural disasters", "Hurricane Helene", "World news",
-          "Climate change", "China", "Education", "Woke activism", "Crime and law enforcement", "Guns", "Economics",
+          "Climate change", "China", "Education", "Woke activism",
+            "Crime and law enforcement", "Guns", "Economics",
           "Recession", "Inflation", "Cost of living", "Politics",
           "Trump", "Kamala", "Voting", "Tim Walz", "JD Vance",
           "War", "Israel-Gaza", "Russia-Ukraine", "Iran", "Lebanon",
@@ -19,31 +20,41 @@ TOPICS = ["Immigration", "Justice system", "P Diddy",
 
 
 FOX_HEADLINES = {
-    "Mexican mayor's severed head placed atop pick-up truck 6 days after taking office": ["World news", "Immigration"],
+    "Mexican mayor's severed head placed atop pick-up truck 6 days after taking office": 
+    ["World news", "Immigration"],
 
     "Supreme Court denies Biden administration appeal over federal emergency abortion requirement in Texas":
+
     ["Supreme Court decisions", "Justice system"],
 
-    "P Diddy sued by former employee over workplace harassment": ["P Diddy", "Justice system"],
+    "P Diddy sued by former employee over workplace harassment": 
+    ["P Diddy", "Justice system"],
 
     "Massive wildfires rage across California amid intense heatwave, thousands evacuated":
+
     ["Natural disasters", "Climate change"],
 
     "Kamala Harris faces backlash after controversial comments on immigration policies":
+
     ["Politics", "Kamala", "Immigration"],
 
-    "China's new military drills raise tensions in the South China Sea": ["China", "World news"],
+    "China's new military drills raise tensions in the South China Sea": 
+    ["China", "World news"],
 
     "Justice Department investigates police handling of race-related protests in Minneapolis":
+
     ["Justice system", "Race relations", "Crime and law enforcement"],
 
     "US inflation hits 40-year high, causing concerns for the economy":
+
     ["Economics", "Inflation", "Cost of living"],
 
     "Russia-Ukraine war: Latest developments and international reactions":
+
     ["War", "Russia-Ukraine", "World news"],
 
     "Supreme Court takes on major gun control case with national implications":
+    
     ["Supreme Court decisions", "Guns", "Justice system"]
 }
 
