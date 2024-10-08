@@ -1,4 +1,5 @@
 '''Generates dummy data'''
+
 from os import environ as ENV
 import random
 from faker import Faker
@@ -47,6 +48,7 @@ FOX_HEADLINES = {
 
 def connect():
     '''Return a connection to the RDS database.'''
+
     load_dotenv()
     return psycopg2.connect(dbname=ENV["DB_NAME"],
                             host=ENV["DB_HOST"],
@@ -80,6 +82,7 @@ def generate_fake_articles(
         source_headlines: list
         ) -> list[tuple]:
     '''Generates fake article table entries.'''
+
     rows = []
 
     for i in range(1, min(len(source_headlines), num_articles) + 1):
@@ -113,6 +116,7 @@ def generate_article_topic_assignment(headlines: dict) -> list[tuple]:
 def insert_data_to_db(conn, fake_topics: list[tuple], fake_subs: list[tuple], fake_articles: list[tuple], assignments:list[tuple]
         ):
     '''Inserts fake data into the database'''
+
     with conn.cursor() as cursor:
 
         extras.execute_values(cursor, """INSERT INTO topic (topic_id, topic_name) VALUES %s""", 
