@@ -13,6 +13,36 @@ TOPICS = ["Immigration", "Justice system", "P Diddy",
           ]
 
 
+FOX_HEADLINES = {
+    "Mexican mayor's severed head placed atop pick-up truck 6 days after taking office": ["World news", "Immigration"],
+
+    "Supreme Court denies Biden administration appeal over federal emergency abortion requirement in Texas":
+    ["Supreme Court decisions", "Justice system"],
+
+    "P Diddy sued by former employee over workplace harassment": ["P Diddy", "Justice system"],
+
+    "Massive wildfires rage across California amid intense heatwave, thousands evacuated":
+    ["Natural disasters", "Climate change"],
+
+    "Kamala Harris faces backlash after controversial comments on immigration policies":
+    ["Politics", "Kamala", "Immigration"],
+
+    "China's new military drills raise tensions in the South China Sea": ["China", "World news"],
+
+    "Justice Department investigates police handling of race-related protests in Minneapolis":
+    ["Justice system", "Race relations", "Crime and law enforcement"],
+
+    "US inflation hits 40-year high, causing concerns for the economy":
+    ["Economics", "Inflation", "Cost of living"],
+
+    "Russia-Ukraine war: Latest developments and international reactions":
+    ["War", "Russia-Ukraine", "World news"],
+
+    "Supreme Court takes on major gun control case with national implications":
+    ["Supreme Court decisions", "Guns", "Justice system"]
+}
+
+
 def generate_fake_topics() -> list[tuple]:
     '''Generates fake topic rows containing:
         -topic_id
@@ -67,26 +97,19 @@ def generate_fake_articles(faker: Faker, num_articles: int, num_sources: int) ->
         - date_published
         - article_url
     '''
-    fake = Faker()
+
     articles = []
-    source_polarity = [round(random.uniform(-1.0, 1.0), 2)
-                       for _ in range(num_sources)]
 
-    for i in range(1, num_articles + 1):
+    for i in range(1, min(len(FOX_HEADLINES), num_articles) + 1):
         article_id = i
-        article_title = fake.sentence()
-        source_id = random.randint(1, num_sources)
-
-        polarity_score = random.triangular(source_polarity[source_id-1])
-
-        date_published = fake.date_time_between(
-            start_date='-5d', end_date='today')
-
-        article_url = fake.url()
-
+        article_title = list(FOX_HEADLINES.keys())[i-1]
+        source_id = 1
+        polarity_score = random.triangular(-1.0, 0.0, -0.5)
+        date_published = faker.date_time_between(
+            start_date='-5d')
+        article_url = faker.url()
         articles.append((article_id, article_title, polarity_score,
                         source_id, date_published, article_url))
-
     return articles
 
 
@@ -96,3 +119,5 @@ if __name__ == "__main__":
     fake_topics = generate_fake_topics()
     fake_subs_topics = generate_fake_subscriber_topic_assignments(
         fake_subs, fake_topics, 12)
+    fake_articles = generate_fake_articles(f, 12, 2)
+    print(fake_articles)
