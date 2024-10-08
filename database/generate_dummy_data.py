@@ -144,14 +144,14 @@ def insert_data_to_db(conn, fake_topics: list[tuple], fake_subs: list[tuple], fa
 if __name__ == "__main__":
     f = Faker()
     subs = generate_fake_subscribers(f, 3)
-    
+
     topics = generate_fake_topics()
 
     fox_headlines = list(FOX_HEADLINES.keys())
 
-    articles = generate_fake_articles(f, 12, 1, FOX_HEADLINES)
+    articles = generate_fake_articles(f, 12, 1, fox_headlines)
     
-    article_assignments = generate_article_topic_assignment(fox_headlines)
+    article_assignments = generate_article_topic_assignment(FOX_HEADLINES)
 
     with connect() as connection:
         insert_data_to_db(connection,topics,subs, articles, article_assignments)
