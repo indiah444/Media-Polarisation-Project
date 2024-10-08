@@ -56,7 +56,7 @@ def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
 
     subscribers = []
 
-    for i in range(1, num+1):
+    for _ in range(1, num+1):
         email = fake.unique.email()
         first_name = fake.first_name()
         last_name = fake.last_name()
