@@ -1,6 +1,9 @@
 '''Generates dummy data'''
 from faker import Faker
 import random
+from os import environ as ENV
+from dotenv import load_dotenv
+import psycopg2
 
 TOPICS = ["Immigration", "Justice system", "P Diddy",
           "Supreme Court decisions", "Religion",
@@ -41,6 +44,17 @@ FOX_HEADLINES = {
     "Supreme Court takes on major gun control case with national implications":
     ["Supreme Court decisions", "Guns", "Justice system"]
 }
+
+
+def connect() -> Connection:
+    '''Return a connection to redshift.'''
+
+    return psycopg2.connect(dbname=db_name,
+                            host=ENV["DATABASE_HOST"],
+                            user=ENV["DATABASE_USERNAME"],
+                            port=ENV["DATABASE_PORT"],
+                            password=ENV["DATABASE_PASSWORD"],
+                            cursor_factory=psycopg2.extras.RealDictCursor)
 
 
 def generate_fake_topics() -> list[tuple]:
