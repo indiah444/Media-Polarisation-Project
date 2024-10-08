@@ -4,6 +4,7 @@ import random
 from os import environ as ENV
 from dotenv import load_dotenv
 import psycopg2
+from psycopg2 import extras
 
 TOPICS = ["Immigration", "Justice system", "P Diddy",
           "Supreme Court decisions", "Religion",
@@ -46,14 +47,14 @@ FOX_HEADLINES = {
 }
 
 
-def connect() -> Connection:
-    '''Return a connection to redshift.'''
-
-    return psycopg2.connect(dbname=db_name,
-                            host=ENV["DATABASE_HOST"],
-                            user=ENV["DATABASE_USERNAME"],
-                            port=ENV["DATABASE_PORT"],
-                            password=ENV["DATABASE_PASSWORD"],
+def connect():
+    '''Return a connection to the RDS database.'''
+    load_dotenv()
+    return psycopg2.connect(dbname=ENV["DB_NAME"],
+                            host=ENV["DB_HOST"],
+                            user=ENV["DB_USER"],
+                            port=ENV["DB_PORT"],
+                            password=ENV["DB_PASSWORD"],
                             cursor_factory=psycopg2.extras.RealDictCursor)
 
 
@@ -124,6 +125,33 @@ def generate_fake_articles(faker: Faker, num_articles: int, source_id: int, sour
                         source_id, date_published, article_url))
     return articles
 
+def insert_data_to_db(conn, fake_topics: list[tuple], fake_subs: list[tuple], fake_articles: list[tuple]):
+    '''Inserts fake data into the database'''
+    with conn.cursor() as cursor:
+
+        extras.execute_values(cursor, 
+            "INSERT INTO topic (topic_id, topic_name) VALUES %s", 
+            fake_topics)
+
+        extras.execute_values(cursor, 
+            "INSERT INTO subscribers (subscriber_id, subscriber_email, subscriber_first_name, subscriber_surname) VALUES %s", 
+            fake_subs)
+
+
+        extras.execute_values(cursor, 
+            "INSERT INTO article (article_id, article_title, polarity_score, source_id, date_published, article_url) VALUES %s", 
+            fake_articles)
+
+        extras.execute_values(cursor, 
+            "INSERT INTO subscriber_topic_assignments (subscriber_topic_assignment_id, subscriber_id, topic_id) VALUES %s", 
+            generate_fake_assignment(fake_subs, fake_topics))
+        
+
+        extras.execute_values(cursor, 
+            "INSERT INTO article_topic_assignment (subscriber_topic_assignment_id, topic_id, article_id) VALUES %s", 
+            generate_fake_assignment(fake_topics, fake_articles))
+        
+        conn.commit()
 
 if __name__ == "__main__":
     f = Faker()
