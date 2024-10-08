@@ -29,7 +29,7 @@ DB_NAME=XXXXX
 
 
 - `generate_dummy_data.py` handles fake data generation and insertion.
-
+- `test_dummy.py` contains unit tests for `generate_dummy_data.py` 
 
 ### Generating fake data 
 Fake subscriber and article data can be generated for Fox News. This is useful for testing/developing the cloud architecture. The sentiment score is generated using a random truncated distribution, with a mode of `-0.5`. This was chosen, mostly as a placeholder, and for the purpose of testing visualisations. 
