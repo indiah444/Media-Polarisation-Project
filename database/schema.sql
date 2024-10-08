@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS source;
+DROP TABLE IF EXISTS article_topic_assignment;
 DROP TABLE IF EXISTS article;
 DROP TABLE IF EXISTS topic;
-DROP TABLE IF EXISTS article_topic_assignment;
+DROP TABLE IF EXISTS source;
 DROP TABLE IF EXISTS subscriber;
 
 CREATE TABLE source (
