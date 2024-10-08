@@ -60,6 +60,7 @@ def connect():
 
 def generate_fake_topics() -> list[tuple]:
     '''Generates fake topic rows.'''
+    
     return [(i+1, t) for i, t in enumerate(TOPICS)]
 
 
