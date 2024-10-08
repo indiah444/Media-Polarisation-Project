@@ -14,12 +14,13 @@ CREATE TABLE source (
 
 CREATE TABLE article (
     article_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    article_title VARCHAR(500) NOT NULL UNIQUE,
+    article_title VARCHAR(500) NOT NULL,
     polarity_score FLOAT NOT NULL,
     source_id SMALLINT NOT NULL,
     date_published DATE NOT NULL,
     article_url VARCHAR(500) NOT NULL UNIQUE,
     FOREIGN KEY (source_id) REFERENCES source(source_id)
+    UNIQUE (article_title, source_id, date_published)
 );
 
 CREATE TABLE topic (
@@ -37,7 +38,7 @@ CREATE TABLE article_topic_assignment (
 
 CREATE TABLE subscriber (
     subscriber_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    subscriber_email VARCHAR(250) NOT NULL,
+    subscriber_email VARCHAR(250) NOT NULL UNIQUE,
     subscriber_first_name VARCHAR (100) NOT NULL,
     subscriber_surname VARCHAR(100) NOT NULL
 );
