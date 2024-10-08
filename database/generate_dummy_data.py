@@ -51,12 +51,6 @@ def connect():
                             cursor_factory=psycopg2.extras.RealDictCursor)
 
 
-def generate_fake_topics() -> list[tuple]:
-    '''Generates fake topic rows.'''
-
-    return [(i+1, t) for i, t in enumerate(TOPICS)]
-
-
 def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
     '''Generates fake subscribers.'''
 
@@ -134,7 +128,7 @@ def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple], 
 if __name__ == "__main__":
     f = Faker()
     subs = generate_fake_subscribers(f, 3)
-    topics = generate_fake_topics()
+
     fox_headlines = list(FOX_HEADLINES.keys())
     articles = generate_fake_articles(f, 12, 1, fox_headlines)
     article_assignments = generate_article_topic_assignment(FOX_HEADLINES)
