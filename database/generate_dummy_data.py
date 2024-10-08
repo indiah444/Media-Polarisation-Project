@@ -1,7 +1,8 @@
 '''Generates dummy data'''
-from faker import Faker
-import random
 from os import environ as ENV
+import random
+from faker import Faker
+
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2 import extras
@@ -144,23 +145,22 @@ def insert_data_to_db(conn, fake_topics: list[tuple], fake_subs: list[tuple], fa
 
         extras.execute_values(cursor, 
             "INSERT INTO subscriber_topic_assignments (subscriber_topic_assignment_id, subscriber_id, topic_id) VALUES %s", 
-            generate_fake_assignment(fake_subs, fake_topics))
+            generate_fake_assignment(fake_subs, fake_topics, 15))
         
 
         extras.execute_values(cursor, 
             "INSERT INTO article_topic_assignment (subscriber_topic_assignment_id, topic_id, article_id) VALUES %s", 
-            generate_fake_assignment(fake_topics, fake_articles))
+            generate_fake_assignment(fake_topics, fake_articles, 18))
         
         conn.commit()
 
 if __name__ == "__main__":
     f = Faker()
-    fake_subs = generate_fake_subscribers(f, 3)
-    fake_topics = generate_fake_topics()
-
-    fake_subs_topics = generate_fake_assignment(
-        fake_subs, fake_topics, 12)
+    subs = generate_fake_subscribers(f, 3)
+    topics = generate_fake_topics()
 
     fox_headlines = list(FOX_HEADLINES.keys())
-    fake_articles = generate_fake_articles(f, 12, 1, fox_headlines)
-    print(fake_articles)
+    articles = generate_fake_articles(f, 12, 1, fox_headlines)
+
+    with connect() as connection:
+        insert_data_to_db(connection,topics,subs, articles)
