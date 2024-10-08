@@ -1,0 +1,43 @@
+name: Test and Lint fox_news_scraper
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  quality_check:
+    name: pytest and pylint
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Install Python
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    # Install required packages
+    - name: Install packages
+      run: |
+        pip install pylint pytest pytest--cov
+        pip install -r ./fox_news_scraper/requirements.txt
+    
+    # Run pytest and check coverage
+    - name: Run pytest and check test coverage
+      run: |
+        pytest ./fox_news_scraper/ --cov
+      continue-on-error: false
+    
+    # Run pylint
+    - name: Run pylint
+      run: |
+        find ./fox_news_scraper/ -name "*.py" | xargs pylint --fail-under=8
