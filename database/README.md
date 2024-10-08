@@ -20,7 +20,6 @@ DB_NAME=XXXXX
 ```
 
 4. `pip install -r requirements.txt` 
-
 5. `python3 -m [filename]` can be used to run an individual file
 
 ## Files 

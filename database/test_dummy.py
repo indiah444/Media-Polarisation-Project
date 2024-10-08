@@ -1,10 +1,20 @@
 # pylint: skip-file
-
 """
-Dummy test file to avoid 'no test' pytest error
-PLEASE DELETE AFTER REAL TEST FILE IS MADE
+Testing dummy data generation
 """
 
+from unittest.mock import patch, MagicMock
+from generate_dummy_data import connect
 
-def test_dummy():
-    pass
+
+@patch('generate_dummy_data.load_dotenv')
+@patch('psycopg2.connect')
+def test_connection(mock_connect, mock_load_dotenv):
+    '''Tests the connection'''
+
+    mock_connection = MagicMock()
+    mock_connect.return_value = mock_connection
+    connection = connect()
+    mock_load_dotenv.assert_called_once()
+    mock_connect.assert_called_once()
+    assert connection == mock_connection
