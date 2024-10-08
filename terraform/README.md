@@ -9,7 +9,7 @@ AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
 REGION                = "your-region"
 VPC_ID                = "your-vpc-id"
-SUBNET_ID             = "your-subnet-id"
+SUBNET_ID1            = "your-first-subnet-id"
 SUBNET_ID2            = "your-second-subnet-id"
 SUBNET_ID3            = "your-third-subnet-id"
 
