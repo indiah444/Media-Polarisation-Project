@@ -43,15 +43,15 @@ CREATE TABLE subscriber (
 );
 
 INSERT INTO topic (topic_name) VALUES
-("Donald Trump"),
-("Kamala Harris"),
-("2024 Presidential Election"),
-("Climate Change"),
-("Natural Disaster"),
-("Abortion"),
-("Crime and Law Enforcement"),
-("Guns");
+('Donald Trump'),
+('Kamala Harris'),
+('2024 Presidential Election'),
+('Climate Change'),
+('Natural Disaster'),
+('Abortion'),
+('Crime and Law Enforcement'),
+('Guns');
 
 INSERT INTO source (source_name, source_url, source_image_url, source_political_leaning) VALUES
-("Fox News", "https://www.foxnews.com/", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png", "Right"),
-("Democracy Now!", "https://www.democracynow.org/", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6MVq_iSYjCvMqfZHJNb8PIdCGkqZZwOnyEw&s", "Left");
+('Fox News', 'https://www.foxnews.com/', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png', 'Right'),
+('Democracy Now!', 'https://www.democracynow.org/', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6MVq_iSYjCvMqfZHJNb8PIdCGkqZZwOnyEw&s', 'Left');
