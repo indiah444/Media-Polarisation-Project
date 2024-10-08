@@ -22,25 +22,18 @@ TOPICS = [
 FOX_HEADLINES = {
     "Trump announces his candidacy for the 2024 Presidential Election":
     ["Trump", "2024 Presidential Election"],
-
     "Kamala Harris addresses concerns over climate change at the international summit":
     ["Kamala", "Climate Change"],
-
     "Latest polls show Trump leading the race for the 2024 Presidential Election":
     ["Trump", "2024 Presidential Election"],
-
     "Severe floods devastate parts of the Midwest as climate change impacts intensify":
     ["Natural Disasters", "Climate Change"],
-
     "New study reveals the effects of climate change on hurricane patterns":
     ["Climate Change", "Natural Disasters"],
-
     "Supreme Court hears landmark case on abortion rights":
     ["Abortion", "Crime and Law Enforcement"],
-
     "Crime rates soar in major cities as policing practices come under scrutiny":
     ["Crime and Law Enforcement"],
-
     "Gun violence in America reaches alarming levels as calls for reform grow":
     ["Guns", "Crime and Law Enforcement"]
 }
