@@ -7,25 +7,25 @@ DROP TABLE IF EXISTS subscriber_topic_assignment;
 
 CREATE TABLE source (
     source_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    source_name VARCHAR(250) NOT NULL,
-    source_url VARCHAR(500) NOT NULL,
-    source_image_url VARCHAR(500) NOT NULL,
+    source_name VARCHAR(250) NOT NULL UNIQUE,
+    source_url VARCHAR(500) NOT NULL UNIQUE,
+    source_image_url VARCHAR(500) NOT NULL UNIQUE,
     source_political_leaning VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE article (
     article_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    article_title VARCHAR(500) NOT NULL,
+    article_title VARCHAR(500) NOT NULL UNIQUE,
     polarity_score FLOAT NOT NULL,
     source_id SMALLINT NOT NULL,
     date_published DATE NOT NULL,
-    article_url VARCHAR(500) NOT NULL,
+    article_url VARCHAR(500) NOT NULL UNIQUE,
     FOREIGN KEY (source_id) REFERENCES source(source_id)
 );
 
 CREATE TABLE topic (
     topic_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    topic_name VARCHAR (150) NOT NULL
+    topic_name VARCHAR (150) NOT NULL UNIQUE
 );
 
 CREATE TABLE article_topic_assignment (
