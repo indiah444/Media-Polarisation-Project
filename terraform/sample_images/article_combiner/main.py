@@ -1,4 +1,4 @@
-"""Dummy file to combine random json data and save to S3 as csv"""
+"""Combines JSON inputs from various scrapers and saves to S3 as CSV"""
 
 import json
 from io import StringIO
@@ -9,9 +9,10 @@ import boto3
 from dotenv import load_dotenv
 import pandas as pd
 
-
 load_dotenv()
-s3_client = boto3.client('s3')
+s3_client = boto3.client(service_name="s3",
+                         aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
+                         aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
 
 
 def lambda_handler(event, context):
@@ -19,13 +20,19 @@ def lambda_handler(event, context):
     Combines JSON inputs from the event, saves the result as a CSV in S3 bucket.
     """
 
-    combined_data = {}
-    for json_data in event['json_inputs']:
-        combined_data.update(json_data)
+    combined_data = []
 
-    df = pd.DataFrame([combined_data])
+    for result in event:
+        for key, value in result.items():
+            body = json.loads(value['body'])
+            body['source'] = key
 
-    save_to_s3(df, ENV['S3_BUCKET_NAME'])
+            combined_data.append(body['data'])
+
+    df = pd.DataFrame(combined_data)
+
+    if not df.empty:
+        save_to_s3(df, ENV['S3_BUCKET_NAME'])
 
     return {
         "statusCode": 200,

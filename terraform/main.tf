@@ -11,28 +11,44 @@ data "aws_subnet" "c13-public-subnet2" { id = var.SUBNET_ID2 }
 data "aws_subnet" "c13-public-subnet3" { id = var.SUBNET_ID3 }
 
 data "aws_ecr_image" "fox_news_scraper_image" {
-    repository_name = "c13-boudicca-mp-fox-news-scraper"
+    repository_name = var.FOX_NEWS_SCRAPER_ECR_REPO
     image_tag       = "latest"
 }
 
 data "aws_ecr_image" "democracy_now_news_scraper_image" {
-    repository_name = "c13-boudicca-mp-democracy-now-news-scraper"
+    repository_name = var.DEMOCARCY_NOW_SCRAPER_ECR_REPO
     image_tag       = "latest"
 }
 
 data "aws_ecr_image" "article_combiner_image" {
-    repository_name = "c13-boudicca-mp-article-combiner"
+    repository_name = var.ARTICLE_COMBINER_ECR_REPO
     image_tag       = "latest"
 }
 
 # data "aws_ecr_image" "email_generator_image" {
-#     repository_name = "c13-boudicca-mp-email-generator"
+#     repository_name = var.EMAIL_GENERATOR_ECR_REPO
 #     image_tag       = "latest"
 # }
 
-data "aws_s3_bucket" "article_s3_bucket" {bucket = "c13-boudicca-mp-article-bucket"}
+# data "aws_ecr_image" "article_analyser_image" {
+#     repository_name = var.ARTICLE_ANALYSER_ECR_REPO
+#     image_tag       = "latest"
+# }
+
+data "aws_s3_bucket" "article_s3_bucket" {bucket = var.S3_BUCKET_NAME}  # may not be needed
 data "aws_iam_role" "execution_role" { name = "ecsTaskExecutionRole" }
 data "aws_ecs_cluster" "c13_cluster" { cluster_name = "c13-ecs-cluster" }
+
+data "aws_iam_policy_document" "step_functions_schedule_trust_policy" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["scheduler.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
 
 # =========================== Scraping Pipeline ===========================
 
@@ -90,6 +106,14 @@ resource "aws_lambda_function" "article_combiner_lambda" {
     timeout = 900
     memory_size = 256
 
+    environment {
+        variables = {
+            S3_BUCKET_NAME = var.S3_BUCKET_NAME
+            AWS_ACCESS_KEY_BOUDICCA = var.AWS_ACCESS_KEY
+            AWS_ACCESS_SECRET_KEY_BOUDICCA = var.AWS_SECRET_ACCESS_KEY
+        }
+    }
+
     image_config { command = ["main.lambda_handler"] }
 }
 
@@ -146,39 +170,46 @@ resource "aws_sfn_state_machine" "main_pipeline_state_machine" {
   role_arn = aws_iam_role.step_functions_role.arn
 
   definition = jsonencode({
-    StartAt = "SummaryReportTask",
+    StartAt = "ParallelScraping",
     States = {
-      FoxScraperTask = {
-        Type = "Task",
-        Resource = aws_lambda_function.fox_news_scraper_lambda.arn,
-        ResultPath: "$.reportResult",
-        Next = "SendEmailTask"
-      },
-      DemocracyNowScraperTask = {
-        Type = "Task",
-        Resource = aws_lambda_function.democracy_now_news_scraper_lambda.arn,
-        ResultPath: "$.reportResult",
-        Next = "SendEmailTask"
+      ParallelScraping = {
+        Type = "Parallel",
+        Branches = [
+          {
+            StartAt = "FoxScraperTask",
+            States = {
+              FoxScraperTask = {
+                Type = "Task",
+                Resource = aws_lambda_function.fox_news_scraper_lambda.arn,
+                ResultPath = "$.foxNewsResult",
+                End = true
+              }
+            }
+          },
+          {
+            StartAt = "DemocracyNowScraperTask",
+            States = {
+              DemocracyNowScraperTask = {
+                Type = "Task",
+                Resource = aws_lambda_function.democracy_now_news_scraper_lambda.arn,
+                ResultPath = "$.democracyNowResult",
+                End = true
+              }
+            }
+          }
+        ],
+        ResultPath = "$.scrapingResults",
+        Next = "ArticleCombineTask"
       },
       ArticleCombineTask = {
         Type = "Task",
         Resource = aws_lambda_function.article_combiner_lambda.arn,
-        ResultPath: "$.reportResult",
-        Next = "SendEmailTask"
+        InputPath = "$.scrapingResults",
+        ResultPath = "$.combinedResult",
+        End = true
       }
     }
   })
-}
-
-data "aws_iam_policy_document" "step_functions_schedule_trust_policy" {
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["scheduler.amazonaws.com"]
-    }
-    actions = ["sts:AssumeRole"]
-  }
 }
 
 resource "aws_iam_role" "step_functions_scheduler_role" {

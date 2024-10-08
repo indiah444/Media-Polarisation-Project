@@ -13,6 +13,12 @@ SUBNET_ID1            = "your-first-subnet-id"
 SUBNET_ID2            = "your-second-subnet-id"
 SUBNET_ID3            = "your-third-subnet-id"
 
+FOX_NEWS_SCRAPER_ECR_REPO       ="ecr-repo-name-for-fox-news-scraper"
+DEMOCARCY_NOW_SCRAPER_ECR_REPO  ="ecr-repo-name-for-democracy-now-news-scraper"
+ARTICLE_COMBINER_ECR_REPO       ="ecr-repo-name-for-article-combiner"
+EMAIL_GENERATOR_ECR_REPO        ="ecr-repo-name-for-email-generator"
+ARTICLE_ANALYSER_ECR_REPO       ="ecr-repo-name-for-article-analyser"
+
 DB_HOST               = "your-RDS-host"
 DB_PORT               = "your-RDS-port"
 DB_NAME               = "your-RDS-name"
