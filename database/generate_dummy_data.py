@@ -60,7 +60,7 @@ def connect():
 
 def generate_fake_topics() -> list[tuple]:
     '''Generates fake topic rows.'''
-    
+
     return [(i+1, t) for i, t in enumerate(TOPICS)]
 
 
@@ -124,7 +124,7 @@ def insert_data_to_db(conn, fake_topics: list[tuple], fake_subs: list[tuple], fa
             fake_topics)
 
         extras.execute_values(cursor, """
-            INSERT INTO subscribers 
+            INSERT INTO subscriber
             (subscriber_id, subscriber_email, subscriber_first_name, 
             subscriber_surname) 
             VALUES %s""", fake_subs)
