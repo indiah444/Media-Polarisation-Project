@@ -84,7 +84,7 @@ def generate_fake_articles(
     return rows
 
 
-def generate_article_topic_assignment(headlines: dict) -> list[tuple]:
+def generate_article_topic_assignment(headlines: dict, ordered_topics: list) -> list[tuple]:
     '''Generates fake article_topic_assignment table rows.
     '''
 
@@ -94,7 +94,7 @@ def generate_article_topic_assignment(headlines: dict) -> list[tuple]:
 
         for topic in all_topics:
 
-            topic_id = TOPICS.index(topic) + 1
+            topic_id = ordered_topics.index(topic) + 1
 
             assignments.append((topic_id, article_id))
 
@@ -130,8 +130,12 @@ if __name__ == "__main__":
     subs = generate_fake_subscribers(f, 3)
 
     fox_headlines = list(FOX_HEADLINES.keys())
+
     articles = generate_fake_articles(f, 12, 1, fox_headlines)
-    article_assignments = generate_article_topic_assignment(FOX_HEADLINES)
+
+    article_assignments = generate_article_topic_assignment(
+        FOX_HEADLINES, TOPICS)
+
     with connect() as connection:
         insert_data_to_db(connection, subs,
                           articles, article_assignments)
