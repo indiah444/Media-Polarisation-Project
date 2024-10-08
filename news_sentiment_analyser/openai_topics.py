@@ -1,7 +1,16 @@
-from openai import OpenAI
-from dotenv import load_dotenv
+"""Script to find the topics of an article using openai."""
 from os import environ as ENV
 import json
+
+from openai import OpenAI
+from dotenv import load_dotenv
+import pandas as pd
+
+from database_functions import get_topic_names
+
+
+def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
+    """Returns the dataframe with a topics column added."""
 
 
 def find_article_topics(article_titles: list[str], topics: list[str], openai_client) -> list[str]:
