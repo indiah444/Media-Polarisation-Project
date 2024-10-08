@@ -71,23 +71,21 @@ def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
     return subscribers
 
 
-def generate_fake_subscriber_topic_assignments(subscribers: list[tuple], topics: list[tuple], num_assignments: int) -> list[tuple]:
-    '''Generates random subscriber to topic assignments.
-    Returns a list of tuples containing:
-        - subscriber_topic_assignment_id
-        - subscriber_id
-        - topic_id
-    '''
+def generate_fake_assignment(table1: list[tuple], table2: list[tuple], num_assignments: int) -> list[tuple]:
+    '''Generates random assignment table rows.
+    table1 and table2 are lists of rows in the mapped tables. 
+    It's assumed that the first item in each row is the id.'''
+
     assignments = []
     for i in range(1, num_assignments + 1):
-        subscriber = random.choice(subscribers)
-        topic = random.choice(topics)
+        subscriber = random.choice(table1)
+        topic = random.choice(table2)
 
         assignments.append((i, subscriber[0], topic[0]))
     return assignments
 
 
-def generate_fake_articles(faker: Faker, num_articles: int, num_sources: int) -> list[tuple]:
+def generate_fake_articles(faker: Faker, num_articles: int, source_id: int, source_headlines: list) -> list[tuple]:
     '''Generates fake article table entries.
     Returns a list of tuples containing:
         - article_id
@@ -100,9 +98,9 @@ def generate_fake_articles(faker: Faker, num_articles: int, num_sources: int) ->
 
     articles = []
 
-    for i in range(1, min(len(FOX_HEADLINES), num_articles) + 1):
+    for i in range(1, min(len(source_headlines), num_articles) + 1):
         article_id = i
-        article_title = list(FOX_HEADLINES.keys())[i-1]
+        article_title = source_headlines[i-1]
         source_id = 1
         polarity_score = random.triangular(-1.0, 0.0, -0.5)
         date_published = faker.date_time_between(
@@ -117,7 +115,10 @@ if __name__ == "__main__":
     f = Faker()
     fake_subs = generate_fake_subscribers(f, 3)
     fake_topics = generate_fake_topics()
-    fake_subs_topics = generate_fake_subscriber_topic_assignments(
+
+    fake_subs_topics = generate_fake_assignment(
         fake_subs, fake_topics, 12)
-    fake_articles = generate_fake_articles(f, 12, 2)
+
+    fox_headlines = list(FOX_HEADLINES.keys())
+    fake_articles = generate_fake_articles(f, 12, 1, fox_headlines)
     print(fake_articles)
