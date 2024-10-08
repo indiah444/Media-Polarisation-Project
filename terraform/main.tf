@@ -30,6 +30,7 @@ data "aws_ecr_image" "article_combiner_image" {
 #     image_tag       = "latest"
 # }
 
+data "aws_s3_bucket" "article_s3_bucket" {bucket = "c13-boudicca-mp-article-bucket"}
 data "aws_iam_role" "execution_role" { name = "ecsTaskExecutionRole" }
 data "aws_ecs_cluster" "c13_cluster" { cluster_name = "c13-ecs-cluster" }
 
