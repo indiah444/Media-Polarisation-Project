@@ -20,8 +20,10 @@ def clean_multiple_spaces(text: str) -> str:
     return re.sub(r'\s+', ' ', text)
 
 
-def clean_ads(article_content: str) -> str:
-    '''Returns article content with HTML Hyperlink text removed.'''
+def clean_content(content: str, is_html: bool):
+    if is_html:
+        content = clean_html_tags(content)
+    return clean_multiple_spaces(content)
 
 
 if __name__ == "__main__":
