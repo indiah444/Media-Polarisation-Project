@@ -12,7 +12,7 @@ def get_sentiments(sia, df: pd.DataFrame, text_col: str, topic_col: str, source_
     Returns a dataframe containing:
     text column, topic column and sentiments (pos,neg,neut,compound)."""
 
-    if df[text_col].dtype == 'object':
+    if not pd.api.types.is_string_dtype(df[text_col]):
         raise TypeError("The text column must contain strings.")
 
     sents = df[text_col].apply(lambda x: sia.polarity_scores(x))
