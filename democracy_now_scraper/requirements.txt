@@ -1,0 +1,5 @@
+boto3
+python-dotenv
+grequests
+feedparser
+beautifulsoup4
