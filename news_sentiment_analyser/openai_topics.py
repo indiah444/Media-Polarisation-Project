@@ -2,7 +2,7 @@
 from os import environ as ENV
 import json
 
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 from dotenv import load_dotenv
 import pandas as pd
 
@@ -11,7 +11,12 @@ from database_functions import get_topic_names
 
 def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
     """Returns the dataframe with a topics column added.
-    Currently chuncking is set to 3 titles, but will be increased."""
+    Currently chuncking is set to 3 titles, but will be increased.
+    May change title to article_title - check with others."""
+    if 'title' not in articles.columns:
+        raise ValueError("DataFrame must contain a 'title' column")
+    if articles.empty:
+        raise ValueError("DataFrame is empty")
     load_dotenv()
     ai = OpenAI(api_key=ENV["OPENAI_API_KEY"])
     titles = articles['title'].tolist()
@@ -33,25 +38,37 @@ def chunk_list(lst, chunk_size):
         yield lst[i:i + chunk_size]
 
 
-def find_article_topics(article_titles: list[str], topics: list[str], openai_client: OpenAI) -> str:
+def find_article_topics(article_titles: list[str], topics: list[str],
+                        openai_client: OpenAI) -> dict:
     """Returns a dictionary of article title to topics associated with each article title."""
     titles = "\n".join(article_titles)
     system_content = create_message(topics)
-    response = openai_client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": system_content
-            },
-            {
-                "role": "user",
-                "content": titles,
-            }],
-        model="gpt-4o-mini",
-    )
-    raw_response = response.choices[0].message.content
-    raw_response = raw_response.replace("'", '"')
-    list_response = json.loads(raw_response)
+    try:
+        response = openai_client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_content
+                },
+                {
+                    "role": "user",
+                    "content": titles,
+                }],
+            model="gpt-4o-mini",
+        )
+    except OpenAIError as e:
+        print(f"OpenAI API error: {e}")
+        return {title: [] for title in article_titles}
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return {title: [] for title in article_titles}
+    try:
+        raw_response = response.choices[0].message.content
+        raw_response = raw_response.replace("'", '"')
+        list_response = json.loads(raw_response)
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"Error processing API response: {e}")
+        return {title: [] for title in article_titles}
 
     return {item['title']: item['topics'] for item in list_response}
 
