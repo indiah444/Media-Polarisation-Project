@@ -3,3 +3,4 @@ beautifulsoup4
 grequests
 nltk
 pytest
+python-dotenv
