@@ -43,9 +43,9 @@ def get_article_content(article_url: str) -> str:
 def parse_feed_entries(feed: feedparser.FeedParserDict) -> list[dict]:
     """Parses the entries of a feed and extracts relevant fields."""
 
+    source_name = "Fox News"
     entries = []
     article_requests = (grequests.get(entry.link) for entry in feed.entries)
-
     responses = grequests.map(article_requests)
 
     for entry, response in zip(feed.entries, responses):
@@ -59,7 +59,8 @@ def parse_feed_entries(feed: feedparser.FeedParserDict) -> list[dict]:
             "title": entry.title,
             "content": content,
             "link": entry.link,
-            "published": entry.published
+            "published": entry.published,
+            "source_name": source_name
         })
 
     return entries
