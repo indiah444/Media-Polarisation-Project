@@ -25,13 +25,33 @@ DB_NAME=XXXXX
 
 - `clean_fn.py`: This file cleans the extracted article content by removing URLs, punctuation, and stopwords using regular expressions and NLTK's stopword corpus.
 
+- `load_fn.py`: This file converts the cleaned data into a Pandas DataFrame and uploads it as a CSV to an S3 bucket. It combines the fetching, cleaning, and uploaded processes.
+
+- `pipeline_fn.py`: This file contains the main Lambda handler function for the Fox News scraper. It orchestrates the entire flow from fetching data from RSS feeds to uploading the processed data to S3.
+
 ## Usage
+
+### Running the Entire Pipeline
+
+To run the entire process (fetching, cleaning, and uploading to S3), execute the following command:
+
+```sh
+python3 pipeline_fn.py
+```
 
 ### Running the Extraction Process
 
-Run the extraction process through the command `python3 extract_fn.py`
+If you want to run the extraction process separately, you can execute:
+
+```sh
+python3 extract_fn.py
+```
 
 
 ### Running the Cleaning Process
 
-Run the cleaning process through the command `python3 clean_fn.py`
+To run the cleaning process separately, you can execute:
+
+```sh
+python3 clean_fn.py
+```
