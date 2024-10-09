@@ -22,6 +22,38 @@ def mock_sia():
         yield mock_instance
 
 
+def test_get_sentiments_correct_cols(mock_sia):
+    """Asserts that get_sentiments returns a dataframe with the correct columns"""
+
+    sample_df = pd.DataFrame({
+        'text': ["123", "456", "789"],
+        'topic': ['a', 'b', 'c'],
+        'source': ['source1', 'source1', 'source2']
+    })
+
+    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+
+    assert 'pos' in sentiments.columns
+    assert 'neg' in sentiments.columns
+    assert 'neut' in sentiments.columns
+    assert 'compound' in sentiments.columns
+
+
+def test_get_sentiments_correct_vals(mock_sia):
+    """Asserts that get_sentiments returns a dataframe with the correct values"""
+
+    sample_df = pd.DataFrame({
+        'text': ["123", "456", "789"],
+        'topic': ['a', 'b', 'c'],
+        'source': ['source1', 'source1', 'source2']
+    })
+
+    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+
+    assert pytest.approx(sentiments['pos'][0], rel=1e-4) == 0.6369
+    assert pytest.approx(sentiments['neg'][1], rel=1e-4) == 0.4939
+
+
 def test_get_sentiments_type_error():
     """Tests that a TypeError is raised if the 'text' column
     contains non-string objects"""
