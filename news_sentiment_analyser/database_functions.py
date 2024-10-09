@@ -20,12 +20,11 @@ def create_connection() -> connection:
 
 def get_topic_names() -> list[str]:
     """Returns a list of topic names."""
-    conn = create_connection()
-    query = """SELECT topic_name FROM topic;"""
-    with conn.cursor() as cur:
-        cur.execute(query)
-        res = cur.fetchall()
-    conn.close()
+    with create_connection() as conn:
+        query = """SELECT topic_name FROM topic;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
 
     return [topic['topic_name'] for topic in res]
 
