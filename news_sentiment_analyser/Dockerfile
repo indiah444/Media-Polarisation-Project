@@ -1,7 +1,7 @@
 # Specifies latest image of python
-FROM public.ecr.aws/lambda/python:latest
+FROM python:latest
 
-WORKDIR ${LAMBDA_TASK_ROOT}
+WORKDIR /app
 
 # Copies txt file containing env package requirements
 COPY requirements.txt .
@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copies working files.
-COPY main.py .
+COPY extract_s3.py .
 
 # Runs pipeline
-CMD ["main.lambda_handler"]
+CMD ["python3", "extract_s3.py"]

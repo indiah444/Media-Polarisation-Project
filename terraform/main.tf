@@ -20,20 +20,15 @@ data "aws_ecr_image" "democracy_now_news_scraper_image" {
     image_tag       = "latest"
 }
 
-data "aws_ecr_image" "article_combiner_image" {
-    repository_name = var.ARTICLE_COMBINER_ECR_REPO
-    image_tag       = "latest"
-}
-
 # data "aws_ecr_image" "email_generator_image" {
 #     repository_name = var.EMAIL_GENERATOR_ECR_REPO
 #     image_tag       = "latest"
 # }
 
-# data "aws_ecr_image" "article_analyser_image" {
-#     repository_name = var.ARTICLE_ANALYSER_ECR_REPO
-#     image_tag       = "latest"
-# }
+data "aws_ecr_image" "article_analyser_image" {
+    repository_name = var.ARTICLE_ANALYSER_ECR_REPO
+    image_tag       = "latest"
+}
 
 data "aws_s3_bucket" "article_s3_bucket" {bucket = var.S3_BUCKET_NAME}  # may not be needed
 data "aws_iam_role" "execution_role" { name = "ecsTaskExecutionRole" }
@@ -81,6 +76,14 @@ resource "aws_lambda_function" "fox_news_scraper_lambda" {
     timeout = 900
     memory_size = 256
 
+    environment {
+        variables = {
+            S3_BUCKET_NAME = var.S3_BUCKET_NAME
+            AWS_ACCESS_KEY_BOUDICCA = var.AWS_ACCESS_KEY
+            AWS_ACCESS_SECRET_KEY_BOUDICCA = var.AWS_SECRET_ACCESS_KEY
+        }
+    }
+
     image_config { command = ["main.lambda_handler"] }
 }
 
@@ -92,17 +95,6 @@ resource "aws_lambda_function" "democracy_now_news_scraper_lambda" {
 
     package_type = "Image"
 
-    timeout = 900
-    memory_size = 256
-
-    image_config { command = ["main.lambda_handler"] }
-}
-
-resource "aws_lambda_function" "article_combiner_lambda" {
-    function_name = "c13-boudicca-mp-article-combiner"
-    image_uri     = data.aws_ecr_image.article_combiner_image.image_uri
-    role          = aws_iam_role.lambda_execution_role.arn
-    package_type = "Image"
     timeout = 900
     memory_size = 256
 
@@ -127,6 +119,74 @@ resource "aws_lambda_function" "article_combiner_lambda" {
 
 #     image_config { command = ["main.lambda_handler"] }
 # }
+
+resource "aws_cloudwatch_log_group" "mp_article_analyser_log_group" {
+    name = "/ecs/c13-boudicca-mp-article-analyser"
+}
+
+resource "aws_ecs_task_definition" "mp_article_analyser" {
+    family                   = "c13-boudicca-mp-article-analyser-task-definition"
+    requires_compatibilities = ["FARGATE"]
+    network_mode             = "awsvpc"
+    cpu                      = "256"
+    memory                   = "1024"
+    execution_role_arn       = data.aws_iam_role.execution_role.arn
+
+    container_definitions = jsonencode([
+        {
+            name      = "mp-article-analyser"
+            image     = data.aws_ecr_image.article_analyser_image.image_uri
+            essential = true
+            memory    = 1024
+            environment = [
+                {
+                    name  = "AWS_ACCESS_KEY"
+                    value = var.AWS_ACCESS_KEY
+                },
+                {
+                    name  = "AWS_SECRET_KEY"
+                    value = var.AWS_SECRET_ACCESS_KEY
+                },
+                {
+                    name  = "BUCKET_NAME"
+                    value = var.S3_BUCKET_NAME
+                },
+                {
+                    name  = "REGION"
+                    value = var.REGION
+                },
+                {
+                    name  = "DB_HOST"
+                    value = var.DB_HOST
+                },
+                {
+                    name  = "DB_PORT"
+                    value = var.DB_PORT
+                },
+                {
+                    name  = "DB_USER"
+                    value = var.DB_USER
+                },
+                {
+                    name  = "DB_PASSWORD"
+                    value = var.DB_PASSWORD
+                },
+                {
+                    name  = "DB_NAME"
+                    value = var.DB_NAME
+                },
+            ]
+            logConfiguration = {
+                logDriver = "awslogs"
+                options = {
+                    awslogs-group         = "/ecs/c13-boudicca-mp-article-analyser"
+                    awslogs-region        = var.REGION
+                    awslogs-stream-prefix = "ecs"
+                }
+            }
+        }
+    ])
+}
 
 resource "aws_iam_role" "step_functions_role" {
   name = "c13-boudicca-mp-main-pipeline-step-functions-role"
@@ -157,10 +217,54 @@ resource "aws_iam_role_policy" "step_functions_policy" {
         Action = ["lambda:InvokeFunction"],
         Resource = [
           aws_lambda_function.fox_news_scraper_lambda.arn,
-          aws_lambda_function.democracy_now_news_scraper_lambda.arn,
-          aws_lambda_function.article_combiner_lambda.arn
+          aws_lambda_function.democracy_now_news_scraper_lambda.arn
         ]
       },
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:RunTask",
+          "ecs:StopTask",
+          "ecs:DescribeTasks",
+          "iam:PassRole"
+        ],
+        Resource = [
+          data.aws_iam_role.execution_role.arn,
+          aws_ecs_task_definition.mp_article_analyser.arn
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:DescribeClusters",
+          "ecs:DescribeTaskDefinition",
+          "ecs:DescribeTasks",
+          "ecs:ListTasks"
+        ],
+        Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "events:PutRule",
+          "events:DeleteRule",
+          "events:DescribeRule",
+          "events:EnableRule",
+          "events:DisableRule",
+          "events:PutTargets",
+          "events:RemoveTargets"
+        ],
+        Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup"
+        ],
+        Resource = "*"
+      }
     ]
   })
 }
@@ -199,13 +303,27 @@ resource "aws_sfn_state_machine" "main_pipeline_state_machine" {
           }
         ],
         ResultPath = "$.scrapingResults",
-        Next = "ArticleCombineTask"
+        Next = "RunArticleAnalyserECS"
       },
-      ArticleCombineTask = {
+      RunArticleAnalyserECS = {
         Type = "Task",
-        Resource = aws_lambda_function.article_combiner_lambda.arn,
-        InputPath = "$.scrapingResults",
-        ResultPath = "$.combinedResult",
+        Resource = "arn:aws:states:::ecs:runTask.sync",
+        Parameters = {
+          Cluster = "${data.aws_ecs_cluster.c13_cluster.cluster_name}",
+          TaskDefinition = "${aws_ecs_task_definition.mp_article_analyser.arn}",
+          LaunchType = "FARGATE",
+          NetworkConfiguration = {
+            AwsvpcConfiguration = {
+              Subnets = [
+                "${data.aws_subnet.c13-public-subnet1.id}",
+                "${data.aws_subnet.c13-public-subnet2.id}",
+                "${data.aws_subnet.c13-public-subnet3.id}"
+              ],
+              AssignPublicIp = "ENABLED"
+            }
+          }
+        },
+        ResultPath = "$.ecsRunResult",
         End = true
       }
     }
