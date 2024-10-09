@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS source;
+DROP TABLE IF EXISTS article_topic_assignment;
 DROP TABLE IF EXISTS article;
 DROP TABLE IF EXISTS topic;
-DROP TABLE IF EXISTS article_topic_assignment;
+DROP TABLE IF EXISTS source;
 DROP TABLE IF EXISTS subscriber;
 
 CREATE TABLE source (
@@ -14,12 +14,14 @@ CREATE TABLE source (
 
 CREATE TABLE article (
     article_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    article_title VARCHAR(500) NOT NULL UNIQUE,
+    article_title VARCHAR(500) NOT NULL,
+    article_content TEXT NOT NULL,
     polarity_score FLOAT NOT NULL,
     source_id SMALLINT NOT NULL,
     date_published DATE NOT NULL,
     article_url VARCHAR(500) NOT NULL UNIQUE,
     FOREIGN KEY (source_id) REFERENCES source(source_id)
+    UNIQUE (article_title, source_id, date_published)
 );
 
 CREATE TABLE topic (
@@ -37,21 +39,21 @@ CREATE TABLE article_topic_assignment (
 
 CREATE TABLE subscriber (
     subscriber_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    subscriber_email VARCHAR(250) NOT NULL,
+    subscriber_email VARCHAR(250) NOT NULL UNIQUE,
     subscriber_first_name VARCHAR (100) NOT NULL,
     subscriber_surname VARCHAR(100) NOT NULL
 );
 
 INSERT INTO topic (topic_name) VALUES
-("Donald Trump"),
-("Kamala Harris"),
-("2024 Presidential Election"),
-("Climate Change"),
-("Natural Disaster"),
-("Abortion"),
-("Crime and Law Enforcement"),
-("Guns");
+('Donald Trump'),
+('Kamala Harris'),
+('2024 Presidential Election'),
+('Climate Change'),
+('Natural Disaster'),
+('Abortion'),
+('Crime and Law Enforcement'),
+('Guns');
 
 INSERT INTO source (source_name, source_url, source_image_url, source_political_leaning) VALUES
-("Fox News", "https://www.foxnews.com/", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png", "Right"),
-("Democracy Now!", "https://www.democracynow.org/", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6MVq_iSYjCvMqfZHJNb8PIdCGkqZZwOnyEw&s", "Left");
+('Fox News', 'https://www.foxnews.com/', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png', 'Right'),
+('Democracy Now!', 'https://www.democracynow.org/', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6MVq_iSYjCvMqfZHJNb8PIdCGkqZZwOnyEw&s', 'Left');

@@ -2,3 +2,4 @@ openai
 python-dotenv
 pandas
 psycopg2
+boto3
