@@ -14,7 +14,7 @@ def get_object_names(s3_client, bucket_name: str) -> list[str]:
     now = datetime.now(timezone.utc)
     one_hour_ago = now - timedelta(hours=1)
 
-    return [o["Key"] for o in objects.get("Contents", []) if o["LastModified"] >= one_hour_ago]
+    return [o["Key"] for o in objects.get("Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith("_article_data.csv")]
 
 
 def create_dataframe(s3_client, bucket_name: str, file_name: str) -> pd.DataFrame:
@@ -24,6 +24,7 @@ def create_dataframe(s3_client, bucket_name: str, file_name: str) -> pd.DataFram
         Bucket=bucket_name, Key=file_name, Fileobj=current_bytes)
     current_bytes.seek(0)
     current_df = pd.read_csv(current_bytes)
+
     return current_df
 
 
@@ -38,7 +39,6 @@ def extract() -> pd.DataFrame:
     """Extracts the most recent files and returns a dataframe."""
     load_dotenv()
     bucket_name = ENV['BUCKET_NAME']
-
     s3 = client(service_name="s3",
                 aws_access_key_id=ENV["AWS_ACCESS_KEY"],
                 aws_secret_access_key=ENV["AWS_SECRET_KEY"])
@@ -49,7 +49,7 @@ def extract() -> pd.DataFrame:
         all_dfs.append(create_dataframe(s3, bucket_name, name))
         delete_object(s3, bucket_name, name)
     final_df = pd.concat(all_dfs, ignore_index=True)
-    print("Data extracted from s3.")
+
     return final_df
 
 
