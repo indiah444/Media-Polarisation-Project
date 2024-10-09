@@ -71,7 +71,7 @@ def insert_into_assignment(articles: pd.DataFrame) -> None:
 
 
 if __name__ == "__main__":
-    data = {
+    fake_data = {
         "title": [
             "Trump Criticizes 2024 Election Process",
             "Harris Advocates for Climate Change Action",
@@ -106,6 +106,6 @@ if __name__ == "__main__":
         ]
     }
 
-fake_articles = pd.DataFrame(data)
+    fake_articles = pd.DataFrame(fake_data)
 
-load(fake_articles)
+    load(fake_articles)
