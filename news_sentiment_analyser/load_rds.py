@@ -10,7 +10,8 @@ from database_functions import create_connection, get_topic_dict
 def load(articles: pd.DataFrame) -> None:
     """Loads all the articles and article_topic_assignment into the RDS tables."""
     article_id_dict = insert_into_articles(articles)
-    insert_into_assignment(articles, article_id_dict)
+    processed_df = process_df_for_assignment_insert(articles, article_id_dict)
+    insert_into_assignment(processed_df)
 
 
 def insert_into_articles(articles: pd.DataFrame) -> dict:
@@ -38,8 +39,8 @@ def insert_into_articles(articles: pd.DataFrame) -> dict:
     return article_id_dict
 
 
-def insert_into_assignment(articles: pd.DataFrame, article_id_dict: dict) -> None:
-    """Bulk inserts the article-topic into the article_topic_assignment table."""
+def process_df_for_assignment_insert(articles: pd.DataFrame, article_id_dict: dict) -> pd.DataFrame:
+    """Processes the dataframe to be inserted into the article_topic_assignment table."""
     topic_dict = get_topic_dict()
 
     article_df = articles[['topics', 'title']]
@@ -49,7 +50,13 @@ def insert_into_assignment(articles: pd.DataFrame, article_id_dict: dict) -> Non
 
     article_df = article_df[['topic_id', 'article_id']]
 
-    params = article_df.to_numpy().tolist()
+    return article_df
+
+
+def insert_into_assignment(articles: pd.DataFrame) -> None:
+    """Bulk inserts the article-topic into the article_topic_assignment table."""
+
+    params = articles.to_numpy().tolist()
 
     params = [(int(topic_id), int(article_id))
               for topic_id, article_id in params]
