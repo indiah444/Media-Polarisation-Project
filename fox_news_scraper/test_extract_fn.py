@@ -1,7 +1,7 @@
-# pylint: skip-file
+"""Test file for functions in extract_fn.py"""
 
 from unittest.mock import patch, MagicMock
-import feedparser
+
 from extract_fn import fetch_rss_feed, get_article_content
 
 
