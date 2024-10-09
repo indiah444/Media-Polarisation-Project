@@ -32,13 +32,14 @@ def delete_object(s3_client, bucket_name: str, file_name: str) -> None:
     )
 
 
-def extract():
+def extract() -> pd.DataFrame:
     """Extracts the most recent files and returns a dataframe."""
+    load_dotenv()
     bucket_name = ENV['BUCKET_NAME']
 
     s3 = client(service_name="s3",
                 aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+                aws_secret_access_key=ENV["AWS_SECRET_KEY"])
 
     name = get_object_name(s3, bucket_name)
     df = create_dataframe(s3, bucket_name, name)
@@ -48,4 +49,4 @@ def extract():
 
 
 if __name__ == "__main__":
-    pass
+    print(extract())
