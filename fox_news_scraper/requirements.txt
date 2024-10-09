@@ -4,3 +4,4 @@ grequests
 nltk
 pandas
 boto3
+pytest
