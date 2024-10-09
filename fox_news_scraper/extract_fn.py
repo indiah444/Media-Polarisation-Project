@@ -2,7 +2,6 @@
 
 import feedparser
 import grequests
-import requests
 from bs4 import BeautifulSoup
 
 
@@ -17,7 +16,7 @@ def get_article_content(article_url: str) -> str:
     """Scrapes the full content of an article from a given URL."""
 
     try:
-        response = requests.get(article_url, timeout=10)
+        response = grequests.get(article_url)
         if response.status_code != 200:
             return f"Couldn't connect to article, status_code: {response.status_code}"
 
@@ -37,8 +36,19 @@ def parse_feed_entries(feed: feedparser.FeedParserDict) -> list[dict]:
     """Parses the entries of a feed and extracts relevant fields."""
 
     entries = []
-    for entry in feed.entries:
-        content = get_article_content(entry.link)
+    article_requests = (grequests.get(entry.link) for entry in feed.entries)
+
+    responses = grequests.map(article_requests)
+
+    for entry, response in zip(feed.entries, responses):
+        if response and response.status_code == 200:
+            soup = BeautifulSoup(response.content, "html.parser")
+            article_body = soup.find("div", class_="article-body")
+            content = article_body.get_text(
+                separator=" ", strip=True) if article_body else "Full content not found or unable to parse."
+        else:
+            content = f"Couldn't connect to article, status_code: {
+                response.status_code if response else "No response."}"
 
         entries.append({
             "title": entry.title,
@@ -67,7 +77,7 @@ def fetch_from_multiple_feeds(feed_urls: list[str]) -> list[dict]:
             entries = parse_feed_entries(feed)
             all_entries.extend(entries)
         else:
-            print(f"Failed to fetch feed from {url}, status_code: {
+            print(f"Failed to fetch feed from {response.url if response else "No URL"}, status_code: {
                   response.status_code if response else "No response"}")
 
     return all_entries
