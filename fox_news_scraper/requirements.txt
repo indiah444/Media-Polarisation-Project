@@ -1,1 +1,4 @@
+feedparser
+beautifulsoup4
+grequests
 nltk
