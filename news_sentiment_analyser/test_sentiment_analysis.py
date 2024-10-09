@@ -8,6 +8,16 @@ from sentiment_analysis import get_sentiments, get_avg_sentiment
 
 
 @pytest.fixture
+def sample_df():
+    """Mocks a valid dataframe"""
+    return pd.DataFrame({
+        'text': ["123", "456", "789"],
+        'topic': ['a', 'b', 'c'],
+        'source': ['source1', 'source1', 'source2']
+    })
+
+
+@pytest.fixture
 def mock_sia():
     """Mocks the string intensity analyser."""
 
@@ -22,14 +32,8 @@ def mock_sia():
         yield mock_instance
 
 
-def test_get_sentiments_correct_cols(mock_sia):
+def test_get_sentiments_correct_cols(mock_sia, sample_df):
     """Asserts that get_sentiments returns a dataframe with the correct columns"""
-
-    sample_df = pd.DataFrame({
-        'text': ["123", "456", "789"],
-        'topic': ['a', 'b', 'c'],
-        'source': ['source1', 'source1', 'source2']
-    })
 
     sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
 
@@ -39,14 +43,8 @@ def test_get_sentiments_correct_cols(mock_sia):
     assert 'compound' in sentiments.columns
 
 
-def test_get_sentiments_correct_vals(mock_sia):
+def test_get_sentiments_correct_vals(mock_sia, sample_df):
     """Asserts that get_sentiments returns a dataframe with the correct values"""
-
-    sample_df = pd.DataFrame({
-        'text': ["123", "456", "789"],
-        'topic': ['a', 'b', 'c'],
-        'source': ['source1', 'source1', 'source2']
-    })
 
     sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
 
@@ -82,34 +80,22 @@ def test_get_sentiments_type_error_mixed_types():
         get_sentiments(MagicMock(), df_non_string, 'text', 'topic', 'source')
 
 
-def test_get_avg_sentiment_correct_shape(mock_sia):
+def test_get_avg_sentiment_correct_shape(mock_sia, sample_df):
     """Asserts that get_avg_sentiment returns a dataframe
     of the correct shape."""
 
-    df = pd.DataFrame({
-        'text': ["123", "456", "789"],
-        'topic': ['a', 'b', 'c'],
-        'source': ['source1', 'source1', 'source2']
-    })
-
-    sentiments = get_sentiments(mock_sia, df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
 
     avg_sentiments = get_avg_sentiment(sentiments, 'topic', 'source')
 
     assert avg_sentiments.shape[0] == 3
 
 
-def test_get_avg_sentiment_correct_values(mock_sia):
+def test_get_avg_sentiment_correct_values(mock_sia, sample_df):
     """Asserts that get_avg_sentiment returns a dataframe
     with the correct values."""
 
-    df = pd.DataFrame({
-        'text': ["123", "456", "789"],
-        'topic': ['a', 'b', 'c'],
-        'source': ['source1', 'source1', 'source2']
-    })
-
-    sentiments = get_sentiments(mock_sia, df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
 
     avg_sentiments = get_avg_sentiment(sentiments, 'topic', 'source')
 
