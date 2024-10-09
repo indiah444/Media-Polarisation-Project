@@ -14,7 +14,11 @@ def get_object_names(s3_client, bucket_name: str) -> list[str]:
     now = datetime.now(timezone.utc)
     one_hour_ago = now - timedelta(hours=1)
 
-    return [o["Key"] for o in objects.get("Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith("_article_data.csv")]
+    object_names = [o["Key"] for o in objects.get(
+        "Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith("_article_data.csv")]
+    if len(object_names) == 0:
+        raise ValueError("No csvs in S3 bucket to upload.")
+    return object_names
 
 
 def create_dataframe(s3_client, bucket_name: str, file_name: str) -> pd.DataFrame:
@@ -48,6 +52,8 @@ def extract() -> pd.DataFrame:
     for name in names:
         all_dfs.append(create_dataframe(s3, bucket_name, name))
         delete_object(s3, bucket_name, name)
+    if len(all_dfs) == 0:
+        raise ValueError("No dataframes where found.")
     final_df = pd.concat(all_dfs, ignore_index=True)
 
     return final_df
