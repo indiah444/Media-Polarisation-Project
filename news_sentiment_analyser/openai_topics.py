@@ -15,11 +15,15 @@ def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
     ai = OpenAI(api_key=ENV["OPENAI_API_KEY"])
     titles = articles['title'].tolist()
     topic_test = get_topic_names()
-    combined_dict = {}
+    combined_topic_dict = {}
+    # This would be in batches of 3, probably increase to 10/20? need to test speed
     for batch in chunk_list(titles, 3):
-        batch_result = find_article_topics(batch, topic_test, ai)
-        combined_dict.update(batch_result)
-    articles['topics'] = articles['title'].map(combined_dict)
+        batch_topic_dict = find_article_topics(batch, topic_test, ai)
+        # Creates a dictionary of title to topics
+        combined_topic_dict.update(batch_topic_dict)
+    # Adds a column with the list of topics
+    articles['topics'] = articles['title'].map(combined_topic_dict)
+    # Removes rows with no topics
     df_filtered = articles[articles['topics'].apply(
         lambda x: len(x) > 0)]
 
@@ -33,7 +37,7 @@ def chunk_list(lst, chunk_size):
 
 
 def find_article_topics(article_titles: list[str], topics: list[str], openai_client: OpenAI) -> str:
-    """Returns a list of topics associated with each article title, using openAI."""
+    """Returns a dictionary of article title to topics associated with each article title, using openAI."""
     titles = "\n".join(article_titles)
     system_content = create_message(topics)
     response = openai_client.chat.completions.create(
@@ -49,8 +53,10 @@ def find_article_topics(article_titles: list[str], topics: list[str], openai_cli
             }],
         model="gpt-4o-mini",
     )
+
     raw_response = response.choices[0].message.content
     raw_response = raw_response.replace("'", '"')
+    # change string into list
     list_response = json.loads(raw_response)
     return {item['title']: item['topics'] for item in list_response}
 
@@ -68,7 +74,7 @@ def create_message(topics: list[str]) -> str:
 if __name__ == "__main__":
     data = {
         'title': [
-            "AI Breakthrough in Healthcare",
+            "Trump is angry at people",
             "Climate Change Impacts on Agriculture",
             "New Discoveries in Quantum Computing",
             "The Rise of Electric Vehicles",
