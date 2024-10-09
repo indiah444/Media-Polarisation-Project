@@ -14,7 +14,12 @@ def test_clean_html_tags(html, expected):
     assert clean_html_tags(html) == expected
 
 
-def test_clean_multiple_spaces():
-    '''Tests that multiple spaces are replaced by a single space'''
-
-    assert True
+@pytest.mark.parametrize("html, expected", [
+    ("""We’ve seen over the  past century that, in      general, natural disasters are killing fewer      people.""",
+     """We’ve seen over the past century that, in general, natural disasters are killing fewer people."""),
+    ("   ", " "),
+    (" ", " ")
+])
+def test_clean_multiple_spaces(html, expected):
+    '''Tests that html tags are cleaned as expected'''
+    assert clean_multiple_spaces(html) == expected

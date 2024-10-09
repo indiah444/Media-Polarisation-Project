@@ -10,6 +10,7 @@ def clean_html_tags(html_text: str) -> str:
 
 def clean_multiple_spaces(text: str) -> str:
     '''Returns text multiple spaces removed'''
+    return re.sub(r'\s+', ' ', text)
 
 
 def clean_ads(article_content: str) -> str:
