@@ -6,7 +6,8 @@ import json
 import pandas as pd
 from openai import OpenAI
 
-from openai_topics import add_topics_to_dataframe, find_article_topics, chunk_list, create_message, OpenAIError
+from openai_topics import (add_topics_to_dataframe, find_article_topics,
+                           chunk_list, create_message, OpenAIError)
 
 
 class TestAddTopicsToDataFrame(unittest.TestCase):
