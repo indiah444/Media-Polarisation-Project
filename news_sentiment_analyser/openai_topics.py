@@ -37,7 +37,7 @@ def chunk_list(lst, chunk_size):
 
 
 def find_article_topics(article_titles: list[str], topics: list[str], openai_client: OpenAI) -> str:
-    """Returns a dictionary of article title to topics associated with each article title, using openAI."""
+    """Returns a dictionary of article title to topics associated with each article title."""
     titles = "\n".join(article_titles)
     system_content = create_message(topics)
     response = openai_client.chat.completions.create(
@@ -81,11 +81,11 @@ if __name__ == "__main__":
             "Space Exploration: Next Frontier"
         ],
         'description': [
-            "A recent breakthrough in AI applications promises to revolutionize the healthcare industry by improving diagnostic accuracy and personalized treatments.",
-            "Studies reveal the growing impact of climate change on global agriculture, with challenges in food security and crop yields.",
-            "Quantum computing is set to transform industries as new discoveries make it more feasible for solving complex problems at unprecedented speeds.",
-            "Electric vehicles are experiencing a global rise in popularity, driven by advancements in battery technology and environmental concerns.",
-            "As space agencies and private companies ramp up efforts, the next frontier in space exploration could bring new opportunities and challenges."
+            "A recent breakthrough in AI....",
+            "Studies reveal the growing ...",
+            "Quantum computing is set to ...",
+            "Electric vehicles are ...",
+            "As space agencies and ..."
         ]
     }
 
