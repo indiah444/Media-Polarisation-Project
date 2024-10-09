@@ -2,6 +2,7 @@
 characters, whitespace etc."""
 
 import re
+
 import nltk
 from nltk.corpus import stopwords
 
