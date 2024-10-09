@@ -14,18 +14,19 @@ def create_connection() -> connection:
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
                    port=ENV["DB_PORT"],
                    cursor_factory=RealDictCursor)
+
     return conn
 
 
 def get_topic_names() -> list[str]:
     """Returns a list of topic names."""
-
     conn = create_connection()
     query = """SELECT topic_name FROM topic;"""
     with conn.cursor() as cur:
         cur.execute(query)
         res = cur.fetchall()
     conn.close()
+
     return [topic['topic_name'] for topic in res]
 
 
