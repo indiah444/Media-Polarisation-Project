@@ -39,15 +39,13 @@ FOX_HEADLINES = {
 }
 
 
-def connect():
+def connect(dbname, host: str, user: str, port: str, password: str):
     '''Return a connection to the RDS database.'''
-
-    load_dotenv()
-    return psycopg2.connect(dbname=ENV["DB_NAME"],
-                            host=ENV["DB_HOST"],
-                            user=ENV["DB_USER"],
-                            port=ENV["DB_PORT"],
-                            password=ENV["DB_PASSWORD"],
+    return psycopg2.connect(dbname=dbname,
+                            host=host,
+                            user=user,
+                            port=port,
+                            password=password,
                             cursor_factory=psycopg2.extras.RealDictCursor)
 
 
@@ -126,6 +124,7 @@ def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple], 
 
 
 if __name__ == "__main__":
+    load_dotenv()
     f = Faker()
     subs = generate_fake_subscribers(f, 3)
 
@@ -136,6 +135,10 @@ if __name__ == "__main__":
     article_assignments = generate_article_topic_assignment(
         FOX_HEADLINES, TOPICS)
 
-    with connect() as connection:
+    with connect(ENV["DB_NAME"],
+                 ENV["DB_HOST"],
+                 ENV["DB_USER"],
+                 ENV["DB_PORT"],
+                 ENV["DB_PASSWORD"]) as connection:
         insert_data_to_db(connection, subs,
                           articles, article_assignments)
