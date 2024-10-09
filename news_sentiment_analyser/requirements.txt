@@ -1,4 +1,6 @@
+openai
 python-dotenv
-boto3
 pandas
 pytest
+psycopg2
+boto3
