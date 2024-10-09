@@ -15,6 +15,7 @@ CREATE TABLE source (
 CREATE TABLE article (
     article_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     article_title VARCHAR(500) NOT NULL,
+    article_content TEXT NOT NULL,
     polarity_score FLOAT NOT NULL,
     source_id SMALLINT NOT NULL,
     date_published DATE NOT NULL,
