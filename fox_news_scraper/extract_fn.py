@@ -15,9 +15,11 @@ def parse_feed_entries(feed):
 
     entries = []
     for entry in feed.entries:
+        content = entry.get("content:encoded", entry.get(
+            "description", "No content available."))
         entries.append({
             "title": entry.title,
-            "summary": entry.summary,
+            "content": content,
             "link": entry.link,
             "published": entry.published
         })
@@ -35,3 +37,13 @@ def fetch_from_multiple_feeds(feed_urls):
         all_entries.extend(entries)
 
     return all_entries
+
+
+if __name__ == "__main__":
+
+    test_fn = fetch_rss_feed(
+        "https://moxie.foxnews.com/google-publisher/politics.xml")
+
+    test_extract = parse_feed_entries(test_fn)
+
+    print(test_extract)
