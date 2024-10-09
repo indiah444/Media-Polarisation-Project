@@ -39,4 +39,4 @@ def get_avg_sentiment(sentiments: pd.DataFrame, topic_col: str, source_col: str)
 
 
 if __name__ == "__main__":
-    sia = SentimentIntensityAnalyzer()
+    sentiment_analyser = SentimentIntensityAnalyzer()
