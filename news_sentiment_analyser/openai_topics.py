@@ -72,24 +72,4 @@ def create_message(topics: list[str]) -> str:
 
 
 if __name__ == "__main__":
-    data = {
-        'title': [
-            "Trump is angry at people",
-            "Climate Change Impacts on Agriculture",
-            "New Discoveries in Quantum Computing",
-            "The Rise of Electric Vehicles",
-            "Space Exploration: Next Frontier"
-        ],
-        'description': [
-            "A recent breakthrough in AI....",
-            "Studies reveal the growing ...",
-            "Quantum computing is set to ...",
-            "Electric vehicles are ...",
-            "As space agencies and ..."
-        ]
-    }
-
-# Create DataFrame
-    df_articles = pd.DataFrame(data)
-    result = add_topics_to_dataframe(df_articles)
-    print(result)
+    pass
