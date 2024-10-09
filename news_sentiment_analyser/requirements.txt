@@ -4,3 +4,6 @@ pandas
 psycopg2
 boto3
 bs4
+nltk
+numpy
+matplotlib
