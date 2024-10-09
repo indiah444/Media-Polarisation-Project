@@ -5,14 +5,14 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def fetch_rss_feed(feed_url):
+def fetch_rss_feed(feed_url: str) -> feedparser.FeedParserDict:
     """Fetches and parsers the RSS feed from the provided URL."""
 
     feed = feedparser.parse(feed_url)
     return feed
 
 
-def get_article_content(article_url):
+def get_article_content(article_url: str) -> str:
     """Scrapes the full content of an article from a given URL."""
 
     try:
@@ -22,14 +22,14 @@ def get_article_content(article_url):
         article_body = soup.find("div", class_="article-body")
         if article_body:
             return article_body.get_text(separator=" ", strip=True)
-        else:
-            return "Full content not found or unable to parse."
+
+        return "Full content not found or unable to parse."
 
     except Exception as e:
         return f"Failed to fetch full content from {article_url}: {e}"
 
 
-def parse_feed_entries(feed):
+def parse_feed_entries(feed: feedparser.FeedParserDict) -> list[dict]:
     """Parses the entries of a feed and extracts relevant fields."""
 
     entries = []
@@ -46,7 +46,7 @@ def parse_feed_entries(feed):
     return entries
 
 
-def fetch_from_multiple_feeds(feed_urls):
+def fetch_from_multiple_feeds(feed_urls: list[str]) -> list[dict]:
     """Fetches and parses entries from multiple RSS feeds."""
 
     all_entries = []
