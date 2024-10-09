@@ -29,5 +29,15 @@ def get_topic_names() -> list[str]:
     return [topic['topic_name'] for topic in res]
 
 
+def get_topic_dict() -> dict:
+    """Returns a dictionary of topic name to its id."""
+    with create_connection() as conn:
+        query = """SELECT * FROM topic;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+    return {topic['topic_name']: topic['topic_id'] for topic in res}
+
+
 if __name__ == "__main__":
     print(get_topic_names())
