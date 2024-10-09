@@ -2,3 +2,5 @@ feedparser
 beautifulsoup4
 grequests
 nltk
+pandas
+boto3
