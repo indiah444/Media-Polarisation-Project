@@ -12,6 +12,19 @@ def fetch_rss_feed(feed_url: str) -> feedparser.FeedParserDict:
     return feed
 
 
+def parse_article_content(response) -> str:
+    """Parses the article content from the HTML response."""
+
+    soup = BeautifulSoup(response.content, "html.parser")
+    article_body = soup.find("div", class_="article-body")
+
+    if article_body:
+        content = article_body.get_text(separator=" ", strip=True)
+        return content
+
+    return "Full content not found or unable to parse."
+
+
 def get_article_content(article_url: str) -> str:
     """Scrapes the full content of an article from a given URL."""
 
@@ -20,13 +33,8 @@ def get_article_content(article_url: str) -> str:
         if response.status_code != 200:
             return f"Couldn't connect to article, status_code: {response.status_code}"
 
-        soup = BeautifulSoup(response.content, "html.parser")
-        article_body = soup.find("div", class_="article-body")
-
-        if article_body:
-            return article_body.get_text(separator=" ", strip=True)
-
-        return "Full content not found or unable to parse."
+        content = parse_article_content(response)
+        return content
 
     except Exception as e:
         return f"Failed to fetch full content from {article_url}: {e}"
@@ -42,10 +50,7 @@ def parse_feed_entries(feed: feedparser.FeedParserDict) -> list[dict]:
 
     for entry, response in zip(feed.entries, responses):
         if response and response.status_code == 200:
-            soup = BeautifulSoup(response.content, "html.parser")
-            article_body = soup.find("div", class_="article-body")
-            content = article_body.get_text(
-                separator=" ", strip=True) if article_body else "Full content not found or unable to parse."
+            content = parse_article_content(response)
         else:
             content = f"Couldn't connect to article, status_code: {
                 response.status_code if response else "No response."}"
