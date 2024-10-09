@@ -5,7 +5,14 @@ import re
 
 def clean_html_tags(html_text: str) -> str:
     '''Returns text with HTML tags removed'''
-    return BeautifulSoup(html_text, "html.parser").get_text()
+    soup = BeautifulSoup(html_text, "html.parser")
+
+    for a_tag in soup.find_all('a'):
+        strong_tag = a_tag.find('strong')
+        if strong_tag:
+            a_tag.decompose()
+
+    return soup.get_text()
 
 
 def clean_multiple_spaces(text: str) -> str:
