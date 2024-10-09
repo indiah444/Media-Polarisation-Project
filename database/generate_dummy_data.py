@@ -39,22 +39,14 @@ FOX_HEADLINES = {
 }
 
 
-def connect():
+def connect(dbname, host: str, user: str, port: str, password: str):
     '''Return a connection to the RDS database.'''
-
-    load_dotenv()
-    return psycopg2.connect(dbname=ENV["DB_NAME"],
-                            host=ENV["DB_HOST"],
-                            user=ENV["DB_USER"],
-                            port=ENV["DB_PORT"],
-                            password=ENV["DB_PASSWORD"],
+    return psycopg2.connect(dbname=dbname,
+                            host=host,
+                            user=user,
+                            port=port,
+                            password=password,
                             cursor_factory=psycopg2.extras.RealDictCursor)
-
-
-def generate_fake_topics() -> list[tuple]:
-    '''Generates fake topic rows.'''
-
-    return [(i+1, t) for i, t in enumerate(TOPICS)]
 
 
 def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
@@ -62,7 +54,7 @@ def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
 
     subscribers = []
 
-    for i in range(1, num+1):
+    for _ in range(1, num+1):
         email = fake.unique.email()
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -90,7 +82,7 @@ def generate_fake_articles(
     return rows
 
 
-def generate_article_topic_assignment(headlines: dict) -> list[tuple]:
+def generate_article_topic_assignment(headlines: dict, ordered_topics: list) -> list[tuple]:
     '''Generates fake article_topic_assignment table rows.
     '''
 
@@ -100,7 +92,7 @@ def generate_article_topic_assignment(headlines: dict) -> list[tuple]:
 
         for topic in all_topics:
 
-            topic_id = TOPICS.index(topic) + 1
+            topic_id = ordered_topics.index(topic) + 1
 
             assignments.append((topic_id, article_id))
 
@@ -132,12 +124,21 @@ def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple], 
 
 
 if __name__ == "__main__":
+    load_dotenv()
     f = Faker()
     subs = generate_fake_subscribers(f, 3)
-    topics = generate_fake_topics()
+
     fox_headlines = list(FOX_HEADLINES.keys())
+
     articles = generate_fake_articles(f, 12, 1, fox_headlines)
-    article_assignments = generate_article_topic_assignment(FOX_HEADLINES)
-    with connect() as connection:
+
+    article_assignments = generate_article_topic_assignment(
+        FOX_HEADLINES, TOPICS)
+
+    with connect(ENV["DB_NAME"],
+                 ENV["DB_HOST"],
+                 ENV["DB_USER"],
+                 ENV["DB_PORT"],
+                 ENV["DB_PASSWORD"]) as connection:
         insert_data_to_db(connection, subs,
                           articles, article_assignments)
