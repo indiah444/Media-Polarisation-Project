@@ -1,4 +1,6 @@
+# pylint: skip-file
 """Tests the content cleaning methods"""
+
 import pytest
 from clean_content import clean_html_tags, clean_multiple_spaces, clean_content
 
