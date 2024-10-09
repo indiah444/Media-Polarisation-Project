@@ -49,7 +49,6 @@ def extract() -> pd.DataFrame:
         all_dfs.append(create_dataframe(s3, bucket_name, name))
         delete_object(s3, bucket_name, name)
     final_df = pd.concat(all_dfs, ignore_index=True)
-    print("Data extracted from s3.")
 
     return final_df
 
