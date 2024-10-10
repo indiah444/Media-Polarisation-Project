@@ -1,8 +1,9 @@
 """Test file for functions in extract_fn.py"""
 import pytest
 from unittest.mock import patch, MagicMock
+from unittest import TestCase
 from bs4 import BeautifulSoup
-from extract_fn import fetch_rss_feed, get_article_content, remove_hyperlink_ads
+from extract_fn import fetch_rss_feed, get_article_content, remove_hyperlink_ads, parse_article_content
 
 
 @pytest.mark.parametrize("fake_url", [
@@ -13,7 +14,6 @@ from extract_fn import fetch_rss_feed, get_article_content, remove_hyperlink_ads
 @patch("feedparser.parse")
 def test_fetch_rss_feed(mock_parse, sample_feed_data, fake_url):
     """Tests the fetch_rss_feed function."""
-
     mock_parse.return_value = sample_feed_data
     feed = fetch_rss_feed(fake_url)
 
@@ -54,17 +54,56 @@ def test_remove_hyperlink_ads(html, expected):
     assert remove_hyperlink_ads(parsed).get_text() == expected
 
 
+class TestParseArticleContent(TestCase):
+
+    @patch('extract_fn.remove_hyperlink_ads')
+    def test_valid_article_content(self, mock_remove_hyperlink_ads):
+        """Tests the case of valid responses"""
+
+        mock_response = MagicMock()
+        mock_response.content = """
+        <div class="article-body">
+        <p>This is the article content.</p>
+        </div>"""
+
+        mock_soup = BeautifulSoup(mock_response.content, "html.parser")
+        mock_remove_hyperlink_ads.return_value = mock_soup
+
+        result = parse_article_content(mock_response)
+        self.assertEqual(result, "This is the article content.")
+
+    @patch('extract_fn.remove_hyperlink_ads')
+    def test_calls_remove_hyperlink(self, mock_remove_hyperlink_ads):
+        """Tests the case of valid responses"""
+
+        mock_response = MagicMock()
+        mock_response.content = """
+        <div class="article-body">
+        <p>This is the article content.</p>
+        </div>"""
+
+        mock_soup = BeautifulSoup(mock_response.content, "html.parser")
+        parse_article_content(mock_response)
+        mock_remove_hyperlink_ads.assert_called_once_with(mock_soup)
+
+    @patch('extract_fn.find_article_body')
+    @patch('extract_fn.remove_hyperlink_ads')
+    def test_article_body_not_found(self, mock_remove_hyperlink_ads, mock_find_article_body):
+        """Test the case of an article body not found"""
+        mock_response = MagicMock()
+        mock_response.content = "<html><body><div>No article here</div></body></html>"
+
+        mock_soup = BeautifulSoup(mock_response.content, "html.parser")
+        mock_remove_hyperlink_ads.return_value = mock_soup
+
+        mock_find_article_body.return_value = None
+
+        result = parse_article_content(mock_response)
+        self.assertEqual(result, "Full content not found or unable to parse.")
+
+
 class TestExtract:
     """Unit tests for the extract_fn script."""
-
-    @patch("feedparser.parse")
-    def test_fetch_rss_feed(self, mock_parse, sample_feed_data):
-        """Tests the fetch_rss_feed function."""
-
-        mock_parse.return_value = sample_feed_data
-        feed = fetch_rss_feed("https://fake.url/rss")
-        assert feed == sample_feed_data
-        mock_parse.assert_called_once_with("https://fake.url/rss")
 
     @patch("grequests.get")
     def test_get_article_content(self, mock_get, sample_article_content):
