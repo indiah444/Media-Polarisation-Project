@@ -445,7 +445,7 @@ def test_scrape_democracy_now(mock_get_all_links, mock_link_is_old, mock_parse_a
     mock_parse_all_links.return_value = [{"title": "Story 1", "content": "Content 1"},
                                          {"title": "Story 2", "content": "Content 2"},]
 
-    result = scrape_democracy_now()
+    result = scrape_democracy_now(7)
 
     mock_get_all_links.assert_called_once()
     mock_link_is_old.assert_any_call(

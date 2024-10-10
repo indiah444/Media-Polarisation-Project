@@ -17,8 +17,8 @@ def test_convert_to_dataframe_with_articles():
     df = convert_to_dataframe(articles)
     assert df.shape[0] == 2
     assert set(df.columns) == {"title", "content",
-                               "link", "published", "source"}
-    assert all(df['source'] == 'Democracy Now!')
+                               "link", "published", "source_name"}
+    assert all(df['source_name'] == 'Democracy Now!')
 
 
 def test_convert_to_dataframe_empty():
