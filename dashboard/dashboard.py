@@ -4,11 +4,9 @@ import altair as alt
 from datetime import datetime, timedelta
 from db_functions import create_connection, get_topic_names, get_topic_dict
 
-# Query to get average content_polarity_score for each source in the last 3 days
-
 
 def get_bubble_data(topic_id):
-    # Calculate the date from 3 days ago
+
     three_days_ago = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
 
     query = f"""
@@ -28,10 +26,7 @@ def get_bubble_data(topic_id):
             cur.execute(query, (topic_id, three_days_ago))
             data = cur.fetchall()
 
-    # Return data as a DataFrame
     return pd.DataFrame(data)
-
-# Query to get individual article polarity scores for scatter plot
 
 
 def get_scatter_data(topic_id):
@@ -52,22 +47,17 @@ def get_scatter_data(topic_id):
             cur.execute(query, (topic_id,))
             data = cur.fetchall()
 
-    # Return data as a DataFrame
     return pd.DataFrame(data)
-
-# Streamlit app
 
 
 def main():
     st.title("Topic-Based Polarity Analysis with Altair")
 
-    # Sidebar for topic selection
     st.sidebar.header("Select Topic")
     topic_names = get_topic_names()
     topic_dict = get_topic_dict()
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
 
-    # Fetch and display the Bubble Chart (Average Polarity by Source)
     st.subheader(
         f"Bubble Chart: Average Polarity by Source (Topic: {selected_topic})")
 
@@ -76,7 +66,7 @@ def main():
         bubble_data = get_bubble_data(topic_id)
 
         if not bubble_data.empty:
-            # Create a bubble chart using Altair
+
             bubble_chart = alt.Chart(bubble_data).mark_circle().encode(
                 x=alt.X('source_name:N', title='Source'),
                 y=alt.Y('avg_polarity_score:Q',
@@ -89,12 +79,10 @@ def main():
                 height=400
             )
 
-            # Display the bubble chart
             st.altair_chart(bubble_chart, use_container_width=True)
         else:
             st.write("No data available for the selected topic in the last 3 days.")
 
-    # Fetch and display the Scatter Plot (Title Polarity vs Content Polarity)
     st.subheader(
         f"Scatter Plot: Title vs Content Polarity (Topic: {selected_topic})")
 
@@ -102,7 +90,7 @@ def main():
         scatter_data = get_scatter_data(topic_id)
 
         if not scatter_data.empty:
-            # Create a scatter plot using Altair
+
             scatter_chart = alt.Chart(scatter_data).mark_point(filled=True).encode(
                 x=alt.X('title_polarity_score:Q',
                         scale=alt.Scale(domain=[-1, 1]),
@@ -124,17 +112,14 @@ def main():
                 y='y:Q'
             )
 
-            # Combine the scatter plot with the axis lines
             final_chart = scatter_chart + zero_line
 
-            # Set the axis crossing at 0, 0
             final_chart = final_chart.configure_axis(
                 grid=True
             ).configure_view(
-                stroke=None  # Remove border around the plot
+                stroke=None
             )
 
-            # Display the scatter plot
             st.altair_chart(final_chart, use_container_width=True)
         else:
             st.write("No articles found for the selected topic.")
