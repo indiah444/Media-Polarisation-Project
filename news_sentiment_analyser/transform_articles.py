@@ -11,8 +11,14 @@ from sentiment_analysis import get_sentiments
 
 def transform(articles: pd.DataFrame) -> pd.DataFrame:
     """Returns the transformed dataframe."""
+    if articles.empty:
+        return articles
     articles = drop_duplicate_titles(articles)
+    if articles.empty:
+        return articles
     articles = drop_already_present_articles(articles)
+    if articles.empty:
+        return articles
     articles = change_source_name_to_id(articles)
     articles = get_polarity_scores(articles)
     articles = add_topics_to_dataframe(articles)
