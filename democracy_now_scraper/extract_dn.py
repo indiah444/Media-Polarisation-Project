@@ -80,9 +80,10 @@ def reformat_date(date: str) -> str:
     try:
         date_obj = datetime.strptime(date, "%B %d, %Y")
     except ValueError:
-        date_obj = datetime.strptime(date, "%b %d, %Y")
-    except ValueError:
-        return None
+        try:
+            date_obj = datetime.strptime(date, "%b %d, %Y")
+        except ValueError:
+            return None
 
     return date_obj.strftime("%Y-%m-%d")
 
@@ -127,7 +128,8 @@ def get_all_topic_links() -> list[str]:
             ["https://www.democracynow.org/topics/browse"])[0]
 
         if response is None:
-            print("Democracy now website not responding")
+            print(
+                f'Democracy Now url "https://www.democracynow.org/topics/browse" not responding')
             return []
 
         soup = fetch_response_html(response)
@@ -162,8 +164,9 @@ def get_all_links_from_all_topics() -> list[str]:
 
     topic_links = get_all_topic_links()
     print(f"Found {len(topic_links)} topic links")
-    if isinstance(topic_links, str):
+    if not topic_links:
         return []
+
     responses = fetch_article_responses(topic_links)
     all_article_links = []
     for i, response in enumerate(responses):
@@ -204,11 +207,10 @@ def link_is_old(link: str, time_diff: int) -> bool:
     try:
         date_str = '/'.join(link.split('/')[3:6])
         link_date = datetime.strptime(date_str, "%Y/%m/%d")
-
         if link_date >= one_week_ago:
             return False
 
-    except ValueError as e:
+    except ValueError:
         return True
 
     return True

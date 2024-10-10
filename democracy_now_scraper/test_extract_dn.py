@@ -18,7 +18,10 @@ from extract_dn import (
     scrape_article,
     get_all_topic_links,
     get_all_links_from_topic,
-    link_is_old
+    get_all_links_from_all_topics,
+    parse_all_links,
+    link_is_old,
+    scrape_democracy_now
 )
 
 
@@ -33,7 +36,9 @@ def test_fetch_response_html():
 
 @patch('grequests.map')
 def test_fetch_article_responses(mock_map):
+
     mock_response = MagicMock()
+
     mock_map.return_value = [mock_response]
 
     result = fetch_article_responses(["https://test.com"])
@@ -72,6 +77,7 @@ class TestGetArticleTitle:
 class TestArticleFunctions:
 
     def test_get_headline_title(self):
+
         html_content = '''
         <article class="headline">
             <h1>Test Headline Title</h1>
@@ -82,6 +88,7 @@ class TestArticleFunctions:
         assert result == "Test Headline Title"
 
     def test_get_headline_title_fail(self):
+
         html_content = '''
         <article class="headline">
             <p>No title here</p>
@@ -92,6 +99,7 @@ class TestArticleFunctions:
         assert result is None
 
     def test_get_article_contents(self):
+
         html_content = '''
         <div class="story_summary">
             <p>First paragraph.</p>
@@ -106,6 +114,7 @@ class TestArticleFunctions:
         assert result == "First paragraph.\nSecond paragraph.\nTranscript paragraph."
 
     def test_get_article_contents_fail(self):
+
         html_content = '''
         <div class="story_summary">
             <p>No content here.</p>
@@ -116,6 +125,7 @@ class TestArticleFunctions:
         assert result is None
 
     def test_get_headline_contents(self):
+
         html_content = '''
         <div class="headline_summary">
             <p>Headline first paragraph.</p>
@@ -127,6 +137,7 @@ class TestArticleFunctions:
         assert result == "Headline first paragraph.\nHeadline second paragraph."
 
     def test_get_headline_contents_fail(self):
+
         html_content = '''
         <div class="other_summary">
             <p>No headline content here.</p>
@@ -137,6 +148,7 @@ class TestArticleFunctions:
         assert result is None
 
     def test_get_article_date(self):
+
         html_content = '''
         <span class="date">October 07, 2024</span>
         '''
@@ -145,6 +157,7 @@ class TestArticleFunctions:
         assert result == "2024-10-07"
 
     def test_get_article_date_fail(self):
+
         html_content = '''
         <div class="date-container">
             <p>No date here</p>
@@ -155,6 +168,20 @@ class TestArticleFunctions:
         assert result is None
 
 
+@pytest.mark.parametrize("input_date, expected_output", [("October 07, 2024",
+                                                          "2024-10-07"),
+                                                         ("Oct 07, 2024",
+                                                          "2024-10-07"),
+                                                         ("February 29, 2024",
+                                                          "2024-02-29"),
+                                                         ("Mar 15, 2023",
+                                                          "2023-03-15"),
+                                                         ("Invalid Date", None),
+                                                         ("April 31, 2024", None),])
+def test_reformat_date(input_date, expected_output):
+    assert reformat_date(input_date) == expected_output
+
+
 class TestScrapeArticle():
 
     @patch('extract_dn.fetch_response_html')
@@ -162,6 +189,7 @@ class TestScrapeArticle():
     @patch('extract_dn.get_headline_contents')
     @patch('extract_dn.get_article_date')
     def test_scrape_article_pass_headline(self, mock_get_article_date, mock_get_headline_contents, mock_get_headline_title, mock_fetch_response_html):
+
         mock_fetch_response_html.return_value = Mock()
         mock_get_headline_title.return_value = "Test Headline Title"
         mock_get_headline_contents.return_value = "Headline first paragraph.\nHeadline second paragraph."
@@ -184,6 +212,7 @@ class TestScrapeArticle():
     @patch('extract_dn.get_article_contents')
     @patch('extract_dn.get_article_date')
     def test_scrape_article_pass_regular_article(self, mock_get_article_date, mock_get_article_contents, mock_get_article_title, mock_fetch_response_html):
+
         mock_fetch_response_html.return_value = Mock()
         mock_get_article_title.return_value = "Test Article Title"
         mock_get_article_contents.return_value = "First paragraph.\nSecond paragraph."
@@ -206,6 +235,7 @@ class TestScrapeArticle():
     @patch('extract_dn.get_article_contents')
     @patch('extract_dn.get_article_date')
     def test_scrape_article_fail(self, mock_get_article_date, mock_get_article_contents, mock_get_article_title, mock_fetch_response_html):
+
         mock_fetch_response_html.return_value = Mock()
         mock_get_article_title.return_value = None
         mock_get_article_contents.return_value = None
@@ -217,3 +247,182 @@ class TestScrapeArticle():
         result = scrape_article(mock_response)
         expected = "Failed to fetch content from https://www.democacrynow.org/articles/test-article"
         assert result == expected
+
+
+class TestGetAllTopicLinks():
+
+    @patch('extract_dn.fetch_response_html')
+    @patch('extract_dn.fetch_article_responses')
+    def test_get_all_topic_links(self, mock_fetch_article_responses, mock_fetch_response_html):
+
+        html_content = """
+            <html>
+                <body>
+                    <div class="container-fluid"></div>
+                    <div class="container-fluid"></div>
+                    <div class="container-fluid"></div>
+                    <div class="container-fluid"></div>
+                    <div class="container-fluid">
+                        <li><a href="/topic/1">Topic 1</a></li>
+                        <li><a href="/topic/2">Topic 2</a></li>
+                    </div>
+                </body>
+            </html>
+        """
+        mock_fetch_article_responses.return_value = [True]
+        mock_fetch_response_html.return_value = BeautifulSoup(html_content,
+                                                              'html.parser')
+
+        result = get_all_topic_links()
+        expected = ["https://www.democracynow.org/topic/1",
+                    "https://www.democracynow.org/topic/2"]
+        assert result == expected
+
+    @patch('extract_dn.fetch_article_responses')
+    def test_get_all_topic_links_fail(self, mock_fetch_article_responses):
+
+        mock_fetch_article_responses.return_value = [None]
+
+        result = get_all_topic_links()
+        expected = []
+        assert result == expected
+
+
+@patch('extract_dn.fetch_response_html')
+def test_get_all_links_from_topic(mock_fetch_response_html):
+    html_content = """
+        <html>
+            <body>
+                <a data-ga-action="Topic: Story Headline" href="/article1">Article 1</a>
+                <a data-ga-action="Topic: Story Headline" href="/article2">Article 2</a>
+                <a data-ga-action="Other Action" href="/article3">Article 3</a>
+            </body>
+        </html>
+    """
+    mock_response = Mock()
+    mock_response.content = html_content.encode('utf-8')
+
+    mock_fetch_response_html.return_value = BeautifulSoup(
+        html_content, 'html.parser')
+
+    result = get_all_links_from_topic(mock_response)
+    expected = [
+        "https://www.democracynow.org/article1",
+        "https://www.democracynow.org/article2"
+    ]
+    assert result == expected
+
+
+class TestGetAllLinksFromAllTopics:
+
+    @patch('extract_dn.get_all_links_from_topic')
+    @patch('extract_dn.fetch_article_responses')
+    @patch('extract_dn.get_all_topic_links')
+    def test_get_all_links_from_all_topics(self, mock_get_all_topic_links, mock_fetch_article_responses, mock_get_all_links_from_topic):
+        topic_links = ["https://www.democracynow.org/topic/1",
+                       "https://www.democracynow.org/topic/2"]
+        mock_response_1 = Mock()
+        mock_response_2 = Mock()
+
+        mock_get_all_topic_links.return_value = topic_links
+        mock_fetch_article_responses.return_value = [mock_response_1,
+                                                     mock_response_2]
+        mock_get_all_links_from_topic.side_effect = [["https://www.democracynow.org/article1",
+                                                      "https://www.democracynow.org/article2"],
+                                                     ["https://www.democracynow.org/article3"]]
+
+        result = get_all_links_from_all_topics()
+        expected = ["https://www.democracynow.org/article1",
+                    "https://www.democracynow.org/article2",
+                    "https://www.democracynow.org/article3"]
+        assert result == expected
+
+    @patch('extract_dn.get_all_topic_links')
+    def test_get_all_links_from_all_topics_fail(self, mock_get_all_topic_links):
+        mock_get_all_topic_links.return_value = []
+
+        result = get_all_links_from_all_topics()
+        expected = []
+        assert result == expected
+
+
+class TestParseAllLinks:
+
+    @patch('extract_dn.scrape_article')
+    @patch('extract_dn.fetch_article_responses')
+    def test_parse_all_links(self, mock_fetch_article_responses, mock_scrape_article):
+        all_links = ["https://www.democracynow.org/article1",
+                     "https://www.democracynow.org/article2"]
+
+        mock_fetch_article_responses.return_value = [Mock(), Mock()]
+        mock_scrape_article.side_effect = [{"title": "Article 1", "content": "Content of article 1",
+                                            "link:": "https://www.democracynow.org/article1", "published": "2024-10-01"},
+                                           {"title": "Article 2", "content": "Content of article 2",
+                                            "link:": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
+
+        result = parse_all_links(all_links)
+        expected = [{"title": "Article 1", "content": "Content of article 1",
+                     "link:": "https://www.democracynow.org/article1", "published": "2024-10-01"},
+                    {"title": "Article 2", "content": "Content of article 2",
+                     "link:": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
+        assert result == expected
+
+    @patch('extract_dn.scrape_article')
+    @patch('extract_dn.fetch_article_responses')
+    def test_parse_all_links_fail(self, mock_fetch_article_responses, mock_scrape_article):
+        all_links = ["https://www.democracynow.org/article1",
+                     "https://www.democracynow.org/article2"]
+
+        mock_fetch_article_responses.return_value = [None, None]
+
+        result = parse_all_links(all_links)
+        expected = []
+        assert result == expected
+
+
+class TestLinkIsOld:
+    @pytest.mark.parametrize("link, time_diff, date, expected", [("https://www.democracynow.org/2023/10/1/story", 7,
+                                                                  datetime(2023, 10, 1), False),
+                                                                 ("https://www.democracynow.org/2022/9/25/story", 7,
+                                                                  datetime(2023, 9, 25), True)])
+    @patch('extract_dn.datetime')
+    def test_link_is_old(self, mock_datetime, link, time_diff, date, expected):
+
+        mock_datetime.now.return_value = datetime(2023, 10, 6)
+        mock_datetime.strptime.return_value = date
+
+        result = link_is_old(link, time_diff)
+        assert result == expected
+
+    def test_link_is_old_throws_value_error(self):
+
+        result = link_is_old("https://www.democracynow.org/n/o_/dat/e/story",
+                             7)
+        assert result == True
+
+
+@patch('extract_dn.parse_all_links')
+@patch('extract_dn.link_is_old')
+@patch('extract_dn.get_all_links_from_all_topics')
+def test_scrape_democracy_now(mock_get_all_links, mock_link_is_old, mock_parse_all_links):
+    # Setup mock return values
+    mock_get_all_links.return_value = ["https://www.democracynow.org/2024/10/1/story",
+                                       "https://www.democracynow.org/2023/9/25/story",
+                                       "https://www.democracynow.org/invalid/date"]
+
+    mock_link_is_old.side_effect = [False, True, True]
+    mock_parse_all_links.return_value = [{"title": "Story 1", "content": "Content 1"},
+                                         {"title": "Story 2", "content": "Content 2"},]
+
+    result = scrape_democracy_now()
+
+    mock_get_all_links.assert_called_once()
+    mock_link_is_old.assert_any_call(
+        "https://www.democracynow.org/2024/10/1/story", 7)
+    mock_link_is_old.assert_any_call(
+        "https://www.democracynow.org/invalid/date", 7)
+    mock_parse_all_links.assert_called_once()
+
+    assert len(result) == 2
+    assert result == [{"title": "Story 1", "content": "Content 1"},
+                      {"title": "Story 2", "content": "Content 2"},]
