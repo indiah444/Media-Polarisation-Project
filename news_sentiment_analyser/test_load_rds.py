@@ -54,8 +54,8 @@ class TestInsertIntoArticles(unittest.TestCase):
             "title_polarity_score": [0.1, -0.3],
             "content_polarity_score": [0.2, -0.5],
             "source_id": [1, 2],
-            "date_published": [pd.Timestamp('2023-01-01'), pd.Timestamp('2023-01-02')],
-            "article_url": ["http://article1.com", "http://article2.com"]
+            "published": [pd.Timestamp('2023-01-01'), pd.Timestamp('2023-01-02')],
+            "link": ["http://article1.com", "http://article2.com"]
         })
         fake_cursor = MagicMock()
         fake_cursor.fetchall.return_value = [
