@@ -1,3 +1,4 @@
+# pylint: skip-file
 """Tests for clean_fn.py"""
 import pytest
 from unittest.mock import patch
