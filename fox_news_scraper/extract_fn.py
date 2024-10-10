@@ -7,16 +7,34 @@ from bs4 import BeautifulSoup
 
 def fetch_rss_feed(feed_url: str) -> feedparser.FeedParserDict:
     """Fetches and parsers the RSS feed from the provided URL."""
-
+    if not isinstance(feed_url, str):
+        raise TypeError("Feed URL should be a string")
     feed = feedparser.parse(feed_url)
     return feed
+
+
+def remove_hyperlink_ads(parsed: BeautifulSoup):
+    """Removes adverts encased in <a><strong> tags"""
+
+    for a_tag in parsed.find_all('a'):
+        strong_tag = a_tag.find('strong')
+        if strong_tag:
+            a_tag.decompose()
+
+    return parsed
+
+
+def find_article_body(bs: BeautifulSoup):
+    """Returns the article body"""
+    return bs.find("div", class_="article-body")
 
 
 def parse_article_content(response) -> str:
     """Parses the article content from the HTML response."""
 
     soup = BeautifulSoup(response.content, "html.parser")
-    article_body = soup.find("div", class_="article-body")
+    soup = remove_hyperlink_ads(soup)
+    article_body = find_article_body(soup)
 
     if article_body:
         content = article_body.get_text(separator=" ", strip=True)
