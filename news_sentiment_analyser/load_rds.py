@@ -9,9 +9,11 @@ from database_functions import create_connection, get_topic_dict
 
 def load(articles: pd.DataFrame) -> None:
     """Loads all the articles and article_topic_assignment into the RDS tables."""
-    article_id_dict = insert_into_articles(articles)
-    processed_df = process_df_for_assignment_insert(articles, article_id_dict)
-    insert_into_assignment(processed_df)
+    if not articles.empty:
+        article_id_dict = insert_into_articles(articles)
+        processed_df = process_df_for_assignment_insert(
+            articles, article_id_dict)
+        insert_into_assignment(processed_df)
 
 
 def insert_into_articles(articles: pd.DataFrame) -> dict:
@@ -19,7 +21,7 @@ def insert_into_articles(articles: pd.DataFrame) -> dict:
     and returns  dictionary of article title to id."""
     article_df = articles[['title', 'content', 'title_polarity_score',
                            'content_polarity_score',
-                           'source_id', 'date_published', 'article_url']]
+                           'source_id', 'published', 'link']]
     params = [tuple(x) for x in article_df.values]
     article_insert_query = """
     INSERT INTO article (
@@ -58,7 +60,8 @@ def insert_into_assignment(articles: pd.DataFrame) -> None:
     params = [(int(topic_id), int(article_id))
               for topic_id, article_id in params]
     assignment_insert_query = """
-    INSERT INTO article_topic_assignment (topic_id, article_id) VALUES %s;
+    INSERT INTO article_topic_assignment (topic_id, article_id) VALUES %s
+    ON CONFLICT (topic_id, article_id) DO NOTHING;
     """
     with create_connection() as conn:
         with conn.cursor() as cur:

@@ -22,7 +22,7 @@ def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
     titles = articles['title'].tolist()
     topic_test = get_topic_names()
     combined_topic_dict = {}
-    for batch in chunk_list(titles, 3):
+    for batch in chunk_list(titles, 15):
         batch_topic_dict = find_article_topics(batch, topic_test, ai)
         combined_topic_dict.update(batch_topic_dict)
     articles['topics'] = articles['title'].map(combined_topic_dict)
@@ -65,12 +65,20 @@ def find_article_topics(article_titles: list[str], topics: list[str],
     try:
         raw_response = response.choices[0].message.content
         raw_response = raw_response.replace("'", '"')
-        list_response = json.loads(raw_response)
+        if raw_response.startswith("```json"):
+            cleaned_response = raw_response.strip("```json").strip()
+        else:
+            cleaned_response = raw_response
+        list_response = json.loads(cleaned_response)
+
     except (json.JSONDecodeError, KeyError, IndexError) as e:
         print(f"Error processing API response: {e}")
         return {title: [] for title in article_titles}
 
-    return {item['title']: item['topics'] for item in list_response}
+    if isinstance(list_response, list):
+        return {item['title']: item['topics'] for item in list_response}
+
+    return {list_response['title']: list_response['topics']}
 
 
 def create_message(topics: list[str]) -> str:

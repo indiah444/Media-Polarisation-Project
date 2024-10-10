@@ -17,7 +17,7 @@ def get_sentiments(sia, df: pd.DataFrame, text_col: str, topic_col: str, source_
 
     sents = df[text_col].apply(lambda x: sia.polarity_scores(x))
 
-    sentiments = df[[text_col, topic_col, source_col]]
+    sentiments = df.copy()
 
     sentiments["pos"] = sents.apply(lambda x: x['pos'])
     sentiments["neg"] = sents.apply(lambda x: x['neg'])
