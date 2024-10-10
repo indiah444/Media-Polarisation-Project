@@ -13,16 +13,15 @@ def fetch_response_html(response) -> BeautifulSoup:
 
 
 def chunk_links(links: list[str], chunk_size: int) -> list[list[str]]:
-    """
-    Split the list of links into smaller chunks.
-    """
+    """Split the list of links into smaller chunks."""
 
     return [links[i:i + chunk_size] for i in range(0, len(links), chunk_size)]
 
 
 def fetch_article_responses(links: list[str]) -> list:
     """
-    Fetches article responses asynchronously using grequests in increments of 50.
+    Fetches article responses asynchronously using 
+    grequests in increments of 50.
     """
 
     responses = []
@@ -106,6 +105,7 @@ def reformat_date(date: str) -> str:
 
 def get_article_date(soup: BeautifulSoup) -> str:
     """Return date of article given the web body"""
+
     try:
         article_tag = soup.find(
             "div", class_="container-fluid", id="story_content")
@@ -118,6 +118,7 @@ def get_article_date(soup: BeautifulSoup) -> str:
 
 def get_headline_date(soup: BeautifulSoup) -> str:
     """Return date of article given the web body"""
+
     try:
         first_headline = soup.find("article", class_="headline")
         date = first_headline.find("span", class_="date")
@@ -129,7 +130,7 @@ def get_headline_date(soup: BeautifulSoup) -> str:
 
 def scrape_article(response) -> dict:
     """
-    Get the title and main content of an article
+    Get the title, content and date of an article
     from Democracy Now article page.
     """
 
