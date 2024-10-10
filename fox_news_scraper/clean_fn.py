@@ -10,9 +10,9 @@ nltk.download("stopwords")
 STOPWORDS = set(stopwords.words("english"))
 
 
-def clean_multiple_spaces(text: str) -> str:
+def clean_multiple_spaces(to_clean: str) -> str:
     """Returns text multiple spaces removed"""
-    return re.sub(r'\s+', ' ', text)
+    return re.sub(r'\s+', ' ', to_clean)
 
 
 def clean_text(text: str) -> str:
