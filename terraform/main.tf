@@ -175,6 +175,10 @@ resource "aws_ecs_task_definition" "mp_article_analyser" {
                     name  = "DB_NAME"
                     value = var.DB_NAME
                 },
+                {
+                    name  = "OPENAI_API_KEY"
+                    value = var.OPENAI_API_KEY
+                },
             ]
             logConfiguration = {
                 logDriver = "awslogs"
@@ -215,6 +219,17 @@ resource "aws_iam_role_policy" "step_functions_policy" {
       {
         Effect = "Allow",
         Action = ["lambda:InvokeFunction"],
+        Resource = [
+          aws_lambda_function.fox_news_scraper_lambda.arn,
+          aws_lambda_function.democracy_now_news_scraper_lambda.arn
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ],
         Resource = [
           aws_lambda_function.fox_news_scraper_lambda.arn,
           aws_lambda_function.democracy_now_news_scraper_lambda.arn
@@ -429,4 +444,89 @@ resource "aws_cloudwatch_event_target" "ecs_target" {
       assign_public_ip = true
     }
   }
+}
+
+# =========================== MP Dashboard ===========================
+
+resource "tls_private_key" "private_key" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+
+resource "local_file" "private_key_file" {
+    content  = tls_private_key.private_key.private_key_pem
+    filename = "${path.module}/c13-boudicca-mp-key-pair.pem"
+}
+
+resource "aws_key_pair" "key_pair" {
+    key_name = "c13-boudicca-mp-key-pair"
+    public_key = tls_private_key.private_key.public_key_openssh
+}
+
+resource "aws_security_group" "ec2_sg" {
+    name = "c13-boudicca-ec2-security-group"
+    vpc_id = data.aws_vpc.c13-vpc.id
+    ingress = [
+        {
+            from_port = 22
+            to_port = 22
+            protocol = "TCP"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow ssh"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        },
+        {
+            from_port   = 8501
+            to_port     = 8501
+            protocol    = "tcp"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow streamlit"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        },
+        {
+            from_port   = 80
+            to_port     = 80
+            protocol    = "tcp"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow connection"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        }
+    ]
+    egress = [
+        {   
+            from_port = 0
+            to_port = 0
+            protocol = "-1"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow all outbound"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        }
+    ]
+}
+
+resource "aws_instance" "pipeline_ec2" {
+    instance_type = "t3.micro"
+    tags = {Name: "c13-boudicca-mp-plant-dashboard"}
+    security_groups = [aws_security_group.ec2_sg.id]
+    subnet_id = data.aws_subnet.c13-public-subnet1.id
+    associate_public_ip_address = true
+    ami = "ami-0c0493bbac867d427"
+    key_name = aws_key_pair.key_pair.key_name
+    user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y python3
+              EOF
 }

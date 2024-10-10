@@ -41,4 +41,6 @@ DB_PORT               = "your-RDS-port"
 DB_NAME               = "your-RDS-name"
 DB_USER               = "your-RDS-user"
 DB_PASSWORD           = "your-RDS-password"
+
+OPENAI_API_KEY          = "your-open-ai-key"
 ```

@@ -25,9 +25,11 @@ def upload_dataframe_to_s3(df: pd.DataFrame, bucket_name: str, s3_filename: str)
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False)
 
-    s3 = boto3.client("s3")
+    s3_client = boto3.client(service_name="s3",
+                             aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
+                             aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
     try:
-        s3.put_object(
+        s3_client.put_object(
             Bucket=bucket_name,
             Key=s3_filename,
             Body=csv_buffer.getvalue()
