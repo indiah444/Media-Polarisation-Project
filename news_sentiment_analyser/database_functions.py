@@ -49,5 +49,16 @@ def get_source_dict() -> dict:
     return {source['source_name']: source['source_id'] for source in res}
 
 
+def get_article_titles() -> list[str]:
+    """Returns a list of article titles."""
+    with create_connection() as conn:
+        query = """SELECT article_title FROM article;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+
+    return [article['article_title'] for article in res]
+
+
 if __name__ == "__main__":
-    print(get_source_dict())
+    print(get_article_titles())
