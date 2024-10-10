@@ -14,8 +14,6 @@ def load(articles: pd.DataFrame) -> None:
         processed_df = process_df_for_assignment_insert(
             articles, article_id_dict)
         insert_into_assignment(processed_df)
-    else:
-        print("nothing inserted")
 
 
 def insert_into_articles(articles: pd.DataFrame) -> dict:
