@@ -246,13 +246,15 @@ def link_is_old(link: str, time_diff: int) -> bool:
     return True
 
 
-def scrape_democracy_now() -> list[dict]:
+def scrape_democracy_now(days_old: int) -> list[dict]:
     """Scrape the democracy now pages to obtain all stories"""
 
     all_links = get_all_links_from_all_topics()
     print(f"Retreived {len(all_links)} article links")
-    all_valid_links = [x for x in all_links if not link_is_old(x, 7)]
-    print(f"{len(all_valid_links)} article links are within 7 days old")
+    all_valid_links = [
+        x for x in all_links if not link_is_old(x, days_old)]
+    print(
+        f"{len(all_valid_links)} article links are within {days_old} days old")
     results = parse_all_links(all_valid_links)
     print(f"Extracted title and content from {len(results)} articles")
     return results

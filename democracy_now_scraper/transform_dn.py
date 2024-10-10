@@ -15,5 +15,5 @@ def convert_to_dataframe(articles: list[dict]) -> pd.DataFrame:
     if not all(x in available_columns for x in required_columns):
         return None
 
-    df['source'] = 'Democracy Now!'
+    df['source_name'] = 'Democracy Now!'
     return df

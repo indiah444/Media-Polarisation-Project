@@ -10,7 +10,11 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copies working files.
-COPY main.py .
+COPY load_dn.py .
+COPY transform_dn.py .
+COPY extract_dn.py .
+COPY pipeline_dn.py .
+
 
 # Runs pipeline
-CMD ["main.lambda_handler"]
+CMD ["pipeline_dn.lambda_handler"]
