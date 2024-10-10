@@ -21,7 +21,7 @@ def test_lambda_handler_success_status(mock_process_rss, mock_rss_feed_urls):
     response = lambda_handler(event, context)
 
     assert response["statusCode"] == 200
-    assert response["body"] == "RSS feed data processes and uploaded to S3 successfully."
+    assert response["body"] == "RSS feed data processed and uploaded to S3 successfully."
 
 
 @patch('pipeline_fn.RSS_FEED_URLS')
