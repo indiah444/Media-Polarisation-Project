@@ -7,7 +7,8 @@ from bs4 import BeautifulSoup
 
 def fetch_rss_feed(feed_url: str) -> feedparser.FeedParserDict:
     """Fetches and parsers the RSS feed from the provided URL."""
-
+    if not isinstance(feed_url, str):
+        raise TypeError("Feed URL should be a string")
     feed = feedparser.parse(feed_url)
     return feed
 
