@@ -84,7 +84,7 @@ resource "aws_lambda_function" "fox_news_scraper_lambda" {
         }
     }
 
-    image_config { command = ["main.lambda_handler"] }
+    image_config { command = ["pipeline_fn.lambda_handler"] }
 }
 
 
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "democracy_now_news_scraper_lambda" {
         }
     }
 
-    image_config { command = ["main.lambda_handler"] }
+    image_config { command = ["pipeline_dn.lambda_handler"] }
 }
 
 # resource "aws_lambda_function" "email_generator_lambda" {
@@ -223,29 +223,6 @@ resource "aws_iam_role_policy" "step_functions_policy" {
       {
         Effect = "Allow",
         Action = [
-          "ecs:RunTask",
-          "ecs:StopTask",
-          "ecs:DescribeTasks",
-          "iam:PassRole"
-        ],
-        Resource = [
-          data.aws_iam_role.execution_role.arn,
-          aws_ecs_task_definition.mp_article_analyser.arn
-        ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "ecs:DescribeClusters",
-          "ecs:DescribeTaskDefinition",
-          "ecs:DescribeTasks",
-          "ecs:ListTasks"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
           "events:PutRule",
           "events:DeleteRule",
           "events:DescribeRule",
@@ -303,27 +280,6 @@ resource "aws_sfn_state_machine" "main_pipeline_state_machine" {
           }
         ],
         ResultPath = "$.scrapingResults",
-        Next = "RunArticleAnalyserECS"
-      },
-      RunArticleAnalyserECS = {
-        Type = "Task",
-        Resource = "arn:aws:states:::ecs:runTask.sync",
-        Parameters = {
-          Cluster = "${data.aws_ecs_cluster.c13_cluster.cluster_name}",
-          TaskDefinition = "${aws_ecs_task_definition.mp_article_analyser.arn}",
-          LaunchType = "FARGATE",
-          NetworkConfiguration = {
-            AwsvpcConfiguration = {
-              Subnets = [
-                "${data.aws_subnet.c13-public-subnet1.id}",
-                "${data.aws_subnet.c13-public-subnet2.id}",
-                "${data.aws_subnet.c13-public-subnet3.id}"
-              ],
-              AssignPublicIp = "ENABLED"
-            }
-          }
-        },
-        ResultPath = "$.ecsRunResult",
         End = true
       }
     }
@@ -362,5 +318,115 @@ resource "aws_scheduler_schedule" "daily_step_function_trigger" {
     arn     = aws_sfn_state_machine.main_pipeline_state_machine.arn
     role_arn = aws_iam_role.step_functions_scheduler_role.arn
     input   = jsonencode({})
+  }
+}
+
+# =========================== S3 Event to EventBridge ===========================
+
+resource "aws_s3_bucket_notification" "csv_upload_to_s3_notification" {
+    bucket     = data.aws_s3_bucket.article_s3_bucket.id
+    eventbridge = true
+}
+
+resource "aws_cloudwatch_event_rule" "csv_upload_to_s3_event_rule" {
+  name        = "c13-boudicca-csv-upload-to-s3-event-rule"
+  description = "Triggers ECS Task when new XML file is uploaded to S3"
+  event_pattern = jsonencode({
+    detail = {
+      bucket = {name = ["${data.aws_s3_bucket.article_s3_bucket.id}"]},
+      object = {key = [{wildcard = "*_article_data.csv"}]}
+    },
+    "detail-type" = ["Object Created"],
+    source = ["aws.s3"]
+  })
+}
+
+data "aws_iam_policy_document" "schedule_trust_policy" {
+    statement {
+        effect = "Allow"
+        principals {
+            type        = "Service"
+            identifiers = ["events.amazonaws.com"]
+        }
+        actions = ["sts:AssumeRole"]
+    }
+}
+
+resource "aws_iam_role" "schedule_role" {
+  name               = "c13-boudicca-schedule-role"
+  assume_role_policy = data.aws_iam_policy_document.schedule_trust_policy.json
+
+  inline_policy {
+    name   = "c13-shayak-pharmazer-execution-policy"
+    policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["ecs:RunTask"],
+            "Resource": [replace(aws_ecs_task_definition.mp_article_analyser.arn, "/:\\d+$/", ":*")],
+            "Condition": {"ArnLike": {"ecs:cluster": data.aws_ecs_cluster.c13_cluster.arn}}
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": ["*"],
+            "Condition": {"StringLike": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}}
+        }
+      ]
+    })
+  }
+}
+
+resource "aws_security_group" "article_analyser_sg" {
+    name   = "c13-boudicca-analyser-sg"
+    vpc_id = data.aws_vpc.c13-vpc.id
+
+    ingress = [
+        {
+            from_port        = 0
+            to_port          = 0
+            protocol         = "-1"
+            cidr_blocks      = ["0.0.0.0/0"]
+            description      = "Allow all inbound traffic"
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            security_groups  = []
+            self             = false
+        }
+    ]
+
+    egress = [
+        {
+            from_port        = 0
+            to_port          = 0
+            protocol         = "-1"
+            cidr_blocks      = ["0.0.0.0/0"]
+            description      = "Allow all outbound"
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            security_groups  = []
+            self             = false
+        }
+    ]
+}
+
+resource "aws_cloudwatch_event_target" "ecs_target" {
+  rule      = aws_cloudwatch_event_rule.csv_upload_to_s3_event_rule.name
+  arn       = data.aws_ecs_cluster.c13_cluster.arn
+  role_arn  = aws_iam_role.schedule_role.arn
+
+  ecs_target {
+    task_definition_arn = aws_ecs_task_definition.mp_article_analyser.arn
+    launch_type         = "FARGATE"
+    network_configuration {
+      subnets         = [
+          data.aws_subnet.c13-public-subnet1.id,
+          data.aws_subnet.c13-public-subnet2.id,
+          data.aws_subnet.c13-public-subnet3.id
+      ]
+      security_groups = [aws_security_group.article_analyser_sg.id] 
+      assign_public_ip = true
+    }
   }
 }
