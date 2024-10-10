@@ -7,7 +7,7 @@ from transform_dn import convert_to_dataframe
 from load_dn import upload_dataframe_to_s3
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: dict, context: dict) -> dict:
     """AWS Lambda handler function."""
 
     try:
@@ -29,7 +29,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": "data extracted, processed and uploaded to S3 successfully."
+            "body": "Data extracted, processed and uploaded to S3 successfully."
         }
 
     except Exception as e:

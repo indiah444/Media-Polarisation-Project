@@ -242,6 +242,7 @@ def link_is_old(link: str, time_diff: int) -> bool:
             return False
 
     except ValueError:
+        # very old links do not have date in the url and should be classified as old
         return True
 
     return True
