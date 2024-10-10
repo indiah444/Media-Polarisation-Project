@@ -2,7 +2,7 @@ openai
 python-dotenv
 pandas
 pytest
-psycopg2
+psycopg2-binary
 boto3
 bs4
 nltk

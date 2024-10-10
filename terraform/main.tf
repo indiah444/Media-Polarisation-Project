@@ -227,17 +227,6 @@ resource "aws_iam_role_policy" "step_functions_policy" {
       {
         Effect = "Allow",
         Action = [
-          "s3:PutObject",
-          "s3:GetObject"
-        ],
-        Resource = [
-          aws_lambda_function.fox_news_scraper_lambda.arn,
-          aws_lambda_function.democracy_now_news_scraper_lambda.arn
-        ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
           "events:PutRule",
           "events:DeleteRule",
           "events:DescribeRule",
