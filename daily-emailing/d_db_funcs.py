@@ -20,14 +20,13 @@ def create_connection() -> connection:
     return conn
 
 
-def get_avg_polarity_by_topic_and_source_yesterday():
+def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
+    """Returns a dataframe of average content polarity by topic and source."""
     yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
     query = f"""
-        SELECT 
-            t.topic_name,
-            s.source_name,
-            AVG(a.content_polarity_score) AS avg_polarity_score
+        SELECT t.topic_name, s.source_name,
+        AVG(a.content_polarity_score) AS avg_polarity_score
         FROM article_topic_assignment ata
         JOIN article a ON ata.article_id = a.article_id
         JOIN topic t ON ata.topic_id = t.topic_id
@@ -42,3 +41,19 @@ def get_avg_polarity_by_topic_and_source_yesterday():
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
     return pd.DataFrame(data)
+
+
+def get_daily_subscribers() -> list[str]:
+    """Returns the emails of subscribers for daily emails."""
+    query = """
+        SELECT subscriber_email 
+        FROM subscriber
+        WHERE daily = TRUE
+            """
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            data = cur.fetchall()
+    if data:
+        return [subscriber['subscriber_email'] for subscriber in data]
+    return []

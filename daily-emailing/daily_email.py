@@ -9,13 +9,14 @@ from dotenv import load_dotenv
 import boto3
 
 from html_content import generate_html
-from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday
+from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers
 
 
 def send_email() -> None:
     """Sends an email"""
 
     load_dotenv()
+    emails = get_daily_subscribers()
     df = get_avg_polarity_by_topic_and_source_yesterday()
     html = generate_html(df)
     yesterday = (datetime.now() - timedelta(days=1)).strftime('%d-%m-%Y')
@@ -32,9 +33,7 @@ def send_email() -> None:
 
     client.send_raw_email(
         Source='trainee.megan.lester@sigmalabs.co.uk',
-        Destinations=[
-            'trainee.megan.lester@sigmalabs.co.uk'
-        ],
+        Destinations=emails,
         RawMessage={
             'Data': message.as_string()
         }
