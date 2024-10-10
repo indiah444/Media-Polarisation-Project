@@ -117,7 +117,7 @@ def scrape_article(response) -> dict:
         return f"Failed to fetch content from {response.url}"
 
     return {"title": title, "content": content,
-            "link:": response.url, "published": date}
+            "link": response.url, "published": date}
 
 
 def get_all_topic_links() -> list[str]:

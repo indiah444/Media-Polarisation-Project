@@ -202,7 +202,7 @@ class TestScrapeArticle():
         expected = {
             "title": "Test Headline Title",
             "content": "Headline first paragraph.\nHeadline second paragraph.",
-            "link:": "https://www.democacrynow.org/headlines/test-article",
+            "link": "https://www.democacrynow.org/headlines/test-article",
             "published": "2024-10-07"
         }
         assert result == expected
@@ -225,7 +225,7 @@ class TestScrapeArticle():
         expected = {
             "title": "Test Article Title",
             "content": "First paragraph.\nSecond paragraph.",
-            "link:": "https://www.democacrynow.org/articles/test-article",
+            "link": "https://www.democacrynow.org/articles/test-article",
             "published": "2024-10-08"
         }
         assert result == expected
@@ -356,15 +356,15 @@ class TestParseAllLinks:
 
         mock_fetch_article_responses.return_value = [Mock(), Mock()]
         mock_scrape_article.side_effect = [{"title": "Article 1", "content": "Content of article 1",
-                                            "link:": "https://www.democracynow.org/article1", "published": "2024-10-01"},
+                                            "link": "https://www.democracynow.org/article1", "published": "2024-10-01"},
                                            {"title": "Article 2", "content": "Content of article 2",
-                                            "link:": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
+                                            "link": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
 
         result = parse_all_links(all_links)
         expected = [{"title": "Article 1", "content": "Content of article 1",
-                     "link:": "https://www.democracynow.org/article1", "published": "2024-10-01"},
+                     "link": "https://www.democracynow.org/article1", "published": "2024-10-01"},
                     {"title": "Article 2", "content": "Content of article 2",
-                     "link:": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
+                     "link": "https://www.democracynow.org/article2", "published": "2024-10-02"}]
         assert result == expected
 
     @patch('extract_dn.scrape_article')
