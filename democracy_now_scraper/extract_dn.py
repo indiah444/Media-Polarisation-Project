@@ -16,44 +16,78 @@ def fetch_article_responses(links: list[str]) -> list:
 def get_article_title(soup) -> str:
     """Return title of article given the web body"""
 
-    title_tag = soup.find("h1", class_="article__title")
-    if not title_tag:
+    try:
+        article_tag = soup.find(
+            "div", class_="container-fluid", id="story_content")
+        title_tag = article_tag.find("h1")
+        return title_tag.get_text(strip=True)
+
+    except AttributeError:
         return None
 
-    return title_tag.get_text(strip=True)
+
+def get_headline_title(soup) -> str:
+    """Return title of article given the headline body"""
+
+    try:
+        article = soup.find("article", class_="headline")
+        title_tag = article.find("h1")
+        return title_tag.get_text(strip=True)
+
+    except AttributeError:
+        return None
 
 
 def get_article_contents(soup) -> str:
     """Return content of article given the web body"""
 
-    article_body = soup.find("div", class_="article__body")
-    if not article_body:
+    try:
+        story_summary = soup.find("div", class_="story_summary")
+        paragraphs = story_summary.find_all("p")
+        transcript = soup.find("div", class_="mobile_anchor_target",
+                               id="transcript")
+        paragraphs.extend(transcript.find_all("p"))
+        return "\n".join([p.get_text(strip=True) for p in paragraphs])
+
+    except AttributeError:
         return None
 
-    paragraphs = article_body.find_all("p")
-    if not paragraphs:
-        return None
 
-    return "\n".join([p.get_text(strip=True) for p in paragraphs])
+def get_headline_contents(soup) -> str:
+    """Return content of article given the headline body"""
+
+    try:
+        headline_summary = soup.find("div", class_="headline_summary")
+        paragraphs = headline_summary.find_all("p")
+        return "\n".join([p.get_text(strip=True) for p in paragraphs])
+
+    except AttributeError:
+        return None
 
 
 def reformat_date(date: str):
-    """change from american date to standard YYYY-MM-DD"""
+    """
+    change from american date to standard YYYY-MM-DD.
+    expecting data in "October 07, 2024" or "Oct 07, 2024"
+    """
 
-    date_obj = datetime.strptime(date, "%B %d, %Y")
+    try:
+        date_obj = datetime.strptime(date, "%B %d, %Y")
+    except ValueError:
+        date_obj = datetime.strptime(date, "%b %d, %Y")
+    except ValueError:
+        return None
 
     return date_obj.strftime("%Y-%m-%d")
 
 
 def get_article_date(soup) -> str:
     """Return date of article given the web body"""
-
-    date = soup.find("span", class_="date")
-    if not date:
-        return None
     try:
+        date = soup.find("span", class_="date")
         return reformat_date(date.get_text(strip=True))
-    except ValueError:
+
+    except (ValueError, TypeError):
         return None
 
 
@@ -63,18 +97,20 @@ def scrape_article(response: str) -> dict:
     from Democracy Now article page.
     """
 
-    try:
-        soup = BeautifulSoup(response.content, "html.parser")
+    soup = BeautifulSoup(response.content, "html.parser")
+    if '/headlines/' in response.url:
+        title = get_headline_title(soup)
+        content = get_headline_contents(soup)
+    else:
         title = get_article_title(soup)
         content = get_article_contents(soup)
-        date = get_article_date(soup)
+    date = get_article_date(soup)
 
-        return {"title": title, "content": content,
-                "link:": response.url, "published": date}
+    if any(x is None for x in (title, content, date)):
+        return f"Failed to fetch content from {response.url}"
 
-    except Exception as e:
-
-        return f"Failed to fetch content from {response.url}: {e}"
+    return {"title": title, "content": content,
+            "link:": response.url, "published": date}
 
 
 def get_all_topic_links() -> list[str]:
@@ -120,8 +156,7 @@ def get_all_links_from_all_topics() -> list[dict]:
     print(f"Found {len(topic_links)} topic links")
     if isinstance(topic_links, str):
         return []
-    responses = [x for x in fetch_article_responses(topic_links)
-                 if x is not None]
+    responses = fetch_article_responses(topic_links)
     all_article_links = []
     for i, response in enumerate(responses):
         if response is None:
@@ -142,7 +177,11 @@ def parse_all_links(all_links: list[str]) -> list[dict]:
         if response is None:
             print(f"Could not connect to url: {all_links[i]}")
         else:
-            articles.append(scrape_article(response))
+            article_info = scrape_article(response)
+            if isinstance(article_info, str):
+                print(article_info)
+            else:
+                articles.append(article_info)
     return articles
 
 
@@ -162,7 +201,6 @@ def link_is_old(link: str, time_diff: int) -> bool:
             return False
 
     except ValueError as e:
-        # print(f"Skipping invalid link: {link}, error: {e}")
         return True
 
     return True
@@ -172,13 +210,12 @@ def scrape_democracy_now():
     """Scrape the democracy now pages to obtain all stories"""
 
     all_links = get_all_links_from_all_topics()
-    all_valid_links = [x for x in all_links if not link_is_old(x, 7)]
+    all_valid_links = [x for x in all_links if not link_is_old(x, 3)]
     print(f"Retreived {len(all_valid_links)} valid article links")
     results = parse_all_links(all_valid_links)
-    print(f"Extracted title and content from {len(all_valid_links)} articles")
+    print(f"Extracted title and content from {len(results)} articles")
     return results
 
 
 if __name__ == "__main__":
-
     print(scrape_democracy_now())
