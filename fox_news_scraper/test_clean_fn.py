@@ -12,10 +12,22 @@ def test_clean_text_empty():
 @pytest.mark.parametrize(
     "text, expected", [
         ("http://", ""),
-        ("a http://", "a"),
-        ("http:// b", "a")
+        ("link http://", "link"),
+        ("http:// link", "link")
     ]
 )
 def test_clean_text_http(text, expected):
     """Checks that hyperlink starts are removed"""
+    assert clean_text(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text, expected", [
+        ("hello world", "hello world"),
+        ("hello world, and", "hello world, "),
+        ("abcdef is a set of letters", "abcdef  set letters")
+    ]
+)
+def test_clean_text_removes_stopwords(text, expected):
+    """Checks that stopwords are removed"""
     assert clean_text(text) == expected
