@@ -2,3 +2,4 @@ streamlit
 psycopg2-binary 
 altair
 python-dotenv
+pandas
