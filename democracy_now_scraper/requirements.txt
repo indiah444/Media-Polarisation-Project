@@ -1,0 +1,9 @@
+boto3
+python-dotenv
+grequests
+feedparser
+beautifulsoup4
+pandas
+nltk
+pylint
+pytest
