@@ -3,6 +3,9 @@
 from unittest.mock import patch
 from pipeline_fn import lambda_handler
 
+with patch('pipeline_fn.load_dotenv') as mock_load_dotenv:
+    mock_load_dotenv.return_value = dict()
+
 
 @patch('pipeline_fn.RSS_FEED_URLS')
 @patch('pipeline_fn.process_rss_feeds_and_upload')
