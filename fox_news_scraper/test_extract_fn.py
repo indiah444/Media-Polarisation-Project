@@ -29,3 +29,16 @@ class TestExtract:
         content = get_article_content("https://www.example.com/article1")
         assert content == "This is a sample article content."
         mock_get.assert_called_once_with("https://www.example.com/article1")
+
+    @patch("grequests.get")
+    def test_get_article_content_fails(self, mock_get, sample_article_content):
+        """Tests the get_article_content function."""
+
+        mock_response = MagicMock()
+        mock_response.status_code = 500
+        mock_response.content = sample_article_content.encode("UTF-8")
+        mock_get.return_value = mock_response
+
+        content = get_article_content("https://www.example.com/article1")
+        assert content == "This is a sample article content."
+        mock_get.assert_called_once_with("https://www.example.com/article1")
