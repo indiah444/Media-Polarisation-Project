@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from psycopg2.extensions import connection
 
-from database_functions import create_connection, get_topic_names, RealDictCursor
+from database_functions import create_connection, get_topic_names, RealDictCursor, get_topic_dict
 
 
 @patch('database_functions.connect')
@@ -48,3 +48,22 @@ def test_get_topic_names(fake_create_connection):
         "SELECT topic_name FROM topic;")
 
     assert result == ["Dogs", "Cats"]
+
+
+@patch('database_functions.create_connection')
+def test_get_topic_dict(fake_create_connection):
+    """Tests the get_topic_dict function."""
+    fake_conn = MagicMock()
+    fake_cursor = MagicMock()
+    fake_create_connection.return_value.__enter__.return_value = fake_conn
+    fake_conn.cursor.return_value.__enter__.return_value = fake_cursor
+    fake_cursor.fetchall.return_value = [
+        {"topic_name": "Dogs", "topic_id": 1},
+        {"topic_name": "Cats", "topic_id": 2}
+    ]
+    result = get_topic_dict()
+
+    fake_cursor.execute.assert_called_once_with(
+        "SELECT * FROM topic;")
+
+    assert result == {"Dogs": 1, "Cats": 2}
