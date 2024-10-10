@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         process_rss_feeds_and_upload(RSS_FEED_URLS)
         return {
             "statusCode": 200,
-            "body": "RSS feed data processes and uploaded to S3 successfully."
+            "body": "RSS feed data processed and uploaded to S3 successfully."
         }
 
     except Exception as e:
