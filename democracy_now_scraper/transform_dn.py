@@ -16,4 +16,8 @@ def convert_to_dataframe(articles: list[dict]) -> pd.DataFrame:
         return None
 
     df['source_name'] = 'Democracy Now!'
+    print(f"No. rows: {len(df.index)}")
+    df.drop_duplicates(subset=["title", "content", "link", "published"],
+                       keep='first')
+    print(f"No. rows after dropping duplicates: {len(df.index)}")
     return df
