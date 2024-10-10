@@ -5,3 +5,4 @@ nltk
 pandas
 boto3
 pytest
+python-dotenv
