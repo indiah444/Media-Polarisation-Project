@@ -45,7 +45,8 @@ def test_feed_url_is_a_boolean():
 @pytest.mark.parametrize("html, expected", [
     ("<a><strong>...</strong></a>", ""),
     ("<a><strong>This is an ad</strong></a>", ""),
-    ("<a>This is not an ad</strong></a>", "This is not an ad")
+    ("<a>This is not an ad</a>", "This is not an ad"),
+    ("<strong>This is not an ad</strong>", "This is not an ad")
 ])
 def test_remove_hyperlink_ads(html, expected):
     """Test with a simple case of <a><strong>...</strong></a>"""
