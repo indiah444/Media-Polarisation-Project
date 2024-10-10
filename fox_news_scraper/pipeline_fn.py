@@ -1,6 +1,7 @@
 """File that holds the main lambda handler function for the Fox News
 scraper."""
 
+import grequests
 from dotenv import load_dotenv
 
 from load_csv_fn import process_rss_feeds_and_upload

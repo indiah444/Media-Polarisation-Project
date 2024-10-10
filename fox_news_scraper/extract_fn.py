@@ -1,7 +1,7 @@
 """A file to extract information from various Fox News RSS feeds."""
 
-import feedparser
 import grequests
+import feedparser
 from bs4 import BeautifulSoup
 
 
