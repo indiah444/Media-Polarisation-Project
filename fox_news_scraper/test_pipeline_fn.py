@@ -1,3 +1,4 @@
+# pylint: skip-file
 """Tests for pipeline_fn.py"""
 from unittest.mock import patch
 from pipeline_fn import lambda_handler
