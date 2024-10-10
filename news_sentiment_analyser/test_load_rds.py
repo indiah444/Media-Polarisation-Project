@@ -51,7 +51,8 @@ class TestInsertIntoArticles(unittest.TestCase):
         articles = pd.DataFrame({
             "title": ["Article 1", "Article 2"],
             "content": ["Content 1", "Content 2"],
-            "polarity_score": [0.1, -0.3],
+            "title_polarity_score": [0.1, -0.3],
+            "content_polarity_score": [0.2, -0.5],
             "source_id": [1, 2],
             "date_published": [pd.Timestamp('2023-01-01'), pd.Timestamp('2023-01-02')],
             "article_url": ["http://article1.com", "http://article2.com"]

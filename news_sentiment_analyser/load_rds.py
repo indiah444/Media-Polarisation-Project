@@ -17,13 +17,14 @@ def load(articles: pd.DataFrame) -> None:
 def insert_into_articles(articles: pd.DataFrame) -> dict:
     """Bulk inserts the articles into the article table 
     and returns  dictionary of article title to id."""
-
-    article_df = articles[['title', 'content', 'polarity_score',
+    article_df = articles[['title', 'content', 'title_polarity_score',
+                           'content_polarity_score',
                            'source_id', 'date_published', 'article_url']]
     params = [tuple(x) for x in article_df.values]
     article_insert_query = """
     INSERT INTO article (
-        article_title, article_content, polarity_score, source_id, date_published, article_url
+        article_title, article_content, title_polarity_score, content_polarity_score, 
+        source_id, date_published, article_url
     ) VALUES %s
     ON CONFLICT (article_title, source_id, date_published) DO NOTHING
     RETURNING article_id, article_title;
@@ -42,12 +43,10 @@ def insert_into_articles(articles: pd.DataFrame) -> dict:
 def process_df_for_assignment_insert(articles: pd.DataFrame, article_id_dict: dict) -> pd.DataFrame:
     """Processes the dataframe to be inserted into the article_topic_assignment table."""
     topic_dict = get_topic_dict()
-
     article_df = articles[['topics', 'title']]
     article_df = article_df.explode('topics')
     article_df['topic_id'] = article_df['topics'].map(topic_dict)
     article_df['article_id'] = article_df['title'].map(article_id_dict)
-
     article_df = article_df[['topic_id', 'article_id']]
 
     return article_df
@@ -55,12 +54,9 @@ def process_df_for_assignment_insert(articles: pd.DataFrame, article_id_dict: di
 
 def insert_into_assignment(articles: pd.DataFrame) -> None:
     """Bulk inserts the article-topic into the article_topic_assignment table."""
-
     params = articles.to_numpy().tolist()
-
     params = [(int(topic_id), int(article_id))
               for topic_id, article_id in params]
-
     assignment_insert_query = """
     INSERT INTO article_topic_assignment (topic_id, article_id) VALUES %s;
     """
