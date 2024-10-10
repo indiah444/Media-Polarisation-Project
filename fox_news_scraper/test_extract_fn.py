@@ -15,6 +15,7 @@ from extract_fn import fetch_rss_feed, get_article_content, remove_hyperlink_ads
 @patch("feedparser.parse")
 def test_fetch_rss_feed(mock_parse, sample_feed_data, fake_url):
     """Tests the fetch_rss_feed function."""
+
     mock_parse.return_value = sample_feed_data
     feed = fetch_rss_feed(fake_url)
 
@@ -26,6 +27,7 @@ def test_fetch_rss_feed(mock_parse, sample_feed_data, fake_url):
 @patch('feedparser.parse')
 def test_valid_feed_url(mock_parse, sample_feed_data):
     """Tests the fetch_rss_feed returns the correct output"""
+
     mock_parse.return_value = sample_feed_data
     result = fetch_rss_feed("https://example.com/rss")
     assert result == sample_feed_data
@@ -33,12 +35,14 @@ def test_valid_feed_url(mock_parse, sample_feed_data):
 
 def test_feed_url_is_not_string():
     """Test for invalid non-string input"""
+
     with pytest.raises(TypeError):
         fetch_rss_feed(123)
 
 
 def test_feed_url_is_a_boolean():
     """Test for invalid non-string input"""
+
     with pytest.raises(TypeError):
         fetch_rss_feed(True)
 
@@ -51,6 +55,7 @@ def test_feed_url_is_a_boolean():
 ])
 def test_remove_hyperlink_ads(html, expected):
     """Test with a simple case of <a><strong>...</strong></a>"""
+
     parsed = BeautifulSoup(html, 'html.parser')
     assert remove_hyperlink_ads(parsed).get_text() == expected
 
@@ -91,6 +96,7 @@ class TestParseArticleContent(TestCase):
     @patch('extract_fn.remove_hyperlink_ads')
     def test_article_body_not_found(self, mock_remove_hyperlink_ads, mock_find_article_body):
         """Test the case of an article body not found"""
+
         mock_response = MagicMock()
         mock_response.content = "<html><body><div>No article here</div></body></html>"
 
@@ -121,6 +127,7 @@ class TestGetArticleContent:
     @patch('extract_fn.grequests.get')
     def test_non_200_status_code(self, mock_get):
         """Test when the request returns a non-200 status code."""
+
         mock_response = MagicMock()
         mock_response.status_code = 404  # Simulate a 404 error
         mock_get.return_value = mock_response
@@ -131,6 +138,7 @@ class TestGetArticleContent:
     @patch('extract_fn.grequests.get')
     def test_exception_handling(self, mock_get):
         """Test when an exception occurs during the request."""
+
         mock_get.side_effect = Exception(
             "Connection error")  # Simulate an exception
 
@@ -141,6 +149,7 @@ class TestGetArticleContent:
     @patch('extract_fn.grequests.get')
     def test_parse_article_content_failure(self, mock_get, mock_parse_article_content):
         """Test when the article is fetched but parsing fails."""
+
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_parse_article_content.side_effect = Exception(
@@ -313,6 +322,7 @@ class TestFetchFromMultipleFeeds:
 
     def test_fetch_from_multiple_feeds_no_responses(self, mock_grequests):
         """Test when no responses are returned."""
+
         _, mock_map = mock_grequests
 
         feed_urls = ["http://example.com/feed1", "http://example.com/feed2"]

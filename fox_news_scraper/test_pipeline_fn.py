@@ -11,6 +11,7 @@ with patch('pipeline_fn.load_dotenv') as mock_load_dotenv:
 @patch('pipeline_fn.process_rss_feeds_and_upload')
 def test_lambda_handler_success_status(mock_process_rss, mock_rss_feed_urls):
     """Test lambda_handler success case."""
+
     mock_process_rss.return_value = None
     mock_rss_feed_urls.return_value = [
         "https://moxie.foxnews.com/google-publisher/latest.xml"]
