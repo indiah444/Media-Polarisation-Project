@@ -10,14 +10,19 @@ nltk.download("stopwords")
 STOPWORDS = set(stopwords.words("english"))
 
 
+def clean_multiple_spaces(to_clean: str) -> str:
+    """Returns text multiple spaces removed"""
+    return re.sub(r'\s+', ' ', to_clean)
+
+
 def clean_text(text: str) -> str:
     """Cleans the article text by removing unwanted characters, stopwords etc."""
 
     text = re.sub(r'http\S+', '', text)
-    text = re.sub(r'[^\w\s]', '', text)
+    text = clean_multiple_spaces(text)
 
     words = text.lower().split()
-    words = [word for word in words if word not in STOPWORDS]
+    words = [word.strip() for word in words if word not in STOPWORDS]
 
     cleaned_text = ' '.join(words)
     return cleaned_text
