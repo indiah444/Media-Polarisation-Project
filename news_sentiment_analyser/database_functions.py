@@ -29,5 +29,36 @@ def get_topic_names() -> list[str]:
     return [topic['topic_name'] for topic in res]
 
 
+def get_topic_dict() -> dict:
+    """Returns a dictionary of topic name to its id."""
+    with create_connection() as conn:
+        query = """SELECT * FROM topic;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+    return {topic['topic_name']: topic['topic_id'] for topic in res}
+
+
+def get_source_dict() -> dict:
+    """Returns a dictionary of source name  to its id."""
+    with create_connection() as conn:
+        query = """SELECT source_name, source_id FROM source;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+    return {source['source_name']: source['source_id'] for source in res}
+
+
+def get_article_titles() -> list[str]:
+    """Returns a list of article titles."""
+    with create_connection() as conn:
+        query = """SELECT article_title FROM article;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+
+    return [article['article_title'] for article in res]
+
+
 if __name__ == "__main__":
-    print(get_topic_names())
+    print(get_article_titles())

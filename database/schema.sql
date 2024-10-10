@@ -16,11 +16,12 @@ CREATE TABLE article (
     article_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     article_title VARCHAR(500) NOT NULL,
     article_content TEXT NOT NULL,
-    polarity_score FLOAT NOT NULL,
+    title_polarity_score FLOAT NOT NULL,
+    content_polarity_score FLOAT NOT NULL,
     source_id SMALLINT NOT NULL,
     date_published DATE NOT NULL,
     article_url VARCHAR(500) NOT NULL UNIQUE,
-    FOREIGN KEY (source_id) REFERENCES source(source_id)
+    FOREIGN KEY (source_id) REFERENCES source(source_id),
     UNIQUE (article_title, source_id, date_published)
 );
 
@@ -34,7 +35,8 @@ CREATE TABLE article_topic_assignment (
     topic_id SMALLINT NOT NULL,
     article_id BIGINT NOT NULL,
     FOREIGN KEY (topic_id) REFERENCES topic(topic_id),
-    FOREIGN KEY (article_id) REFERENCES article(article_id)
+    FOREIGN KEY (article_id) REFERENCES article(article_id),
+    UNIQUE (topic_id, article_id)
 );
 
 CREATE TABLE subscriber (
@@ -52,7 +54,8 @@ INSERT INTO topic (topic_name) VALUES
 ('Natural Disaster'),
 ('Abortion'),
 ('Crime and Law Enforcement'),
-('Guns');
+('Guns'),
+('Israel-Palestine');
 
 INSERT INTO source (source_name, source_url, source_image_url, source_political_leaning) VALUES
 ('Fox News', 'https://www.foxnews.com/', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fox_News_Channel_logo.svg/1200px-Fox_News_Channel_logo.svg.png', 'Right'),
