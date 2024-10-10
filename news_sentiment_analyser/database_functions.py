@@ -39,5 +39,15 @@ def get_topic_dict() -> dict:
     return {topic['topic_name']: topic['topic_id'] for topic in res}
 
 
+def get_source_dict() -> dict:
+    """Returns a dictionary of source name  to its id."""
+    with create_connection() as conn:
+        query = """SELECT source_name, source_id FROM source;"""
+        with conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchall()
+    return {source['source_name']: source['source_id'] for source in res}
+
+
 if __name__ == "__main__":
-    print(get_topic_names())
+    print(get_source_dict())
