@@ -8,12 +8,14 @@ from bs4 import BeautifulSoup
 
 from extract_dn import (
     fetch_response_html,
+    chunk_links,
     fetch_article_responses,
     get_article_title,
     get_headline_title,
     get_article_contents,
     get_headline_contents,
     reformat_date,
+    get_headline_date,
     get_article_date,
     scrape_article,
     get_all_topic_links,
@@ -34,6 +36,19 @@ def test_fetch_response_html():
     assert isinstance(result, BeautifulSoup)
 
 
+@pytest.mark.parametrize("links, chunk_size, expected", [(["link1", "link2", "link3"], 2, [["link1", "link2"], ["link3"]]),
+                                                         (["link1"], 1,
+                                                          [["link1"]]),
+                                                         (["link1", "link2", "link3"], 1, [
+                                                          ["link1"], ["link2"], ["link3"]]),
+                                                         ([], 2, []),
+                                                         (["link1", "link2", "link3", "link4", "link5"], 3, [
+                                                             ["link1", "link2", "link3"], ["link4", "link5"]]),])
+def test_chunk_links(links, chunk_size, expected):
+    result = chunk_links(links, chunk_size)
+    assert result == expected
+
+
 @patch('grequests.map')
 def test_fetch_article_responses(mock_map):
 
@@ -47,8 +62,7 @@ def test_fetch_article_responses(mock_map):
     mock_map.assert_called_once()
 
 
-class TestGetArticleTitle:
-
+class TestArticleFunctions:
     def test_get_article_title(self):
 
         html_content = '''
@@ -72,9 +86,6 @@ class TestGetArticleTitle:
         result = get_article_title(soup)
 
         assert result is None
-
-
-class TestArticleFunctions:
 
     def test_get_headline_title(self):
 
@@ -148,24 +159,44 @@ class TestArticleFunctions:
         assert result is None
 
     def test_get_article_date(self):
-
         html_content = '''
-        <span class="date">October 07, 2024</span>
+        <div class="container-fluid" id="story_content">
+            <span class="date">October 07, 2024</span>
+        </div>
         '''
         soup = BeautifulSoup(html_content, "html.parser")
         result = get_article_date(soup)
         assert result == "2024-10-07"
 
     def test_get_article_date_fail(self):
-
         html_content = '''
-        <div class="date-container">
+        <div class="container-fluid" id="story_content">
             <p>No date here</p>
         </div>
         '''
         soup = BeautifulSoup(html_content, "html.parser")
         result = get_article_date(soup)
         assert result is None
+
+        def test_get_headline_date(self):
+            html_content = '''
+            <article class="headline">
+                <span class="date">October 08, 2024</span>
+            </article>
+            '''
+            soup = BeautifulSoup(html_content, "html.parser")
+            result = get_headline_date(soup)
+            assert result == "2024-10-08"
+
+        def test_get_headline_date_fail(self):
+            html_content = '''
+            <article class="headline">
+                <p>No date here</p>
+            </article>
+            '''
+            soup = BeautifulSoup(html_content, "html.parser")
+            result = get_headline_date(soup)
+            assert result is None
 
 
 @pytest.mark.parametrize("input_date, expected_output", [("October 07, 2024",
@@ -182,18 +213,18 @@ def test_reformat_date(input_date, expected_output):
     assert reformat_date(input_date) == expected_output
 
 
-class TestScrapeArticle():
+class TestScrapeArticle:
 
-    @patch('extract_dn.fetch_response_html')
-    @patch('extract_dn.get_headline_title')
+    @patch('extract_dn.get_headline_date')
     @patch('extract_dn.get_headline_contents')
-    @patch('extract_dn.get_article_date')
-    def test_scrape_article_pass_headline(self, mock_get_article_date, mock_get_headline_contents, mock_get_headline_title, mock_fetch_response_html):
+    @patch('extract_dn.get_headline_title')
+    @patch('extract_dn.fetch_response_html')
+    def test_scrape_article_pass_headline(self, mock_fetch_response_html, mock_get_headline_title, mock_get_headline_contents, mock_get_headline_date):
 
         mock_fetch_response_html.return_value = Mock()
         mock_get_headline_title.return_value = "Test Headline Title"
         mock_get_headline_contents.return_value = "Headline first paragraph.\nHeadline second paragraph."
-        mock_get_article_date.return_value = "2024-10-07"
+        mock_get_headline_date.return_value = "2024-10-07"
 
         mock_response = Mock()
         mock_response.url = 'https://www.democacrynow.org/headlines/test-article'
@@ -207,11 +238,11 @@ class TestScrapeArticle():
         }
         assert result == expected
 
-    @patch('extract_dn.fetch_response_html')
-    @patch('extract_dn.get_article_title')
-    @patch('extract_dn.get_article_contents')
     @patch('extract_dn.get_article_date')
-    def test_scrape_article_pass_regular_article(self, mock_get_article_date, mock_get_article_contents, mock_get_article_title, mock_fetch_response_html):
+    @patch('extract_dn.get_article_contents')
+    @patch('extract_dn.get_article_title')
+    @patch('extract_dn.fetch_response_html')
+    def test_scrape_article_pass_regular_article(self, mock_fetch_response_html, mock_get_article_title, mock_get_article_contents, mock_get_article_date):
 
         mock_fetch_response_html.return_value = Mock()
         mock_get_article_title.return_value = "Test Article Title"
@@ -230,11 +261,11 @@ class TestScrapeArticle():
         }
         assert result == expected
 
-    @patch('extract_dn.fetch_response_html')
-    @patch('extract_dn.get_article_title')
-    @patch('extract_dn.get_article_contents')
     @patch('extract_dn.get_article_date')
-    def test_scrape_article_fail(self, mock_get_article_date, mock_get_article_contents, mock_get_article_title, mock_fetch_response_html):
+    @patch('extract_dn.get_article_contents')
+    @patch('extract_dn.get_article_title')
+    @patch('extract_dn.fetch_response_html')
+    def test_scrape_article_fail(self, mock_fetch_response_html, mock_get_article_title, mock_get_article_contents, mock_get_article_date):
 
         mock_fetch_response_html.return_value = Mock()
         mock_get_article_title.return_value = None

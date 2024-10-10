@@ -12,11 +12,27 @@ def fetch_response_html(response) -> BeautifulSoup:
     return BeautifulSoup(response.content, "html.parser")
 
 
-def fetch_article_responses(links: list[str]) -> list:
-    """Fetches article responses asynchronously using grequests."""
+def chunk_links(links: list[str], chunk_size: int) -> list[list[str]]:
+    """
+    Split the list of links into smaller chunks.
+    """
 
-    article_requests = (grequests.get(x, timeout=30) for x in links)
-    return grequests.map(article_requests)
+    return [links[i:i + chunk_size] for i in range(0, len(links), chunk_size)]
+
+
+def fetch_article_responses(links: list[str]) -> list:
+    """
+    Fetches article responses asynchronously using grequests in increments of 50.
+    """
+
+    responses = []
+    link_chunks = chunk_links(links, 50)
+
+    for chunk in link_chunks:
+        article_requests = (grequests.get(x, timeout=30) for x in chunk)
+        responses.extend(grequests.map(article_requests))
+
+    return responses
 
 
 def get_article_title(soup: BeautifulSoup) -> str:
@@ -91,7 +107,20 @@ def reformat_date(date: str) -> str:
 def get_article_date(soup: BeautifulSoup) -> str:
     """Return date of article given the web body"""
     try:
-        date = soup.find("span", class_="date")
+        article_tag = soup.find(
+            "div", class_="container-fluid", id="story_content")
+        date = article_tag.find("span", class_="date")
+        return reformat_date(date.get_text(strip=True))
+
+    except AttributeError:
+        return None
+
+
+def get_headline_date(soup: BeautifulSoup) -> str:
+    """Return date of article given the web body"""
+    try:
+        first_headline = soup.find("article", class_="headline")
+        date = first_headline.find("span", class_="date")
         return reformat_date(date.get_text(strip=True))
 
     except AttributeError:
@@ -104,14 +133,15 @@ def scrape_article(response) -> dict:
     from Democracy Now article page.
     """
 
-    soup = fetch_response_html(response.content)
+    soup = fetch_response_html(response)
     if '/headlines/' in response.url:
         title = get_headline_title(soup)
         content = get_headline_contents(soup)
+        date = get_headline_date(soup)
     else:
         title = get_article_title(soup)
         content = get_article_contents(soup)
-    date = get_article_date(soup)
+        date = get_article_date(soup)
 
     if any(x is None for x in (title, content, date)):
         return f"Failed to fetch content from {response.url}"
@@ -151,7 +181,7 @@ def get_all_topic_links() -> list[str]:
 def get_all_links_from_topic(topic_response) -> list[str]:
     """Return links for a given topic page on Democracy Now."""
 
-    soup = fetch_response_html(topic_response.content)
+    soup = fetch_response_html(topic_response)
     articles = soup.find_all(
         "a", attrs={"data-ga-action": "Topic: Story Headline"})
     article_links = [
@@ -220,8 +250,9 @@ def scrape_democracy_now() -> list[dict]:
     """Scrape the democracy now pages to obtain all stories"""
 
     all_links = get_all_links_from_all_topics()
+    print(f"Retreived {len(all_links)} article links")
     all_valid_links = [x for x in all_links if not link_is_old(x, 7)]
-    print(f"Retreived {len(all_valid_links)} valid article links")
+    print(f"{len(all_valid_links)} article links are within 7 days old")
     results = parse_all_links(all_valid_links)
     print(f"Extracted title and content from {len(results)} articles")
     return results
