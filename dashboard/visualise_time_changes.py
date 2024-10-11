@@ -12,8 +12,11 @@ def resample_dataframe(df: pd.DataFrame, time_interval:str, avg_over_source:bool
     over a set of grouped time intervals"""
 
     df['date_published'] =pd.to_datetime(df['date_published'])
-    keys = ['source_name', 'topic_name'] if not avg_over_source else ['topic_name']
-    df_avg = df.groupby(keys).resample(time_interval, on= 'date_published').mean().reset_index()
+
+    if avg_over_source:
+        df["source_name"] = "Average"
+    df_avg = df.groupby(['source_name', 'topic_name']).resample(time_interval, on= 'date_published').mean().reset_index()
+
     return df_avg
 
 def generate_warning_message(source_to_topics: dict) -> str:
@@ -29,7 +32,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title:bool) -> alt.Chart:
     """Visualise changes in sentiment over time"""
 
     base = alt.Chart(df).encode(
-    alt.Color("source_name",title='Source Name').legend(None)
+    alt.Color("source_name:N",title='Source Name').legend(None)
     ).properties(
         width=500
     )
@@ -48,11 +51,11 @@ def visualise_change_over_time(df: pd.DataFrame, by_title:bool) -> alt.Chart:
 
     last_point = base.mark_circle(size=100, color='red').encode(
         x='date_published:T',
-        y='title_polarity_score:Q'
+        y=f'{y_axis[0]}:Q'
     ).transform_window(
         rank='rank(date_published)',
         sort=[alt.SortField('date_published', order='descending')],
-        groupby=['source_name']
+        groupby=['source_name:N']
     ).transform_filter(
         alt.datum.rank == 1
     )
@@ -80,12 +83,13 @@ def construct_streamlit_time_graph():
         if data.empty:
             st.text("No data to display.")
         else:
-            averaged = resample_dataframe(data, sampling).dropna(inplace=True)
-            averaged_over_sources = resample_dataframe(data,sampling,True).dropna(inplace=True)
+            averaged = resample_dataframe(data, sampling,False).dropna()
+            averaged_over_sources = resample_dataframe(data,sampling,True).dropna()
 
-            line_graph = visualise_change_over_time(averaged, selected_topic, by_title=True)
-            averaged = visualise_change_over_time(averaged_over_sources, selected_topic, by_title=True)
+            line_graph = visualise_change_over_time(averaged, by_title=True)
+            averaged = visualise_change_over_time(averaged_over_sources, by_title=True)
             st.altair_chart(line_graph + averaged)
+
 
 if __name__ == "__main__":
     construct_streamlit_time_graph()
