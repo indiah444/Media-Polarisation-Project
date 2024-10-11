@@ -518,4 +518,7 @@ resource "aws_instance" "pipeline_ec2" {
               sudo yum update -y
               sudo yum install -y python3
               EOF
+    lifecycle {
+      ignore_changes = [ami]
+    }
 }
