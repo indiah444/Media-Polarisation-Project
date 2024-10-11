@@ -3,3 +3,4 @@ psycopg2-binary
 altair
 python-dotenv
 pandas
+boto3
