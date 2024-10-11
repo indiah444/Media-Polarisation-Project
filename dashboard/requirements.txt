@@ -6,3 +6,4 @@ pandas
 wordcloud
 matplotlib
 pylint
+nltk
