@@ -4,7 +4,7 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 import altair as alt
-from db_functions import get_scores_topic
+from db_functions import get_scores_topic, get_topic_names
 
 
 def resample_dataframe(df: pd.DataFrame, time_interval:str):
