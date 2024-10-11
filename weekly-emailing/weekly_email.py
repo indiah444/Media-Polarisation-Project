@@ -1,4 +1,4 @@
-"""A script to send a html email of the previous days articles."""
+"""A script to send an email with a pdf of the previous weeks articles."""
 from os import environ as ENV
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -8,28 +8,33 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import boto3
 
-from html_content import generate_html
-from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers
+from pdf_content import generate_pdf
+from w_db_funcs import get_avg_polarity_last_week, get_weekly_subscribers
 
 
 def send_email() -> None:
     """Sends an email"""
 
     load_dotenv()
-    emails = get_daily_subscribers()
-    df = get_avg_polarity_by_topic_and_source_yesterday()
-    html = generate_html(df)
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%d-%m-%Y')
+    emails = get_weekly_subscribers()
+    df = get_avg_polarity_last_week()
+    pdf_content = generate_pdf(df)
     client = boto3.client("ses", region_name="eu-west-2",
                           aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
                           aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
     message = MIMEMultipart()
 
-    message["Subject"] = f"Media Sentiment Report for {yesterday}"
+    message["Subject"] = f"Media Sentiment Report for Last Week"
     body = MIMEText(
-        html,
-        "html")
+        "Dear subscriber, please find attached your weekly media sentiment report.",
+        "plain")
     message.attach(body)
+
+    attachment = MIMEApplication(
+        pdf_content.read())
+    attachment.add_header('Content-Disposition',
+                          'attachment', filename=f'Weekly_sentiment_report.pdf')
+    message.attach(attachment)
 
     client.send_raw_email(
         Source=ENV['FROM_EMAIL'],
