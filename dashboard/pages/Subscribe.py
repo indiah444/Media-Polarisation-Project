@@ -1,8 +1,8 @@
+"""Page for subscribing, altering subscription, and removing subscription."""
+
 import streamlit as st
 
 from db_functions import get_subscriber_emails, updates_subscriber, add_new_subscriber, remove_subscription
-
-# Define the function that will be called on form submission
 
 
 def check_submission(first_name: str, surname: str, email: str, daily: bool, weekly: bool):

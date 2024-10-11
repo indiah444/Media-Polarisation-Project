@@ -1,4 +1,5 @@
 """Script to check if email is verified and add to database."""
+
 from os import environ as ENV
 
 import boto3

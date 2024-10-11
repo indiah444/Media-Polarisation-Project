@@ -1,4 +1,5 @@
 """One page showing a few graphs, where you can filter by topic."""
+
 import streamlit as st
 
 from db_functions import get_topic_names, get_topic_dict, get_average_score_per_source_for_a_topic, get_title_and_content_data_for_a_topic

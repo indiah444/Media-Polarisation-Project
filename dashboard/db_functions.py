@@ -1,4 +1,5 @@
 """Some functions for interacting with the RDS."""
+
 from os import environ as ENV
 from datetime import datetime, timedelta
 

@@ -1,4 +1,5 @@
 """Script to create altair graphs for dashboard."""
+
 import pandas as pd
 import altair as alt
 
