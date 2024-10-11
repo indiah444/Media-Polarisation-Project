@@ -4,5 +4,3 @@ altair
 python-dotenv
 pandas
 boto3
-
-
