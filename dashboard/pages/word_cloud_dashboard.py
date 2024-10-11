@@ -13,6 +13,7 @@ from nltk import download as nltk_download
 from db_functions import create_connection
 
 
+@st.cache_data
 def get_all_article_content():
     """Returns all article content from the database."""
 
@@ -48,6 +49,7 @@ def clean_text(text: str, custom_stopwords: list) -> str:
     return ' '.join(words)
 
 
+@st.cache_data
 def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     """Counts word frequencies in a given list of articles."""
 
