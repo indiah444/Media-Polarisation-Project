@@ -43,7 +43,9 @@ CREATE TABLE subscriber (
     subscriber_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     subscriber_email VARCHAR(250) NOT NULL UNIQUE,
     subscriber_first_name VARCHAR (100) NOT NULL,
-    subscriber_surname VARCHAR(100) NOT NULL
+    subscriber_surname VARCHAR(100) NOT NULL,
+    daily BOOLEAN,
+    weekly BOOLEAN
 );
 
 INSERT INTO topic (topic_name) VALUES

@@ -27,7 +27,7 @@ def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
         combined_topic_dict.update(batch_topic_dict)
     articles['topics'] = articles['title'].map(combined_topic_dict)
     df_filtered = articles[articles['topics'].apply(
-        lambda x: len(x) > 0)]
+        lambda x: isinstance(x, list) and len(x) > 0)]
 
     return df_filtered
 

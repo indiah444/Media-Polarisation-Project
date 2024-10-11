@@ -8,7 +8,6 @@ from io import StringIO
 import pandas as pd
 import boto3
 
-from clean_fn import clean_text
 from extract_fn import fetch_from_multiple_feeds
 
 
@@ -43,9 +42,6 @@ def process_rss_feeds_and_upload(feed_urls: list[str]):
     """Combines the fetching, cleaning, combining, and uploading of RSS data."""
 
     entries = fetch_from_multiple_feeds(feed_urls)
-
-    for entry in entries:
-        entry["content"] = clean_text(entry.get("content", ""))
 
     df = combine_entries_to_dataframe(entries)
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
