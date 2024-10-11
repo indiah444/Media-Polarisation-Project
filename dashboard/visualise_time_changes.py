@@ -4,24 +4,8 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 import altair as alt
-from db_functions import get_topic_names, create_connection
+from db_functions import get_scores_topic
 
-def get_scores_topic(topic_name: str) -> dict:
-    """Returns a dictionary containing the polarity scores for a given topic """
-
-    topic_name = topic_name.strip().title()
-    with create_connection() as conn:
-        select_data = """SELECT t.topic_name, s.source_name, a.content_polarity_score, a.title_polarity_score, a.date_published FROM article a
-        INNER JOIN article_topic_assignment ata ON a.article_id = ata.article_id 
-        INNER JOIN topic t ON ata.topic_id = t.topic_id 
-        INNER JOIN source s ON a.source_id = s.source_id
-        WHERE t.topic_name = %s 
-        """
-        with conn.cursor() as curr:
-            curr.execute(select_data,(topic_name, ))
-            res = curr.fetchall()
-
-    return res
 
 def resample_dataframe(df: pd.DataFrame, time_interval:str):
     """Resamples the dataframe to return the average sentiment scores by source, topic 
@@ -75,7 +59,7 @@ def visualise_change_over_time(df: pd.DataFrame, topic_name:str) -> alt.Chart:
 
 def construct_streamlit_time_graph():
     """Constructs a streamlit time graph"""
-    
+
     topic_names = get_topic_names()
     st.sidebar.header("Topic")
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
