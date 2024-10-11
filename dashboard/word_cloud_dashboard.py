@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import nltk
+from nltk import download as nltk_download
 
 from db_functions import create_connection
 
@@ -83,18 +83,19 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    nltk.download("punkt")
-    nltk.download("stopwords")
+    nltk_download("punkt")
+    nltk_download("stopwords")
 
-    custom_stopwords = ["fox", "news", "said",
-                        "get", "also", "would", "could", "get"]
+    custom_stop_words = ["fox", "news", "said",
+                         "get", "also", "would", "could", "get"]
 
     st.title("Article Content Word Cloud by News Source")
 
     fn_articles, dn_articles = get_all_article_content()
 
-    fox_news_word_freq = get_word_frequency(fn_articles, custom_stopwords)
-    democracy_now_word_freq = get_word_frequency(dn_articles, custom_stopwords)
+    fox_news_word_freq = get_word_frequency(fn_articles, custom_stop_words)
+    democracy_now_word_freq = get_word_frequency(
+        dn_articles, custom_stop_words)
 
     st.header("Fox News Word Cloud")
     generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
