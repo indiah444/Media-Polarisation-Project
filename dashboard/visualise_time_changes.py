@@ -93,5 +93,8 @@ if __name__ == "__main__":
     selected_frequency = st.sidebar.slider(label="Number of hours to average over", min_value=1,max_value=24,step=1)
     
     sampling = str(selected_frequency) + 'h'
+    st.title(f"Change in Sentiment of {selected_topic} Over Time")
+    st.header(f"Polarity by Article Titles")
     construct_streamlit_time_graph(selected_topic, sent_by_title=True)
-    construct_streamlit_time_graph(selected_topic, sent_by_title=True)
+    st.header(f"Polarity by Article Content")
+    construct_streamlit_time_graph(selected_topic, sent_by_title=False)
