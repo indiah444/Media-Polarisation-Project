@@ -1,3 +1,5 @@
+"""A file to generate word clouds based on article word frequency by source."""
+
 import re
 
 import streamlit as st
@@ -9,11 +11,6 @@ from nltk.tokenize import word_tokenize
 import nltk
 
 from db_functions import create_connection
-
-load_dotenv()
-
-nltk.download("punkt")
-nltk.download("stopwords")
 
 
 def get_all_article_content():
@@ -34,7 +31,7 @@ def get_all_article_content():
     democracy_now_articles = [article["article_content"]
                               for article in articles if article["source_name"] == "Democracy Now!"]
 
-    return [article["article_content"] for article in articles]
+    return fox_news_articles, democracy_now_articles
 
 
 def clean_text(text: str) -> str:
@@ -82,17 +79,23 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     st.pyplot(plt)
 
 
-st.title("Article Content Word Cloud by News Source")
+if __name__ == "__main__":
 
-fox_news_articles = get_all_article_content()
-democracy_now_articles = get_all_article_content()
+    load_dotenv()
 
-fox_news_word_freq = get_word_frequency(fox_news_articles)
-democracy_now_word_freq = get_word_frequency(democracy_now_articles)
+    nltk.download("punkt")
+    nltk.download("stopwords")
 
-st.header("Fox News Word Cloud")
-generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
+    st.title("Article Content Word Cloud by News Source")
 
-st.header("Democracy Now! Word Cloud")
-generate_wordcloud(democracy_now_word_freq,
-                   "Democracy Now!", colormap="winter")
+    fn_articles, dn_articles = get_all_article_content()
+
+    fox_news_word_freq = get_word_frequency(fn_articles)
+    democracy_now_word_freq = get_word_frequency(dn_articles)
+
+    st.header("Fox News Word Cloud")
+    generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
+
+    st.header("Democracy Now! Word Cloud")
+    generate_wordcloud(democracy_now_word_freq,
+                       "Democracy Now!", colormap="winter")
