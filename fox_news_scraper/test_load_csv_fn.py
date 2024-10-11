@@ -1,3 +1,4 @@
+# pylint: skip-file
 """Tests for load_csv_fn"""
 from datetime import datetime
 import unittest
