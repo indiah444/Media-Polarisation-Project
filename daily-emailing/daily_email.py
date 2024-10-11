@@ -41,5 +41,23 @@ def send_email() -> None:
     print("sent email")
 
 
+def lambda_handler(event: dict, context: dict) -> dict:
+    """AWS Lambda handler function."""
+    try:
+        send_email()
+        print("Daily emails sent!")
+        return {
+            "statusCode": 200,
+            "body": "Daily emails sent."
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": f"Error: {str(e)}"
+        }
+
+
+
 if __name__ == "__main__":
-    send_email()
+    lambda_handler({}, {})
