@@ -31,8 +31,8 @@ data "aws_ecr_image" "article_analyser_image" {
 }
 
 data "aws_s3_bucket" "article_s3_bucket" {bucket = var.S3_BUCKET_NAME}
-data "aws_iam_role" "execution_role" { name = "ecsTaskExecutionRole" }
-data "aws_ecs_cluster" "c13_cluster" { cluster_name = "c13-ecs-cluster" }
+data "aws_iam_role" "execution_role" {name = "ecsTaskExecutionRole"}
+data "aws_ecs_cluster" "c13_cluster" {cluster_name = var.ECS_CLUSTER_NAME}
 
 data "aws_iam_policy_document" "step_functions_schedule_trust_policy" {
   statement {

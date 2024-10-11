@@ -2,12 +2,13 @@
 
 ##  Prerequisites
 - **Terraform** installed
-- **ECR** repos for the following:
+- **AWS ECR** repos for the following:
     - Fox news scraper image
     - Democracy now scraper image
     - Article analyser image
     - Email generator image
-- Provision **PostgreSQL RDS** instance
+- Provision **AWS RDS (PostgreSQL)** instance
+- Provision **AWS S3**
 - Read the following READMEs to setup containers, database and upload:
     1. news_sentiment_analyser/README.md
     2. fox_news_scraper/README.md
@@ -28,6 +29,7 @@ VPC_ID                = "your-vpc-id"
 SUBNET_ID1            = "your-first-subnet-id"
 SUBNET_ID2            = "your-second-subnet-id"
 SUBNET_ID3            = "your-third-subnet-id"
+ECS_CLUSTER_NAME      = "your-aws-ecs-cluster-name"
 
 S3_BUCKET_NAME  = "name-of-S3-bucket"
 
