@@ -16,7 +16,7 @@ def create_sentiment_distribution_chart(df):
         y='topic_name:O',
         color='source_name:N',
         size=alt.Size('article_count:Q', legend=None, scale=alt.Scale(
-            range=[30, 300])),  # Set size based on article count
+            range=[30, 300])),
         tooltip=['topic_name', 'source_name',
                  'avg_polarity_score', 'article_count']
     ).properties(
