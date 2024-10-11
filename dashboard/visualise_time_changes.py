@@ -64,18 +64,8 @@ def visualise_change_over_time(df: pd.DataFrame, by_title:bool) -> alt.Chart:
 
     return  last_point + source_names + line
 
-def construct_streamlit_time_graph():
+def construct_streamlit_time_graph(selected_topic:str, sent_by_title: bool):
     """Constructs a streamlit time graph"""
-
-    topic_names = get_topic_names()
-    st.sidebar.header("Topic")
-    
-    selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
-
-    selected_frequency = st.sidebar.slider(label="Number of hours to average over", min_value=1,max_value=24,step=1)
-    
-    sampling = str(selected_frequency) + 'h'
-
     if selected_topic:
 
         data = pd.DataFrame(get_scores_topic(selected_topic))
@@ -86,10 +76,19 @@ def construct_streamlit_time_graph():
             averaged = resample_dataframe(data, sampling,False).dropna()
             averaged_over_sources = resample_dataframe(data,sampling,True).dropna()
 
-            line_graph = visualise_change_over_time(averaged, by_title=True)
-            averaged = visualise_change_over_time(averaged_over_sources, by_title=True)
+            line_graph = visualise_change_over_time(averaged, by_title=sent_by_title)
+            averaged = visualise_change_over_time(averaged_over_sources, by_title=sent_by_title)
             st.altair_chart(line_graph + averaged)
 
 
 if __name__ == "__main__":
-    construct_streamlit_time_graph()
+    topic_names = get_topic_names()
+    st.sidebar.header("Topic")
+    
+    selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
+
+    selected_frequency = st.sidebar.slider(label="Number of hours to average over", min_value=1,max_value=24,step=1)
+    
+    sampling = str(selected_frequency) + 'h'
+    construct_streamlit_time_graph(selected_topic, sent_by_title=True)
+    construct_streamlit_time_graph(selected_topic, sent_by_title=True)
