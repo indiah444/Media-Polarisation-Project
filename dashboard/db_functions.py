@@ -8,6 +8,7 @@ from psycopg2 import connect
 from psycopg2.extensions import connection
 from dotenv import load_dotenv
 import pandas as pd
+import streamlit as st
 
 from verify_identity import check_and_verify_email
 
@@ -23,6 +24,7 @@ def create_connection() -> connection:
     return conn
 
 
+@st.cache_data
 def get_topic_names() -> list[str]:
     """Returns a list of topic names."""
     with create_connection() as conn:
@@ -34,6 +36,7 @@ def get_topic_names() -> list[str]:
     return [topic['topic_name'] for topic in res]
 
 
+@st.cache_data
 def get_topic_dict() -> dict:
     """Returns a dictionary of topic name to its id."""
     with create_connection() as conn:
@@ -44,6 +47,7 @@ def get_topic_dict() -> dict:
     return {topic['topic_name']: topic['topic_id'] for topic in res}
 
 
+@st.cache_data
 def get_average_score_per_source_for_a_topic(topic_id):
     """Get average score for a topic by source in the last week."""
 
@@ -69,6 +73,7 @@ def get_average_score_per_source_for_a_topic(topic_id):
     return pd.DataFrame(data)
 
 
+@st.cache_data
 def get_title_and_content_data_for_a_topic(topic_id):
     """Get article and content scores for the last week."""
     seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
@@ -92,6 +97,7 @@ def get_title_and_content_data_for_a_topic(topic_id):
     return pd.DataFrame(data)
 
 
+@st.cache_data
 def get_subscriber_emails() -> list[str]:
     """Returms a list of subscriber emails."""
     query = """
