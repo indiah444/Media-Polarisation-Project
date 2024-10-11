@@ -4,6 +4,13 @@ import streamlit as st
 
 if __name__ == "__main__":
 
+    st.set_page_config(
+        page_title="Media Polarisation Dashboard",
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
     st.title("Welcome to the Media Polarisation Dashboard")
     st.markdown("""
     ## Understanding Polarised Media Coverage and Sentiment
