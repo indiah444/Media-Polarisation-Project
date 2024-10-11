@@ -44,7 +44,10 @@ def visualise_change_over_time(df: pd.DataFrame, by_title:bool) -> alt.Chart:
 
     line = base.mark_line().encode(
         x = alt.X('date_published:T', axis = alt.Axis(offset=-150,title = 'Date Published', titleAnchor="end")),
-        y = alt.Y(f'{y_axis[0]}:Q',scale=alt.Scale(domain=[-1, 1]), title = y_axis[1])
+        y = alt.Y(f'{y_axis[0]}:Q',scale=alt.Scale(domain=[-1, 1]), title = y_axis[1]),
+        tooltip=[alt.Tooltip(field="source_name", title="Source Name"),
+                 alt.Tooltip(field=f"{y_axis[0]}",
+                             title=f"Average {y_axis[1]}")]
     ).properties(
         width=500
     )
