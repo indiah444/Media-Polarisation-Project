@@ -34,10 +34,10 @@ def get_all_article_content():
     return fox_news_articles, democracy_now_articles
 
 
-def clean_text(text: str) -> str:
+def clean_text(text: str, custom_stopwords: list) -> str:
     """Cleans text by removing URLs, punctuation, and stopwords."""
 
-    stop_words = set(stopwords.words("english"))
+    stop_words = set(stopwords.words("english")) | set(custom_stopwords)
 
     text = re.sub(r'http\S+', '', text)
     text = re.sub(r'[^\w\s]', '', text.lower())
@@ -48,13 +48,13 @@ def clean_text(text: str) -> str:
     return ' '.join(words)
 
 
-def get_word_frequency(articles: list[str]) -> dict:
+def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     """Counts word frequencies in a given list of articles."""
 
     word_freq = {}
 
     for article in articles:
-        cleaned_text = clean_text(article)
+        cleaned_text = clean_text(article, custom_stopwords)
         words = cleaned_text.split()
 
         for word in words:
@@ -86,12 +86,15 @@ if __name__ == "__main__":
     nltk.download("punkt")
     nltk.download("stopwords")
 
+    custom_stopwords = ["fox", "news", "said",
+                        "get", "also", "would", "could", "get"]
+
     st.title("Article Content Word Cloud by News Source")
 
     fn_articles, dn_articles = get_all_article_content()
 
-    fox_news_word_freq = get_word_frequency(fn_articles)
-    democracy_now_word_freq = get_word_frequency(dn_articles)
+    fox_news_word_freq = get_word_frequency(fn_articles, custom_stopwords)
+    democracy_now_word_freq = get_word_frequency(dn_articles, custom_stopwords)
 
     st.header("Fox News Word Cloud")
     generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
