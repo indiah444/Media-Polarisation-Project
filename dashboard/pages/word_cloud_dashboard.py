@@ -87,6 +87,7 @@ if __name__ == "__main__":
 
     nltk_download("punkt")
     nltk_download("stopwords")
+    nltk_download('punkt_tab')
 
     custom_stop_words = ["fox", "news", "said",
                          "get", "also", "would", "could", "get"]
