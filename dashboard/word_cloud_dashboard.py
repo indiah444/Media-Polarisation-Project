@@ -69,11 +69,11 @@ def get_word_frequency(articles: list[str]) -> dict:
     return word_freq
 
 
-def generate_wordcloud(word_freq: dict, title: str):
+def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
     wordcloud = WordCloud(
-        width=800, height=400, background_color="white").generate_from_frequencies(word_freq)
+        width=800, height=400, background_color="white", colormap=colormap).generate_from_frequencies(word_freq)
 
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation="bilinear")
@@ -91,7 +91,8 @@ fox_news_word_freq = get_word_frequency(fox_news_articles)
 democracy_now_word_freq = get_word_frequency(democracy_now_articles)
 
 st.header("Fox News Word Cloud")
-generate_wordcloud(fox_news_word_freq, "Fox News")
+generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
 
 st.header("Democracy Now! Word Cloud")
-generate_wordcloud(democracy_now_word_freq, "Democracy Now!")
+generate_wordcloud(democracy_now_word_freq,
+                   "Democracy Now!", colormap="winter")
