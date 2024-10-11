@@ -36,7 +36,8 @@ S3_BUCKET_NAME  = "name-of-S3-bucket"
 FOX_NEWS_SCRAPER_ECR_REPO       ="ecr-repo-name-for-fox-news-scraper"
 DEMOCARCY_NOW_SCRAPER_ECR_REPO  ="ecr-repo-name-for-democracy-now-news-scraper"
 ARTICLE_ANALYSER_ECR_REPO       ="ecr-repo-name-for-article-analyser"
-EMAIL_GENERATOR_ECR_REPO        ="ecr-repo-name-for-email-generator"
+DAILY_EMAIL_ECR_REPO        ="ecr-repo-name-for-daily-emailer"
+WEEKLY_EMAIL_ECR_REPO        ="ecr-repo-name-for-weekly-emailer"
 
 DB_HOST               = "your-RDS-host"
 DB_PORT               = "your-RDS-port"
@@ -44,5 +45,7 @@ DB_NAME               = "your-RDS-name"
 DB_USER               = "your-RDS-user"
 DB_PASSWORD           = "your-RDS-password"
 
-OPENAI_API_KEY          = "your-open-ai-key"
+OPENAI_API_KEY        = "your-open-ai-key"
+
+FROM_EMAIL            = "address-to-send-emails-from"
 ```

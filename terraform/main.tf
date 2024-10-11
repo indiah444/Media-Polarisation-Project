@@ -20,10 +20,15 @@ data "aws_ecr_image" "democracy_now_news_scraper_image" {
     image_tag       = "latest"
 }
 
-# data "aws_ecr_image" "email_generator_image" {
-#     repository_name = var.EMAIL_GENERATOR_ECR_REPO
-#     image_tag       = "latest"
-# }
+data "aws_ecr_image" "daily_email_image" {
+    repository_name = var.DAILY_EMAIL_ECR_REPO
+    image_tag       = "latest"
+}
+
+data "aws_ecr_image" "weekly_email_image" {
+    repository_name = var.WEEKLY_EMAIL_ECR_REPO
+    image_tag       = "latest"
+}
 
 data "aws_ecr_image" "article_analyser_image" {
     repository_name = var.ARTICLE_ANALYSER_ECR_REPO
@@ -108,17 +113,6 @@ resource "aws_lambda_function" "democracy_now_news_scraper_lambda" {
 
     image_config { command = ["pipeline_dn.lambda_handler"] }
 }
-
-# resource "aws_lambda_function" "email_generator_lambda" {
-#     function_name = "c13-boudicca-mp-email-generator"
-#     image_uri     = data.aws_ecr_image.email_generator_image.image_uri
-#     role          = aws_iam_role.lambda_execution_role.arn
-#     package_type = "Image"
-#     timeout = 900
-#     memory_size = 256
-
-#     image_config { command = ["main.lambda_handler"] }
-# }
 
 resource "aws_cloudwatch_log_group" "mp_article_analyser_log_group" {
     name = "/ecs/c13-boudicca-mp-article-analyser"
@@ -520,5 +514,127 @@ resource "aws_instance" "pipeline_ec2" {
               EOF
     lifecycle {
       ignore_changes = [ami]
+    }
+}
+
+# =========================== Emailing system ===========================
+
+resource "aws_lambda_function" "daily_email_lambda" {
+    function_name = "c13-boudicca-daily-email-lambda"
+    image_uri     = data.aws_ecr_image.daily_email_image.image_uri
+    role          = aws_iam_role.lambda_execution_role.arn
+    package_type = "Image"
+    timeout = 900
+    memory_size = 256
+
+    environment {
+        variables = {
+            S3_BUCKET_NAME = var.S3_BUCKET_NAME
+            AWS_ACCESS_KEY_BOUDICCA = var.AWS_ACCESS_KEY
+            AWS_ACCESS_SECRET_KEY_BOUDICCA = var.AWS_SECRET_ACCESS_KEY
+            DB_HOST = var.DB_HOST
+            DB_PORT = var.DB_PORT
+            DB_NAME = var.DB_NAME
+            DB_USER = var.DB_USER
+            DB_PASSWORD = var.DB_PASSWORD
+            FROM_EMAIL = var.FROM_EMAIL
+        }
+    }
+
+    image_config { command = ["daily_email.lambda_handler"] }
+}
+
+resource "aws_lambda_function" "weekly_email_lambda" {
+    function_name = "c13-boudicca-weekly-email-lambda"
+    image_uri     = data.aws_ecr_image.weekly_email_image.image_uri
+    role          = aws_iam_role.lambda_execution_role.arn
+    package_type = "Image"
+    timeout = 900
+    memory_size = 256
+
+    environment {
+        variables = {
+            S3_BUCKET_NAME = var.S3_BUCKET_NAME
+            AWS_ACCESS_KEY_BOUDICCA = var.AWS_ACCESS_KEY
+            AWS_ACCESS_SECRET_KEY_BOUDICCA = var.AWS_SECRET_ACCESS_KEY
+            DB_HOST = var.DB_HOST
+            DB_PORT = var.DB_PORT
+            DB_NAME = var.DB_NAME
+            DB_USER = var.DB_USER
+            DB_PASSWORD = var.DB_PASSWORD
+            FROM_EMAIL = var.FROM_EMAIL
+        }
+    }
+
+    image_config { command = ["weekly_email.lambda_handler"] }
+}
+
+data "aws_iam_policy_document" "eventbridge_schedule_trust_policy" {
+    statement {
+        effect = "Allow"
+        principals {
+            type        = "Service"
+            identifiers = ["scheduler.amazonaws.com"]
+        }
+        actions = ["sts:AssumeRole"]
+    }
+}
+
+resource "aws_iam_role" "eventbridge_scheduler_role" {
+    name               = "c13-boudicca-email-eventbridge-scheduler-role"
+    assume_role_policy = data.aws_iam_policy_document.eventbridge_schedule_trust_policy.json
+}
+
+resource "aws_iam_role_policy" "eventbridge_lambda_invocation_policy" {
+    name = "EventBridgeLambdaInvocationPolicy"
+    role = aws_iam_role.eventbridge_scheduler_role.id
+
+    policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+            {
+                Effect = "Allow",
+                Action = "lambda:InvokeFunction",
+                Resource = [
+                  aws_lambda_function.daily_email_lambda.arn,
+                  aws_lambda_function.weekly_email_lambda.arn
+                  ]
+            },
+            {
+                Effect = "Allow",
+                Action = "iam:PassRole",
+                Resource = aws_iam_role.lambda_execution_role.arn
+            }
+        ]
+    })
+}
+
+resource "aws_scheduler_schedule" "daily_email_schedule" {
+    name        = "c13-boudicca-daily-email-schedule"
+    description = "Scheduled rule to trigger the short-term ETL lambda every minute"
+    schedule_expression = "cron(0 9 * * ? *)"
+
+    flexible_time_window {
+        mode = "OFF"
+    }
+
+    target {
+        arn     = aws_lambda_function.daily_email_lambda.arn
+        role_arn = aws_iam_role.eventbridge_scheduler_role.arn
+    }
+}
+
+resource "aws_scheduler_schedule" "weekly_email_schedule" {
+    name        = "c13-boudicca-weekly-email-schedule"
+    description = "Scheduled rule to trigger the short-term ETL lambda every minute"
+    schedule_expression = "cron(0 9 ? * 1 *)"
+
+    flexible_time_window {
+        mode = "OFF"
+    }
+
+    target {
+        arn     = aws_lambda_function.weekly_email_lambda.arn
+        role_arn = aws_iam_role.eventbridge_scheduler_role.arn
     }
 }
