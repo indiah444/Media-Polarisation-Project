@@ -1,4 +1,5 @@
 """Script to create visualisations of changes over time"""
+
 from datetime import datetime
 import streamlit as st
 import pandas as pd
@@ -7,6 +8,7 @@ from db_functions import get_topic_names, create_connection
 
 def get_scores_topic(topic_name: str) -> dict:
     """Returns a dictionary containing the polarity scores for a given topic """
+
     topic_name = topic_name.strip().title()
     with create_connection() as conn:
         select_data = """SELECT t.topic_name, s.source_name, a.content_polarity_score, a.title_polarity_score, a.date_published FROM article a
@@ -24,6 +26,7 @@ def get_scores_topic(topic_name: str) -> dict:
 def resample_dataframe(df: pd.DataFrame, time_interval:str):
     """Resamples the dataframe to return the average sentiment scores by source, topic 
     over a set of grouped time intervals"""
+
     df['date_published'] =pd.to_datetime(df['date_published'])
 
     df_avg = df.groupby(['source_name', 'topic_name']).resample(time_interval, on= 'date_published').mean().reset_index()
@@ -31,6 +34,7 @@ def resample_dataframe(df: pd.DataFrame, time_interval:str):
 
 def generate_warning_message(source_to_topics: dict) -> str:
     """Generates a warning message that some sources don't cover some topics"""
+
     if not source_to_topics:
         return ""
     return "\n".join([
@@ -40,6 +44,7 @@ def generate_warning_message(source_to_topics: dict) -> str:
 
 def visualise_change_over_time(df: pd.DataFrame, topic_name:str) -> alt.Chart:
     """Visualise changes in sentiment over time"""
+
     base = alt.Chart(df).encode(
     alt.Color("source_name",title='Source Name').legend(None)
     ).properties(
@@ -69,6 +74,8 @@ def visualise_change_over_time(df: pd.DataFrame, topic_name:str) -> alt.Chart:
     return  last_point + source_names + line
 
 def construct_streamlit_time_graph():
+    """Constructs a streamlit time graph"""
+    
     topic_names = get_topic_names()
     st.sidebar.header("Topic")
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
