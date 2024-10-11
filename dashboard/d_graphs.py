@@ -12,7 +12,10 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
                 title='Average Polarity Score'),
         size=alt.Size('article_count:Q', title='Number of Articles'),
         color=alt.Color('source_name:N', title='Source'),
-        tooltip=['source_name', 'avg_polarity_score', 'article_count']
+        tooltip=[alt.Tooltip(field="article_count", title="Article count"),
+                 alt.Tooltip(field="avg_polarity_score",
+                             title="Average polarity score"),
+                 alt.Tooltip(field="source_name", title="News Source")]
     ).properties(
         width=800,
         height=400
@@ -29,8 +32,12 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
                 scale=alt.Scale(domain=[-1, 1]),
                 axis=alt.Axis(title='Content Polarity Score', grid=True)),
         color=alt.Color('source_name:N', title='Source'),
-        tooltip=['article_title', 'title_polarity_score',
-                 'content_polarity_score', 'source_name']
+        tooltip=[alt.Tooltip(field="article_title", title="Article title"),
+                 alt.Tooltip(field="title_polarity_score",
+                             title="Title polarity score"),
+                 alt.Tooltip(field="content_polarity_score",
+                             title="Content polarity score"),
+                 alt.Tooltip(field="source_name", title="News Source")]
     ).properties(
         width=800,
         height=400
