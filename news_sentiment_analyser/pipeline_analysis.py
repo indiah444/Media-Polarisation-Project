@@ -6,9 +6,15 @@ from load_rds import load
 
 def pipeline() -> None:
     """The full elt pipeline."""
-    articles = extract()
-    articles = transform(articles)
-    load(articles)
+    try:
+        articles = extract()
+        print("Articles extracted!")
+        articles = transform(articles)
+        print("Articles transformed.")
+        load(articles)
+        print("Articles inserted.")
+    except Exception as err:
+        print(f"Error occurred: {err}")
 
 
 if __name__ == "__main__":
