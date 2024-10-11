@@ -3,3 +3,8 @@ psycopg2-binary
 altair
 python-dotenv
 pandas
+wordcloud
+matplotlib
+pylint
+nltk
+boto3
