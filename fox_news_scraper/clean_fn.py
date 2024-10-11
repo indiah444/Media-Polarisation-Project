@@ -7,25 +7,39 @@ import nltk
 from nltk.corpus import stopwords
 
 nltk.download("stopwords")
-STOPWORDS = set(stopwords.words("english"))
 
 
-def clean_multiple_spaces(to_clean: str) -> str:
-    """Returns text multiple spaces removed"""
-    return re.sub(r'\s+', ' ', to_clean)
+def remove_urls(text: str) -> str:
+    """Removes URLs from text."""
+
+    return re.sub(r'http\S+', '', text)
+
+
+def clean_multiple_spaces(text: str) -> str:
+    """Returns text multiple spaces removed."""
+
+    cleaned_text = re.sub(r'\s+', ' ', text)
+    return cleaned_text.strip()
+
+
+def remove_stopwords(text: str) -> str:
+    """Removes stopwords from text."""
+
+    stopwords_set = set(stopwords.words("english"))
+    words = text.lower().split()
+    words = [word.strip() for word in words if word not in stopwords_set]
+
+    return ' '.join(words)
 
 
 def clean_text(text: str) -> str:
-    """Cleans the article text by removing unwanted characters, stopwords etc."""
+    """Cleans the article text by applying all the cleaning steps."""
 
-    text = re.sub(r'http\S+', '', text)
+    text = remove_urls(text)
     text = clean_multiple_spaces(text)
+    text = remove_stopwords(text)
 
-    words = text.lower().split()
-    words = [word.strip() for word in words if word not in STOPWORDS]
-
-    cleaned_text = ' '.join(words)
-    return cleaned_text
+    return text
 
 
 if __name__ == "__main__":
