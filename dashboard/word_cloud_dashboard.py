@@ -20,10 +20,19 @@ def get_all_article_content():
     """Returns all article content from the database."""
 
     with create_connection() as conn:
-        query = "SELECT article_content FROM article;"
+        query = """
+        SELECT article_content, source_name
+        FROM article
+        JOIN source on article.source_id = source.source_id;
+        """
         with conn.cursor() as cur:
             cur.execute(query)
             articles = cur.fetchall()
+
+    fox_news_articles = [article["article_content"]
+                         for article in articles if article["source_name"] == "Fox News"]
+    democracy_now_articles = [article["article_content"]
+                              for article in articles if article["source_name"] == "Democracy Now!"]
 
     return [article["article_content"] for article in articles]
 
@@ -60,7 +69,7 @@ def get_word_frequency(articles: list[str]) -> dict:
     return word_freq
 
 
-def generate_wordcloud(word_freq: dict):
+def generate_wordcloud(word_freq: dict, title: str):
     """Generates and returns a word cloud from word frequencies."""
 
     wordcloud = WordCloud(
@@ -69,14 +78,20 @@ def generate_wordcloud(word_freq: dict):
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
-    plt.show()
-
+    plt.title(title, fontsize=20)
     st.pyplot(plt)
 
 
-st.title("Article Content Word Cloud")
+st.title("Article Content Word Cloud by News Source")
 
-articles = get_all_article_content()
-word_freq = get_word_frequency(articles)
+fox_news_articles = get_all_article_content()
+democracy_now_articles = get_all_article_content()
 
-generate_wordcloud(word_freq)
+fox_news_word_freq = get_word_frequency(fox_news_articles)
+democracy_now_word_freq = get_word_frequency(democracy_now_articles)
+
+st.header("Fox News Word Cloud")
+generate_wordcloud(fox_news_word_freq, "Fox News")
+
+st.header("Democracy Now! Word Cloud")
+generate_wordcloud(democracy_now_word_freq, "Democracy Now!")
