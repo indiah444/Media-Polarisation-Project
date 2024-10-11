@@ -1,10 +1,15 @@
 """Some functions for interacting with the RDS."""
+
 from os import environ as ENV
+from datetime import datetime, timedelta
 
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
 from psycopg2.extensions import connection
 from dotenv import load_dotenv
+import pandas as pd
+
+from verify_identity import check_and_verify_email
 
 
 def create_connection() -> connection:
@@ -37,3 +42,103 @@ def get_topic_dict() -> dict:
             cur.execute(query)
             res = cur.fetchall()
     return {topic['topic_name']: topic['topic_id'] for topic in res}
+
+
+def get_average_score_per_source_for_a_topic(topic_id):
+    """Get average score for a topic by source in the last week."""
+
+    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+
+    query = """
+        SELECT 
+            s.source_name,
+            AVG(a.content_polarity_score) AS avg_polarity_score,
+            COUNT(a.article_id) AS article_count
+        FROM article_topic_assignment ata
+        JOIN article a ON ata.article_id = a.article_id
+        JOIN source s ON a.source_id = s.source_id
+        WHERE ata.topic_id = %s AND a.date_published >= %s
+        GROUP BY s.source_name
+    """
+
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (topic_id, seven_days_ago))
+            data = cur.fetchall()
+
+    return pd.DataFrame(data)
+
+
+def get_title_and_content_data_for_a_topic(topic_id):
+    """Get article and content scores for the last week."""
+    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+    query = """
+        SELECT 
+            a.article_title,
+            a.title_polarity_score,
+            a.content_polarity_score,
+            s.source_name
+        FROM article_topic_assignment ata
+        JOIN article a ON ata.article_id = a.article_id
+        JOIN source s ON a.source_id = s.source_id
+        WHERE ata.topic_id = %s AND a.date_published >= %s
+    """
+
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (topic_id, seven_days_ago))
+            data = cur.fetchall()
+
+    return pd.DataFrame(data)
+
+
+def get_subscriber_emails() -> list[str]:
+    """Returms a list of subscriber emails."""
+    query = """
+        SELECT subscriber_email from subscriber;
+    """
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            data = cur.fetchall()
+    if data:
+        return [subscriber['subscriber_email'] for subscriber in data]
+    return []
+
+
+def updates_subscriber(first_name: str, surname: str, email: str, daily: bool, weekly: bool):
+    """Updates a subscription preference."""
+    query = """
+            UPDATE subscriber
+            SET subscriber_first_name = %s,
+            subscriber_surname = %s,
+            daily = %s,
+            weekly = %s
+            WHERE subscriber_email = %s"""
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (first_name, surname, daily, weekly, email))
+        conn.commit()
+
+
+def add_new_subscriber(first_name: str, surname: str, email: str, daily: bool, weekly: bool):
+    """Adds a new subscriber."""
+    check_and_verify_email(email)
+    query = """
+            INSERT INTO subscriber (subscriber_email, subscriber_first_name, subscriber_surname, daily, weekly)
+            VALUES (%s, %s, %s, %s, %s)"""
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (email, first_name, surname, daily, weekly))
+        conn.commit()
+
+
+def remove_subscription(email: str):
+    """Removes a subscriber."""
+    query = """
+            DELETE FROM subscriber
+            WHERE subscriber_email = %s"""
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (email, ))
+        conn.commit()
