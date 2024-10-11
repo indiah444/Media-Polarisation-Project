@@ -29,7 +29,7 @@ def check_unsubscribe(email: str):
 
 
 st.title("Subscription Form")
-st.write("Scribe to our newsletters, either daily, weekly, or both!")
+st.write("Subscribe to our newsletters, either daily, weekly, or both!")
 
 with st.form("subscription_form"):
     first_name = st.text_input("Enter your first name")
