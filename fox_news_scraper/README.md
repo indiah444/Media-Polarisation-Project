@@ -77,3 +77,9 @@ docker tag c13-boudicca-mp-fox-news-scraper:latest 129033205317.dkr.ecr.eu-west-
 
 docker push 129033205317.dkr.ecr.eu-west-2.amazonaws.com/c13-boudicca-mp-fox-news-scraper:latest
 ```
+
+### Testing and coverage 
+
+Run `pytest -vv` to generate a detailed test report. 
+
+Run `pytest --cov -vv` to include coverage results.
