@@ -501,7 +501,7 @@ resource "aws_security_group" "ec2_sg" {
 
 resource "aws_instance" "pipeline_ec2" {
     instance_type = "t3.micro"
-    tags = {Name: "c13-boudicca-mp-plant-dashboard"}
+    tags = {Name: "c13-boudicca-mp-dashboard"}
     security_groups = [aws_security_group.ec2_sg.id]
     subnet_id = data.aws_subnet.c13-public-subnet1.id
     associate_public_ip_address = true
@@ -513,7 +513,7 @@ resource "aws_instance" "pipeline_ec2" {
               sudo yum install -y python3
               EOF
     lifecycle {
-      ignore_changes = [ami]
+      prevent_destroy = true
     }
 }
 
