@@ -29,10 +29,6 @@ def resample_dataframe(df: pd.DataFrame, time_interval:str):
     df_avg = df.groupby(['source_name', 'topic_name']).resample(time_interval, on= 'date_published').mean().reset_index()
     return df_avg
 
-def detect_missing_topics(df: pd.DataFrame) -> dict:
-    """Given a dataframe, returns a dictionary of sources and any topics that they are missing"""
-
-
 def generate_warning_message(source_to_topics: dict) -> str:
     """Generates a warning message that some sources don't cover some topics"""
     if not source_to_topics:
@@ -72,20 +68,22 @@ def visualise_change_over_time(df: pd.DataFrame, topic_name:str) -> alt.Chart:
 
     return  last_point + source_names + line
 
-def construct_streamlit():
+def construct_streamlit_time_graph():
     topic_names = get_topic_names()
     st.sidebar.header("Topic")
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
+    selected_frequency = st.sidebar.slider(label="Number of hours to average over", min_value=1,max_value=24,step=1)
+    sampling = str(selected_frequency) + 'h'
     if selected_topic:
 
         data = pd.DataFrame(get_scores_topic(selected_topic))
         if data.empty:
             st.text("No data to display.")
         else:
-            averaged = resample_dataframe(data, '1h')
+            averaged = resample_dataframe(data, sampling)
             averaged.dropna(inplace=True)
             line_graph = visualise_change_over_time(averaged, selected_topic)
             st.altair_chart(line_graph)
 
 if __name__ == "__main__":
-    construct_streamlit()
+    construct_streamlit_time_graph()
