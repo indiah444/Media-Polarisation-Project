@@ -30,9 +30,9 @@ data "aws_ecr_image" "article_analyser_image" {
     image_tag       = "latest"
 }
 
-data "aws_s3_bucket" "article_s3_bucket" {bucket = var.S3_BUCKET_NAME}  # may not be needed
-data "aws_iam_role" "execution_role" { name = "ecsTaskExecutionRole" }
-data "aws_ecs_cluster" "c13_cluster" { cluster_name = "c13-ecs-cluster" }
+data "aws_s3_bucket" "article_s3_bucket" {bucket = var.S3_BUCKET_NAME}
+data "aws_iam_role" "execution_role" {name = "ecsTaskExecutionRole"}
+data "aws_ecs_cluster" "c13_cluster" {cluster_name = var.ECS_CLUSTER_NAME}
 
 data "aws_iam_policy_document" "step_functions_schedule_trust_policy" {
   statement {
@@ -84,7 +84,7 @@ resource "aws_lambda_function" "fox_news_scraper_lambda" {
         }
     }
 
-    image_config { command = ["main.lambda_handler"] }
+    image_config { command = ["pipeline_fn.lambda_handler"] }
 }
 
 
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "democracy_now_news_scraper_lambda" {
         }
     }
 
-    image_config { command = ["main.lambda_handler"] }
+    image_config { command = ["pipeline_dn.lambda_handler"] }
 }
 
 # resource "aws_lambda_function" "email_generator_lambda" {
@@ -175,6 +175,10 @@ resource "aws_ecs_task_definition" "mp_article_analyser" {
                     name  = "DB_NAME"
                     value = var.DB_NAME
                 },
+                {
+                    name  = "OPENAI_API_KEY"
+                    value = var.OPENAI_API_KEY
+                },
             ]
             logConfiguration = {
                 logDriver = "awslogs"
@@ -219,29 +223,6 @@ resource "aws_iam_role_policy" "step_functions_policy" {
           aws_lambda_function.fox_news_scraper_lambda.arn,
           aws_lambda_function.democracy_now_news_scraper_lambda.arn
         ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "ecs:RunTask",
-          "ecs:StopTask",
-          "ecs:DescribeTasks",
-          "iam:PassRole"
-        ],
-        Resource = [
-          data.aws_iam_role.execution_role.arn,
-          aws_ecs_task_definition.mp_article_analyser.arn
-        ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "ecs:DescribeClusters",
-          "ecs:DescribeTaskDefinition",
-          "ecs:DescribeTasks",
-          "ecs:ListTasks"
-        ],
-        Resource = "*"
       },
       {
         Effect = "Allow",
@@ -303,27 +284,6 @@ resource "aws_sfn_state_machine" "main_pipeline_state_machine" {
           }
         ],
         ResultPath = "$.scrapingResults",
-        Next = "RunArticleAnalyserECS"
-      },
-      RunArticleAnalyserECS = {
-        Type = "Task",
-        Resource = "arn:aws:states:::ecs:runTask.sync",
-        Parameters = {
-          Cluster = "${data.aws_ecs_cluster.c13_cluster.cluster_name}",
-          TaskDefinition = "${aws_ecs_task_definition.mp_article_analyser.arn}",
-          LaunchType = "FARGATE",
-          NetworkConfiguration = {
-            AwsvpcConfiguration = {
-              Subnets = [
-                "${data.aws_subnet.c13-public-subnet1.id}",
-                "${data.aws_subnet.c13-public-subnet2.id}",
-                "${data.aws_subnet.c13-public-subnet3.id}"
-              ],
-              AssignPublicIp = "ENABLED"
-            }
-          }
-        },
-        ResultPath = "$.ecsRunResult",
         End = true
       }
     }
@@ -363,4 +323,202 @@ resource "aws_scheduler_schedule" "daily_step_function_trigger" {
     role_arn = aws_iam_role.step_functions_scheduler_role.arn
     input   = jsonencode({})
   }
+}
+
+# =========================== S3 Event to EventBridge ===========================
+
+resource "aws_s3_bucket_notification" "csv_upload_to_s3_notification" {
+    bucket     = data.aws_s3_bucket.article_s3_bucket.id
+    eventbridge = true
+}
+
+resource "aws_cloudwatch_event_rule" "csv_upload_to_s3_event_rule" {
+  name        = "c13-boudicca-csv-upload-to-s3-event-rule"
+  description = "Triggers ECS Task when new XML file is uploaded to S3"
+  event_pattern = jsonencode({
+    detail = {
+      bucket = {name = ["${data.aws_s3_bucket.article_s3_bucket.id}"]},
+      object = {key = [{wildcard = "*_article_data.csv"}]}
+    },
+    "detail-type" = ["Object Created"],
+    source = ["aws.s3"]
+  })
+}
+
+data "aws_iam_policy_document" "schedule_trust_policy" {
+    statement {
+        effect = "Allow"
+        principals {
+            type        = "Service"
+            identifiers = ["events.amazonaws.com"]
+        }
+        actions = ["sts:AssumeRole"]
+    }
+}
+
+resource "aws_iam_role" "schedule_role" {
+  name               = "c13-boudicca-schedule-role"
+  assume_role_policy = data.aws_iam_policy_document.schedule_trust_policy.json
+
+  inline_policy {
+    name   = "c13-shayak-pharmazer-execution-policy"
+    policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["ecs:RunTask"],
+            "Resource": [replace(aws_ecs_task_definition.mp_article_analyser.arn, "/:\\d+$/", ":*")],
+            "Condition": {"ArnLike": {"ecs:cluster": data.aws_ecs_cluster.c13_cluster.arn}}
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": ["*"],
+            "Condition": {"StringLike": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}}
+        }
+      ]
+    })
+  }
+}
+
+resource "aws_security_group" "article_analyser_sg" {
+    name   = "c13-boudicca-analyser-sg"
+    vpc_id = data.aws_vpc.c13-vpc.id
+
+    ingress = [
+        {
+            from_port        = 0
+            to_port          = 0
+            protocol         = "-1"
+            cidr_blocks      = ["0.0.0.0/0"]
+            description      = "Allow all inbound traffic"
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            security_groups  = []
+            self             = false
+        }
+    ]
+
+    egress = [
+        {
+            from_port        = 0
+            to_port          = 0
+            protocol         = "-1"
+            cidr_blocks      = ["0.0.0.0/0"]
+            description      = "Allow all outbound"
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            security_groups  = []
+            self             = false
+        }
+    ]
+}
+
+resource "aws_cloudwatch_event_target" "ecs_target" {
+  rule      = aws_cloudwatch_event_rule.csv_upload_to_s3_event_rule.name
+  arn       = data.aws_ecs_cluster.c13_cluster.arn
+  role_arn  = aws_iam_role.schedule_role.arn
+
+  ecs_target {
+    task_definition_arn = aws_ecs_task_definition.mp_article_analyser.arn
+    launch_type         = "FARGATE"
+    network_configuration {
+      subnets         = [
+          data.aws_subnet.c13-public-subnet1.id,
+          data.aws_subnet.c13-public-subnet2.id,
+          data.aws_subnet.c13-public-subnet3.id
+      ]
+      security_groups = [aws_security_group.article_analyser_sg.id] 
+      assign_public_ip = true
+    }
+  }
+}
+
+# =========================== MP Dashboard ===========================
+
+resource "tls_private_key" "private_key" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+
+resource "local_file" "private_key_file" {
+    content  = tls_private_key.private_key.private_key_pem
+    filename = "${path.module}/c13-boudicca-mp-key-pair.pem"
+}
+
+resource "aws_key_pair" "key_pair" {
+    key_name = "c13-boudicca-mp-key-pair"
+    public_key = tls_private_key.private_key.public_key_openssh
+}
+
+resource "aws_security_group" "ec2_sg" {
+    name = "c13-boudicca-ec2-security-group"
+    vpc_id = data.aws_vpc.c13-vpc.id
+    ingress = [
+        {
+            from_port = 22
+            to_port = 22
+            protocol = "TCP"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow ssh"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        },
+        {
+            from_port   = 8501
+            to_port     = 8501
+            protocol    = "tcp"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow streamlit"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        },
+        {
+            from_port   = 80
+            to_port     = 80
+            protocol    = "tcp"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow connection"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        }
+    ]
+    egress = [
+        {   
+            from_port = 0
+            to_port = 0
+            protocol = "-1"
+            cidr_blocks = ["0.0.0.0/0"]
+            description = "Allow all outbound"
+            ipv6_cidr_blocks = []
+            prefix_list_ids = []
+            security_groups = []
+            self = false
+        }
+    ]
+}
+
+resource "aws_instance" "pipeline_ec2" {
+    instance_type = "t3.micro"
+    tags = {Name: "c13-boudicca-mp-plant-dashboard"}
+    security_groups = [aws_security_group.ec2_sg.id]
+    subnet_id = data.aws_subnet.c13-public-subnet1.id
+    associate_public_ip_address = true
+    ami = "ami-0c0493bbac867d427"
+    key_name = aws_key_pair.key_pair.key_name
+    user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y python3
+              EOF
+    lifecycle {
+      ignore_changes = [ami]
+    }
 }
