@@ -57,3 +57,63 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
         stroke=None
     )
     return final_chart
+
+
+def create_sentiment_distribution_chart(df):
+    """Creates a distribution graph of average score by topic and source."""
+    df['article_count'] = df.groupby(['topic_name', 'source_name'])[
+        'avg_polarity_score'].transform('count')
+    points = alt.Chart(df).mark_circle().encode(
+        x=alt.X('avg_polarity_score:Q', title="Average Polarity Score"),
+        y=alt.Y('topic_name:O', title="Topic"),
+        color=alt.Color('source_name:N', title="News Source"),
+        size=alt.Size('article_count:Q', legend=None, scale=alt.Scale(
+            range=[30, 300])),
+        tooltip=[alt.Tooltip(field="topic_name", title="Topic"),
+                 alt.Tooltip(field="avg_polarity_score",
+                             title="Average polarity score"),
+                 alt.Tooltip(field="article_count",
+                             title="Article count"),
+                 alt.Tooltip(field="source_name", title="News Source")]
+    ).properties(
+        width=400,
+        height=300
+    ).interactive()
+    vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
+        x='x:Q'
+    )
+    chart = alt.layer(points, vertical_line)
+
+    return chart
+
+
+def create_bar_graph_of_topic_sentiment(df):
+    """Creates a bar chart of scores.
+    Need to fix"""
+    base_chart = alt.Chart(df).properties(
+        width=150,
+        height=200
+    )
+    bars = base_chart.mark_bar().encode(
+        x='avg_polarity_score:Q',
+        y='topic_name:O',
+        color='avg_polarity_score:Q',
+        tooltip=[alt.Tooltip(field="topic_name", title="Topic"),
+                 alt.Tooltip(field="avg_polarity_score",
+                             title="Average polarity score"),
+                 alt.Tooltip(field="source_name", title="News Source")]
+    ).interactive()
+    vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
+        x='x:Q'
+    )
+    layered_chart = alt.layer(bars, vertical_line)
+    faceted_chart = layered_chart.facet(
+        column='source_name:N',
+        data=df
+    ).configure_axis(
+        grid=False
+    ).configure_view(
+        strokeWidth=0
+    )
+
+    return faceted_chart
