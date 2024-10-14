@@ -1,26 +1,45 @@
 # 🗄️ The Database
+This folder contains the schema and python script to see the database with dummy data.
 
 ## 📋 Overview 
 The database created is a PostgreSQL database, hosted on an AWS RDS instance.
 
-## ⚙️ Setup 
+## 🛠️ Prerequisites
+- **Python** installed (For running locally)
+- **AWS RDS (PostgreSQL)** instance.
 
-1. `python3 -m venv venv` to create a virtual environment.
+## ⚙️ Setup
+1. Create a `.env` file and fill with the following variables
+    ```env
+    # RDS Database Config
+    DB_HOST=<the-RDS-host-address>
+    DB_PORT=<the-RDS-port-number>
+    DB_NAME=<the-RDS-name>
+    DB_USER=<the-RDS-username>
+    DB_PASSWORD=<the-RDS-password>
+    ```
+2. Initialise and seed the database using:
+    ```bash
+    bash seed.sh
+    ```
+    This will initialise the database according to the schema.sql file:
+    - Create the necessary tables
+    - Seed the database with fixed data
 
-2. `source venv/bin/activate` to activate the virtual environment.
-
-3. Configure your environment `.env` file:
-
-```sh 
-DB_HOST=XXXXXX
-DB_PORT=XXXXX
-DB_PASSWORD=XXXXXX
-DB_USER=XXXXX
-DB_NAME=XXXXX
-```
-
-4. `pip install -r requirements.txt` 
-5. `python3 -m [filename]` can be used to run an individual file
+The database can also be further seeded with dummy data to tests [daily-emailing](../daily-emailing/README.md)/[weekly-emailing](../weekly-emailing/REAME.md)/[dashboard functionality](../dashboard/README.md). 
+1. Creating and activating virtual environment:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+2. Install requirements
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Run the entire process locally (fetching, cleaning, and uploading to S3):
+    ```bash
+    python3 pipeline_fn.py
+    ```
 
 ## Files 
 
