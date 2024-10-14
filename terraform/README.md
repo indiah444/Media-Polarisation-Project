@@ -12,13 +12,13 @@ The project is designed to be deployed on the cloud using AWS services via terra
     - Weekly email image
 - Provision an **AWS RDS (PostgreSQL)** instance
 - Provision a **AWS S3**
-- Read the following READMEs to setup containers, upload images and initialise the database:
+- Read the Prequrequisites and Setup section of the following READMEs (setup and upload images to ECR repositories):
     1. [news_sentiment_analyser/README.md](../news_sentiment_analyser/README.md)
     2. [fox_news_scraper/README.md](../fox_news_scraper/README.md)
     3. [democracy_now_scraper/README.md](../democracy_now_scraper/README.md)
     4. [daily-emailing/README.md](../daily-emailing/README.md)
     5. [weekly-emailing/README.md](../weekly-emailing/README.md)
-    6. [database/README.md](../database/README.md)
+- Read [database/README.md](../database/README.md) to initalise the database
 
 ##  Setup
 
