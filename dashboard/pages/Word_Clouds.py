@@ -17,6 +17,7 @@ from psycopg2.extensions import connection
 
 def create_connection() -> connection:
     """Creates a connection to the RDS with postgres."""
+
     load_dotenv()
     conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
