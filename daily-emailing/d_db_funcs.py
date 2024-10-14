@@ -57,3 +57,20 @@ def get_daily_subscribers() -> list[str]:
     if data:
         return [subscriber['subscriber_email'] for subscriber in data]
     return []
+
+
+def get_yesterday_links() -> list[str]:
+    """Returns the article links from yesterday."""
+    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    query = """
+            SELECT article_url
+            FROM article
+            WHERE date_published = %s """
+
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (yesterday,))
+            data = cur.fetchall()
+    if data:
+        return [article['article_url'] for article in data]
+    return []
