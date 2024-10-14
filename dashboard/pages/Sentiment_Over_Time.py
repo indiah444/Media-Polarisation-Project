@@ -48,6 +48,7 @@ def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
 
 
 if __name__ == "__main__":
+    st.title("Changes in Sentiment Over Time")
     topic_names = get_topic_names()
     st.sidebar.header("Topic")
 
@@ -57,8 +58,12 @@ if __name__ == "__main__":
         label="Granularity (hours)", min_value=1, max_value=100, step=1)
 
     sampling = str(selected_frequency) + 'h'
+
     st.title(f"Change in Sentiment of {selected_topic} Over Time")
+
     st.header(f"Polarity by Article Titles")
+
     construct_streamlit_time_graph(selected_topic, sent_by_title=True)
+
     st.header(f"Polarity by Article Content")
     construct_streamlit_time_graph(selected_topic, sent_by_title=False)
