@@ -64,17 +64,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
             alt.Tooltip(field=f"{y_axis[0]}", title=f"Average {y_axis[1]}")
         ]
     ).properties(
-        width=500)
-
-    overall_avg_df = df[['date_published', y_axis[0]]].groupby(
-        'date_published').mean().reset_index()
-
-    avg_line = alt.Chart(overall_avg_df).mark_line(strokeDash=[5, 5], color='red').encode(
-        x='date_published:T',
-        y=alt.Y(f'{y_axis[0]}:Q', scale=alt.Scale(domain=[-1, 1])),
-        tooltip=[alt.Tooltip(field=f'{y_axis[0]}',
-                             title=f'Overall Avg {y_axis[1]}')]
-    ).properties(width=500)
+        width=500).interactive()
 
     last_point = get_last_point(df)
 
