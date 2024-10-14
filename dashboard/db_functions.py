@@ -67,24 +67,20 @@ def get_scores_topic(topic_name: str) -> dict:
 
 def get_average_score_per_source_for_a_topic(topic_id):
     """Get average score for a topic by source in the last week."""
-
-    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-
     query = """
-        SELECT 
-            s.source_name,
-            AVG(a.content_polarity_score) AS avg_polarity_score,
-            COUNT(a.article_id) AS article_count
+        SELECT s.source_name,
+        AVG(a.content_polarity_score) AS avg_polarity_score,
+        COUNT(a.article_id) AS article_count
         FROM article_topic_assignment ata
         JOIN article a ON ata.article_id = a.article_id
         JOIN source s ON a.source_id = s.source_id
-        WHERE ata.topic_id = %s AND a.date_published >= %s
+        WHERE ata.topic_id = %s 
         GROUP BY s.source_name
     """
 
     with create_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(query, (topic_id, seven_days_ago))
+            cur.execute(query, (topic_id, ))
             data = cur.fetchall()
 
     return pd.DataFrame(data)
@@ -93,22 +89,18 @@ def get_average_score_per_source_for_a_topic(topic_id):
 @st.cache_data
 def get_title_and_content_data_for_a_topic(topic_id):
     """Get article and content scores for the last week."""
-    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
     query = """
-        SELECT 
-            a.article_title,
-            a.title_polarity_score,
-            a.content_polarity_score,
-            s.source_name
+        SELECT a.article_title, a.title_polarity_score,
+        a.content_polarity_score, s.source_name
         FROM article_topic_assignment ata
         JOIN article a ON ata.article_id = a.article_id
         JOIN source s ON a.source_id = s.source_id
-        WHERE ata.topic_id = %s AND a.date_published >= %s
+        WHERE ata.topic_id = %s 
     """
 
     with create_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(query, (topic_id, seven_days_ago))
+            cur.execute(query, (topic_id,))
             data = cur.fetchall()
 
     return pd.DataFrame(data)
@@ -166,6 +158,31 @@ def remove_subscription(email: str):
             cur.execute(query, (email, ))
         conn.commit()
 
+
+def get_avg_polarity_all_topics():
+    """Returns a dataframe of  average sentiment for each topic and score
+    in the last week."""
+
+    query = f"""
+        SELECT t.topic_name, s.source_name,
+        AVG(a.content_polarity_score) AS avg_polarity_score,
+        COUNT(a.article_title) AS article_count
+        FROM article_topic_assignment ata
+        JOIN article a ON ata.article_id = a.article_id
+        JOIN topic t ON ata.topic_id = t.topic_id
+        JOIN source s ON a.source_id = s.source_id
+        GROUP BY t.topic_name, s.source_name
+        ORDER BY t.topic_name, s.source_name;
+    """
+
+    with create_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            data = cur.fetchall()
+
+    return pd.DataFrame(data)
+
+
 def get_scores_topic(topic_name: str) -> dict:
     """Returns a dictionary containing the polarity scores for a given topic """
 
@@ -178,7 +195,7 @@ def get_scores_topic(topic_name: str) -> dict:
         WHERE t.topic_name = %s 
         """
         with conn.cursor() as curr:
-            curr.execute(select_data,(topic_name, ))
+            curr.execute(select_data, (topic_name, ))
             res = curr.fetchall()
 
     return res

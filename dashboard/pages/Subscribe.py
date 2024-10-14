@@ -28,29 +28,31 @@ def check_unsubscribe(email: str):
         st.error("You were not subscribed!")
 
 
-st.title("Subscription Form")
-st.write("Subscribe to our newsletters, either daily, weekly, or both!")
+if __name__ == "__main__":
+    st.title("Subscription Form")
+    st.write("""Subscribe to our newsletters, either daily, weekly, or both!
+             A daily newsletter sends you an email at 9am containing a
+            table with the average sentiment per topic for each source
+             for the previous day. A weekly newsletter sends you an email
+             at 9am on a Monday with a sentiment distribution and bar chat.""")
 
-with st.form("subscription_form"):
-    first_name = st.text_input("Enter your first name")
-    surname = st.text_input("Enter your surname")
-    email = st.text_input("Enter your email")
-    daily = st.checkbox("Daily", value=False)
-    weekly = st.checkbox("Weekly", value=False)
+    with st.form("subscription_form"):
+        first_name = st.text_input("Enter your first name")
+        surname = st.text_input("Enter your surname")
+        email = st.text_input("Enter your email")
+        daily = st.checkbox("Daily", value=False)
+        weekly = st.checkbox("Weekly", value=False)
 
-    submit_button = st.form_submit_button(label="Submit")
+        submit_button = st.form_submit_button(label="Submit")
 
-# If the form is submitted, call function_2 with the provided inputs
-if submit_button:
-    # Call the function with the form inputs
-    check_submission(first_name, surname, email, daily, weekly)
+    if submit_button:
+        check_submission(first_name, surname, email, daily, weekly)
 
+    with st.form("unsubscribe_form"):
+        st.write("If you want to unsubscribe")
+        email2 = st.text_input("Enter your email to unsubscribe")
 
-with st.form("unsubscribe_form"):
-    st.write("If you want to unsubscribe!")
-    email2 = st.text_input("Enter your email to unsubscribe")
+        unsubscribe_button = st.form_submit_button(label="Unsubscribe")
 
-    unsubscribe_button = st.form_submit_button(label="Unsubscribe")
-
-if unsubscribe_button:
-    check_unsubscribe(email2)
+    if unsubscribe_button:
+        check_unsubscribe(email2)
