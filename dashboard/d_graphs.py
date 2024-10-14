@@ -84,8 +84,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         x=alt.X('date_published:T', axis=alt.Axis(
             offset=-150, title='Date Published', titleAnchor="end")),
 
-        y=alt.Y(f'{y_axis[0]}:Q', scale=alt.Scale(
-            domain=[-1, 1]), title=y_axis[1]),
+        y=alt.Y(f'{y_axis[0]}:Q', title=y_axis[1]),
 
         tooltip=[
             alt.Tooltip(field="source_name", title="Source Name"),
