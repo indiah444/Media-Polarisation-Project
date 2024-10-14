@@ -7,22 +7,23 @@ import pandas as pd
 
 
 def create_sentiment_distribution_chart(df):
-    """Creates a distribution graph of average score by topic and source
-    Returns as a base64 image."""
-    df['article_count'] = df.groupby(['topic_name', 'source_name'])[
-        'avg_polarity_score'].transform('count')
+    """Creates a distribution graph of average score by topic and source."""
+    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
+                            range=['red', 'blue'])
+
     points = alt.Chart(df).mark_circle().encode(
-        x='avg_polarity_score:Q',
-        y='topic_name:O',
-        color='source_name:N',
-        size=alt.Size('article_count:Q', legend=None, scale=alt.Scale(
-            range=[30, 300])),
-        tooltip=['topic_name', 'source_name',
-                 'avg_polarity_score', 'article_count']
+        x=alt.X('avg_polarity_score:Q', title="Average Polarity Score"),
+        y=alt.Y('topic_name:O', title="Topic"),
+        color=alt.Color('source_name:N', title="News Source",
+                        scale=color_scale),
+        tooltip=[alt.Tooltip(field="topic_name", title="Topic"),
+                 alt.Tooltip(field="avg_polarity_score",
+                             title="Average polarity score"),
+                 alt.Tooltip(field="source_name", title="News Source")]
     ).properties(
         width=400,
         height=300
-    )
+    ).interactive()
     vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
         x='x:Q'
     )
@@ -32,32 +33,35 @@ def create_sentiment_distribution_chart(df):
 
 
 def create_bar_graph(df):
-    """Creates a bar chart of scores.
-    Returns as a base64 image."""
-    base_chart = alt.Chart(df).properties(
-        width=150,
-        height=200
-    )
-    bars = base_chart.mark_bar().encode(
-        x='avg_polarity_score:Q',
-        y='topic_name:O',
-        color='avg_polarity_score:Q',
-        tooltip=['topic_name', 'source_name', 'avg_polarity_score']
-    )
+    """Creates a bar chart of sentiment scores with alternating bars for sources."""
+    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
+                            range=['red', 'blue'])
+    bars = alt.Chart(df).mark_bar(opacity=0.8).encode(
+        x=alt.X('avg_polarity_score:Q',
+                title='Average Polarity Score',
+                axis=alt.Axis(grid=False),
+                stack=None),
+        y=alt.Y('topic_name:O', title='Topic', axis=alt.Axis(labelPadding=10)),
+        color=alt.Color('source_name:N', scale=color_scale,
+                        title='News Source'),
+        tooltip=[alt.Tooltip(field="topic_name", title="Topic"),
+                 alt.Tooltip(field="avg_polarity_score",
+                             title="Average Polarity Score"),
+                 alt.Tooltip(field="source_name", title="News Source")]
+    ).properties(
+        width=400,
+        height=300
+    ).interactive()
     vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
         x='x:Q'
     )
-    layered_chart = alt.layer(bars, vertical_line)
-    faceted_chart = layered_chart.facet(
-        column='source_name:N',
-        data=df
-    ).configure_axis(
+    chart = alt.layer(bars, vertical_line).configure_axis(
         grid=False
     ).configure_view(
         strokeWidth=0
     )
 
-    return chart_to_base64(faceted_chart)
+    return chart_to_base64(chart)
 
 
 def chart_to_base64(chart):
