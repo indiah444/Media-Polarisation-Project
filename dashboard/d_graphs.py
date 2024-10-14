@@ -93,38 +93,6 @@ def create_sentiment_distribution_chart(df):
     return chart
 
 
-def create_bar_graph_of_topic_sentiment(df):
-    """Creates a bar chart of sentiment scores with alternating bars for sources."""
-    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
-                            range=['red', 'blue'])
-    bars = alt.Chart(df).mark_bar(opacity=0.8).encode(
-        x=alt.X('avg_polarity_score:Q',
-                title='Average Polarity Score',
-                axis=alt.Axis(grid=False),
-                stack=None),
-        y=alt.Y('topic_name:O', title='Topic', axis=alt.Axis(labelPadding=10)),
-        color=alt.Color('source_name:N', scale=color_scale,
-                        title='News Source'),
-        tooltip=[alt.Tooltip(field="topic_name", title="Topic"),
-                 alt.Tooltip(field="avg_polarity_score",
-                             title="Average Polarity Score"),
-                 alt.Tooltip(field="source_name", title="News Source")]
-    ).properties(
-        width=400,
-        height=300
-    ).interactive()
-    vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
-        x='x:Q'
-    )
-    chart = alt.layer(bars, vertical_line).configure_axis(
-        grid=False
-    ).configure_view(
-        strokeWidth=0
-    )
-
-    return chart
-
-
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     """Pivots dataframe so topics are rows and sources are columns."""
     pivoted_df = df.pivot(index='topic_name', columns='source_name',
