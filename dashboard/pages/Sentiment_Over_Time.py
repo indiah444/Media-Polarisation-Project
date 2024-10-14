@@ -54,7 +54,7 @@ if __name__ == "__main__":
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
 
     selected_frequency = st.sidebar.slider(
-        label="Number of hours to average over", min_value=1, max_value=24, step=1)
+        label="Granularity (hours)", min_value=1, max_value=100, step=1)
 
     sampling = str(selected_frequency) + 'h'
     st.title(f"Change in Sentiment of {selected_topic} Over Time")
