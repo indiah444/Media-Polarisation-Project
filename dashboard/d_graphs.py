@@ -32,10 +32,10 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
                             range=['red', 'blue'])
     scatter_chart = alt.Chart(df).mark_point(filled=True).encode(
         x=alt.X('title_polarity_score:Q',
-                scale=alt.Scale(domain=[-1, 1]),
+                scale=alt.Scale(domain=[-1.1, 1.1]),
                 axis=alt.Axis(title='Title Polarity Score', grid=True)),
         y=alt.Y('content_polarity_score:Q',
-                scale=alt.Scale(domain=[-1, 1]),
+                scale=alt.Scale(domain=[-1.1, 1.1]),
                 axis=alt.Axis(title='Content Polarity Score', grid=True)),
         color=alt.Color('source_name:N', title='Source', scale=color_scale),
         tooltip=[alt.Tooltip(field="article_title", title="Article title"),
@@ -55,7 +55,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
         y='y:Q'
     )
 
-    final_chart = scatter_chart + zero_line
+    final_chart = zero_line + scatter_chart
 
     final_chart = final_chart.configure_axis(
         grid=True
