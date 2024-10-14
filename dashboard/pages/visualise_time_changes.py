@@ -64,7 +64,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
                              title=f"Average {y_axis[1]}")]
     ).properties(
         width=500
-    )
+    ).interactive()
 
     last_point = get_last_point(df)
 
