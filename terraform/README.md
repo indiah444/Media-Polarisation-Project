@@ -1,8 +1,8 @@
-# Cloud Deployment using Terraform
+# ☁️ Cloud Deployment using Terraform
 
 The project is designed to be deployed on the cloud using AWS services via terraform. Assuming some prerequisite setup explained int this document, the cloud infrastructure can be deployed using a single command.
 
-##  Prerequisites
+## 🛠️ Prerequisites
 - **Terraform** installed
 - **AWS ECR** repositories for the following:
     - Fox news scraper image
@@ -20,7 +20,7 @@ The project is designed to be deployed on the cloud using AWS services via terra
     5. [weekly-emailing/README.md](../weekly-emailing/README.md)
 - Read [database/README.md](../database/README.md) to initalise the database
 
-##  Setup
+## 📂 Setup
 
 1. Create `terraform.tfvars` file and fill with the following variables
     ```bash
@@ -74,7 +74,7 @@ The project is designed to be deployed on the cloud using AWS services via terra
     ```
     - To recreate start again from step 3.
 
-##  Notes
+## 📝 Notes
 
 - Remember to add any `*.env` or `*.tfvars` files to gitignore if note already listed.
 - Each time the `terraform apply` is run, the EC2 will be recreated with a new dns address meaning the [dashboard setup](../dashboard/README.md) will need top be redone each time.
