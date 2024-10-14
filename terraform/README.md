@@ -24,9 +24,11 @@ The project is designed to be deployed on the cloud using AWS services via terra
 
 1. Create `terraform.tfvars` file and fill with the following variables
     ```bash
+    # AWS Credentials
     AWS_ACCESS_KEY        = "your-aws-access-key"
     AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
+    # AWS Region and Network Config
     REGION                = "your-region"
     VPC_ID                = "your-vpc-id"
     SUBNET_ID1            = "your-first-subnet-id"
@@ -34,22 +36,27 @@ The project is designed to be deployed on the cloud using AWS services via terra
     SUBNET_ID3            = "your-third-subnet-id"
     ECS_CLUSTER_NAME      = "your-aws-ecs-cluster-name"
 
-    S3_BUCKET_NAME  = "name-of-S3-bucket"
+    # S3 Bucket Name
+    S3_BUCKET_NAME        = "name-of-S3-bucket"
 
-    FOX_NEWS_SCRAPER_ECR_REPO       ="ecr-repo-name-for-fox-news-scraper"
-    DEMOCARCY_NOW_SCRAPER_ECR_REPO  ="ecr-repo-name-for-democracy-now-news-scraper"
-    ARTICLE_ANALYSER_ECR_REPO       ="ecr-repo-name-for-article-analyser"
-    DAILY_EMAIL_ECR_REPO        ="ecr-repo-name-for-daily-emailer"
-    WEEKLY_EMAIL_ECR_REPO        ="ecr-repo-name-for-weekly-emailer"
+    # ECR Repositories
+    FOX_NEWS_SCRAPER_ECR_REPO       = "ecr-repo-name-for-fox-news-scraper"
+    DEMOCRACY_NOW_SCRAPER_ECR_REPO  = "ecr-repo-name-for-democracy-now-news-scraper"
+    ARTICLE_ANALYSER_ECR_REPO       = "ecr-repo-name-for-article-analyser"
+    DAILY_EMAIL_ECR_REPO            = "ecr-repo-name-for-daily-emailer"
+    WEEKLY_EMAIL_ECR_REPO           = "ecr-repo-name-for-weekly-emailer"
 
+    # RDS Database Config
     DB_HOST               = "your-RDS-host"
     DB_PORT               = "your-RDS-port"
     DB_NAME               = "your-RDS-name"
     DB_USER               = "your-RDS-user"
     DB_PASSWORD           = "your-RDS-password"
 
+    # OpenAI API Key
     OPENAI_API_KEY        = "your-open-ai-key"
 
+    # Email Config
     FROM_EMAIL            = "address-to-send-emails-from"
     ```
 
