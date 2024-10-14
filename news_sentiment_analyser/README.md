@@ -36,6 +36,8 @@ Optional:
     ```
 
 ### ☁️ Pushing to the Cloud
+To deploy the overall cloud infrastructure the sentiment analyser pipeline must be containerised and hosted on the cloud:
+
 1. Make sure you have the Docker application running in the background
 2. Dockerise and upload the application:
     ```bash
@@ -45,7 +47,7 @@ Optional:
     - Authenticate your aws credentials with docker
     - Create the docker image
     - Tag the docker image
-    - Upload tagged imgae to the ECR repository
+    - Upload tagged image to the ECR repository
 
 ### 💻 Running Locally (MacOS)
 The sentiment analysis pipeline can also be ran locally by:

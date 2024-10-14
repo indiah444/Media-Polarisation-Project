@@ -28,6 +28,8 @@ Optional:
     ```
 
 ### ☁️ Pushing to the Cloud
+To deploy the overall cloud infrastructure the Fox News scraper must be containerised and hosted on the cloud:
+
 1. Make sure you have the Docker application running in the background
 2. Dockerise and upload the application:
     ```bash
@@ -37,7 +39,7 @@ Optional:
     - Authenticate your aws credentials with docker
     - Create the docker image
     - Tag the docker image
-    - Upload tagged imgae to the ECR repository
+    - Upload tagged imgage to the ECR repository
 
 ### 💻 Running Locally (MacOS)
 The Fox News web scraper can also be ran locally by:
