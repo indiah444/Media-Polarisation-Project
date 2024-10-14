@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from db_functions import get_scores_topic, get_topic_names
+from d_graphs import visualise_change_over_time
 
 
 def resample_dataframe(df: pd.DataFrame, time_interval: str):
@@ -37,49 +38,6 @@ def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
         lambda x: x.loc[x['date_published'].idxmax()]
     )
     return last_point_df
-
-
-def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
-    """Visualise changes in sentiment over time"""
-
-    base = alt.Chart(df).encode(
-        alt.Color("source_name:N", title='Source Name').legend(None)
-    ).properties(
-        width=500
-    ).interactive()
-
-    if not by_title:
-        y_axis = ('content_polarity_score', "Content Polarity Score")
-    else:
-        y_axis = ('title_polarity_score', "Title Polarity Score")
-
-    line = base.mark_line().encode(
-        x=alt.X('date_published:T', axis=alt.Axis(
-            offset=-150, title='Date Published', titleAnchor="end")),
-
-        y=alt.Y(f'{y_axis[0]}:Q', scale=alt.Scale(
-            domain=[-1, 1]), title=y_axis[1]),
-
-        tooltip=[
-            alt.Tooltip(field="source_name", title="Source Name"),
-            alt.Tooltip(field=f"{y_axis[0]}", title=f"Average {y_axis[1]}")
-        ]
-    ).properties(
-        width=500).interactive()
-
-    last_point = get_last_point(df)
-
-    points = alt.Chart(last_point).mark_circle(size=100).encode(
-        x='date_published:T',
-        y=f'{y_axis[0]}:Q',
-        tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
-        color=alt.Color('source_name:N')
-    )
-
-    source_names = points.mark_text(
-        align="left", dx=10).encode(text="source_name")
-
-    return line + points + source_names
 
 
 def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
