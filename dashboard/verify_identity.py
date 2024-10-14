@@ -11,7 +11,8 @@ def check_and_verify_email(email: str) -> None:
     load_dotenv()
     ses_client = boto3.client(service_name="ses",
                               aws_access_key_id=ENV['AWS_ACCESS_KEY_BOUDICCA'],
-                              aws_secret_access_key=ENV['AWS_ACCESS_SECRET_KEY_BOUDICCA'])
+                              aws_secret_access_key=ENV['AWS_ACCESS_SECRET_KEY_BOUDICCA'],
+                              region_name=ENV['REGION'])
     if check_email_needs_verifying(ses_client, email):
         verify_email(ses_client, email)
 
