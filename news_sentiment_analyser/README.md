@@ -7,7 +7,7 @@ The pipeline is designed to retrieve dataframes stored in an S3 bucket and then 
 - Setup **ECR** repository to store analyser pipeline docker image.  
 
 Optional:
-- **Python** installed (For running scripts locally)
+- **Python** installed (For running locally)
 
 ## ⚙️ Setup 
 1. Create a `.env` file and fill with the following variables

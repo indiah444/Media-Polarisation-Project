@@ -26,7 +26,7 @@ The database created is a PostgreSQL database, hosted on an AWS RDS instance.
     - Create the necessary tables
     - Seed the database with fixed data
 
-(**Optional**) The database can also be further seeded with dummy data to tests [daily-emailing](../daily-emailing/README.md)/[weekly-emailing](../weekly-emailing/REAME.md)/[dashboard functionality](../dashboard/README.md). 
+The database can also be further seeded with dummy data to tests [daily-emailing](../daily-emailing/README.md)/[weekly-emailing](../weekly-emailing/REAME.md)/[dashboard functionality](../dashboard/README.md). 
 1. Creating and activating virtual environment:
     ```bash
     python3 -m venv .venv

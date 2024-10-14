@@ -27,7 +27,7 @@ Optional:
     # ECR Configuration
     ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
     ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
-    IMAGE_NAME=democracy-now-news-scraper-image  # or any other appropriate name
+    IMAGE_NAME=article-analyser-image  # or any other appropriate name
     ```
 
 ### ☁️ Pushing to the Cloud
@@ -42,7 +42,7 @@ To deploy the overall cloud infrastructure the Fox News scraper must be containe
     - Authenticate your aws credentials with docker
     - Create the docker image
     - Tag the docker image
-    - Upload tagged image to the ECR repository
+    - Upload tagged imgage to the ECR repository
 
 ### 💻 Running Locally (MacOS)
 The Fox News web scraper can also be ran locally by:

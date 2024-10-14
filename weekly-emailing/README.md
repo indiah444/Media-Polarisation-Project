@@ -1,7 +1,7 @@
 
-# 🗓️ ✉️ Weekly Media Sentiment Email Report
+# Weekly Media Sentiment Email Report
 
-## 📋 Overview
+## Overview
 This project automates the process of sending a weekly email report that includes an analysis of media sentiment from various sources. The report compiles data from the previous week, calculates the average sentiment polarity by topic and source, and generates a PDF that is attached to the email sent to subscribers.
 
 The project consists of scripts to:
@@ -11,74 +11,15 @@ The project consists of scripts to:
 - Deploy the functionality using Docker and AWS Lambda.
 
 
-## 🛠️ Prerequisites
+## Prerequisites
 Before running the project, ensure you have the following set up:
-4. **Docker** installed.
-5. **AWS ECR** repository to store weekly email generator docker image
-5. Access to **AWS SES**: Amazon Simple Email Service (SES) is called within the scripts and is used for sending emails.
+1. **Python 3.8+**: Required to run the scripts.
+2. **PostgreSQL Database**: The project interacts with a PostgreSQL database to fetch article and sentiment data.
+3. **AWS SES**: Amazon Simple Email Service (SES) is used for sending emails.
+4. **Docker**: To build and deploy the project as a container.
+5. **AWS ECR**: The project is pushed to an AWS Elastic Container Registry (ECR).
 
-Optional:
-- **Python** installed (For running scripts locally)
-
-## ⚙️ Set-up: Environmental variables
-
-1. Create a `.env` file with the following environment variables:
-    ```
-    # AWS Configuration
-    AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
-    AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
-
-    # Database Configuration
-    DB_HOST=<database_host_address>
-    DB_PORT=<database_port>
-    DB_PASSWORD=<database_password>
-    DB_USER=<database_user>
-    DB_NAME=<database_name>
-
-    # S3 Bucket Configuration
-    BUCKET_NAME=<s3_bucket_name>
-
-    # ECR Configuration
-    ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
-    ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
-    IMAGE_NAME=weekly-email-image  # or any other appropriate name
-
-    # Email Configuration
-    FROM_EMAIL=your_ses_verified_email
-    ```
-
-### ☁️ Pushing to the Cloud
-To deploy the overall cloud infrastructure, the weekly email generator must be containerised and hosted on the cloud:
-
-1. Make sure you have the Docker application running in the background
-2. Dockerise and upload the application:
-    ```bash
-    bash dockerise.sh
-    ```
-    This will:
-    - Authenticate your aws credentials with docker
-    - Create the docker image
-    - Tag the docker image
-    - Upload tagged image to the ECR repository
-
-### 💻 Running Locally (MacOS)
-The weekly email generator can also be ran locally by:
-
-1. Creating and activating virtual environment:
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
-2. Install requirements
-    ```bash
-    pip install -r requirements.txt
-    ```
-3. Running the pipeline:
-    ```bash
-    python3 weekly_email.py.py
-    ```
-
-## 📁 Files
+## Folder Structure
 
 - `weekly_email.py`: Script to send a weekly email report
 - `w_db_funcs.py`: Database interaction functions
@@ -88,3 +29,40 @@ The weekly email generator can also be ran locally by:
 - `Dockerfile`: Docker configuration for deployment
 - `requirements.txt`: Python dependencies
 - `.env`: Environment variables (not included in version control)
+
+## Set-up: Environmental variables
+
+Create a `.env` file with the following environment variables:
+```
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_HOST=your_database_host
+DB_PORT=your_database_port
+
+AWS_ACCESS_KEY_BOUDICCA=your_aws_access_key
+AWS_ACCESS_SECRET_KEY_BOUDICCA=your_aws_secret_key
+FROM_EMAIL=your_ses_verified_email
+ECR_REGISTRY_ID=your_ecr_registry_id
+ECR_REPO_NAME=your_ecr_repo_name
+IMAGE_NAME=your_docker_image_name
+```
+
+## Running Locally
+
+1. Create a virtual environment.
+2. Install the required dependencies with:
+```
+pip install -r requirements.txt
+```
+3. Run the script with:
+```
+python3 weekly_email.py
+```
+
+## Deployment
+
+To deploy this project to the cloud using Docker and AWS Lambda run this command:
+```
+bash dockerise.sh
+```
