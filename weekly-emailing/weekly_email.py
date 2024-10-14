@@ -38,7 +38,7 @@ def send_email() -> None:
 
     client.send_raw_email(
         Source=ENV['FROM_EMAIL'],
-        Destinations=['trainee.megan.lester@sigmalabs.co.uk'],
+        Destinations=emails,
         RawMessage={
             'Data': message.as_string()
         }
