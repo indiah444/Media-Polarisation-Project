@@ -24,7 +24,7 @@ Optional:
     # ECR Configuration
     ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
     ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
-    IMAGE_NAME=article-analyser-image  # or any other appropriate name
+    IMAGE_NAME=fox-news-scraper-image  # or any other appropriate name
     ```
 
 ### ☁️ Pushing to the Cloud
