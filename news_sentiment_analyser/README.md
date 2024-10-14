@@ -46,7 +46,7 @@ This module is responsible for assigning a sentiment score for the extracted art
 6. Running the pipeline 
 
 ```sh
-python3 pipeline_analysis.py
+python3 -m 
 ```
 
 ## Test coverage
