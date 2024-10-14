@@ -55,7 +55,11 @@ The sentiment analysis pipeline can also be ran locally by:
     python3 -m venv .venv
     source .venv/bin/activate
     ```
-2. Running the pipeline:
+2. Install requirements
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Running the pipeline:
     ```bash
     python3 pipeline_analysis.py
     ```

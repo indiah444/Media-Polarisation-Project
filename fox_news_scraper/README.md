@@ -47,7 +47,11 @@ The Fox News web scraper can also be ran locally by:
     python3 -m venv .venv
     source .venv/bin/activate
     ```
-2. Run the entire process locally (fetching, cleaning, and uploading to S3):
+2. Install requirements
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Run the entire process locally (fetching, cleaning, and uploading to S3):
     ```bash
     python3 pipeline_fn.py
     ```
