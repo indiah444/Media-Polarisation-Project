@@ -1,6 +1,7 @@
 """Script to create visualisations of changes over time"""
 
 import streamlit as st
+import altair as alt
 import pandas as pd
 from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time
@@ -32,7 +33,7 @@ def generate_warning_message(source_to_topics: dict) -> str:
         for s, t in source_to_topics])
 
 
-def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
+def construct_streamlit_time_graph(avg_col, count_col, selected_topic: str, sent_by_title: bool):
     """Constructs a streamlit time graph."""
     if selected_topic:
 
@@ -51,7 +52,10 @@ def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
         count_graph = visualise_change_over_time(
             counts, by_title=sent_by_title)
 
-        st.altair_chart(avg_graph | count_graph)
+        avg_col.subheader(f"Average")
+        avg_col.altair_chart(avg_graph, use_container_width=True)
+        count_col.subheader(f"Count")
+        count_col.altair_chart(count_graph, use_container_width=True)
 
 
 if __name__ == "__main__":
@@ -72,8 +76,12 @@ if __name__ == "__main__":
     sampling = str(selected_frequency) + 'h'
 
     st.header(f"Polarity by Article Titles")
+    col1, col2 = st.columns(2)
 
-    construct_streamlit_time_graph(selected_topic, sent_by_title=True)
+    construct_streamlit_time_graph(
+        col1, col2, selected_topic, sent_by_title=True)
 
     st.header(f"Polarity by Article Content")
-    construct_streamlit_time_graph(selected_topic, sent_by_title=False)
+    col3, col4 = st.columns(2)
+    construct_streamlit_time_graph(
+        col3, col4, selected_topic, sent_by_title=False)

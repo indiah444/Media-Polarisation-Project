@@ -97,7 +97,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
 
     points = alt.Chart(last_point).mark_circle(size=100).encode(
         x='date_published:T',
-        y=f'{y_axis[0]}:Q',
+        y=alt.Y(f'{y_axis[0]}:Q'),
         tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
         color=alt.Color('source_name:N')
     )
