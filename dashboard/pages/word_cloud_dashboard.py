@@ -1,6 +1,7 @@
 """A file to generate word clouds based on article word frequency by source."""
 
 import re
+from os import environ as ENV
 
 import streamlit as st
 from wordcloud import WordCloud
@@ -9,8 +10,29 @@ from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import download as nltk_download
+from psycopg2.extras import RealDictCursor
+from psycopg2 import connect
+from psycopg2.extensions import connection
 
-from db_functions import create_connection
+
+def create_connection() -> connection:
+    """Creates a connection to the RDS with postgres."""
+    load_dotenv()
+    conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
+                   host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
+                   port=ENV["DB_PORT"],
+                   cursor_factory=RealDictCursor)
+
+    return conn
+
+
+@st.cache_data
+def download_nltk_data():
+    """Downloads the required NLTK data only once."""
+
+    nltk_download("punkt")
+    nltk_download("stopwords")
+    nltk_download('punkt_tab')
 
 
 @st.cache_data
@@ -85,9 +107,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    nltk_download("punkt")
-    nltk_download("stopwords")
-    nltk_download('punkt_tab')
+    download_nltk_data()
 
     custom_stop_words = ["fox", "news", "said",
                          "get", "also", "would", "could", "get"]
@@ -100,9 +120,13 @@ if __name__ == "__main__":
     democracy_now_word_freq = get_word_frequency(
         dn_articles, custom_stop_words)
 
-    st.header("Fox News Word Cloud")
-    generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
+    cols = st.columns(2)
 
-    st.header("Democracy Now! Word Cloud")
-    generate_wordcloud(democracy_now_word_freq,
-                       "Democracy Now!", colormap="winter")
+    with cols[0]:
+        st.header("Fox News Word Cloud")
+        generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
+
+    with cols[1]:
+        st.header("Democracy Now! Word Cloud")
+        generate_wordcloud(democracy_now_word_freq,
+                           "Democracy Now!", colormap="winter")
