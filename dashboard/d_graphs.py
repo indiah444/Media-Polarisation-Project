@@ -59,6 +59,15 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     return final_chart
 
 
+def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataframe with the maximum date published for each source."""
+
+    last_point_df = df.dropna().groupby('source_name').apply(
+        lambda x: x.loc[x['date_published'].idxmax()]
+    )
+    return last_point_df
+
+
 def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     """Visualise changes in sentiment over time. """
 

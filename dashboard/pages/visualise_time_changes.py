@@ -31,15 +31,6 @@ def generate_warning_message(source_to_topics: dict) -> str:
         for s, t in source_to_topics])
 
 
-def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
-    """Returns a dataframe with the maximum date published for each source."""
-
-    last_point_df = df.dropna().groupby('source_name').apply(
-        lambda x: x.loc[x['date_published'].idxmax()]
-    )
-    return last_point_df
-
-
 def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
     """Constructs a streamlit time graph"""
 
