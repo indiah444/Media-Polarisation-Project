@@ -63,10 +63,14 @@ def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
     df['article_count'] = df.groupby(['topic_name', 'source_name'])[
         'avg_polarity_score'].transform('count')
+    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
+                            range=['red', 'blue'])
+
     points = alt.Chart(df).mark_circle().encode(
         x=alt.X('avg_polarity_score:Q', title="Average Polarity Score"),
         y=alt.Y('topic_name:O', title="Topic"),
-        color=alt.Color('source_name:N', title="News Source"),
+        color=alt.Color('source_name:N', title="News Source",
+                        scale=color_scale),
         size=alt.Size('article_count:Q', legend=None, scale=alt.Scale(
             range=[30, 300])),
         tooltip=[alt.Tooltip(field="topic_name", title="Topic"),

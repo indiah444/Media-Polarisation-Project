@@ -15,9 +15,9 @@ variable "AWS_SECRET_ACCESS_KEY" {type = string}
 
 variable "FOX_NEWS_SCRAPER_ECR_REPO" {type = string}
 variable "DEMOCARCY_NOW_SCRAPER_ECR_REPO" {type = string}
-variable "ARTICLE_COMBINER_ECR_REPO" {type = string}
-variable "EMAIL_GENERATOR_ECR_REPO" {type = string}
 variable "ARTICLE_ANALYSER_ECR_REPO" {type = string}
+variable "DAILY_EMAIL_ECR_REPO" {type = string}
+variable "WEEKLY_EMAIL_ECR_REPO" {type = string}
 
 variable "S3_BUCKET_NAME" {type = string}
 
@@ -26,5 +26,7 @@ variable "DB_PORT" {type = string}
 variable "DB_PASSWORD" {type = string}
 variable "DB_USER" {type = string}
 variable "DB_NAME" {type = string}
+
+variable "FROM_EMAIL" {type = string}
 
 variable "OPENAI_API_KEY" {type = string}
