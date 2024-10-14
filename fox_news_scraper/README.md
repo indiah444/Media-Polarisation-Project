@@ -58,7 +58,7 @@ The Fox News web scraper can also be ran locally by:
     python3 pipeline_fn.py
     ```
 
-## Files
+## 📁 Files
 
 - `extract_fn.py`: This file handles the extraction of articles from Fox News RSS feeds. It uses the `feedparser` library to parse RSS feeds and `BeautifulSoup` to scrape the full content of the articles.
 

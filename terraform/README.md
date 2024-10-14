@@ -10,8 +10,8 @@ The project is designed to be deployed on the cloud using AWS services via terra
     - Article analyser image
     - Daily email image
     - Weekly email image
-- Provision an **AWS RDS (PostgreSQL)** instance
-- Provision a **AWS S3**
+- Provision an **AWS RDS (PostgreSQL)** instance to host database
+- Provision an **AWS S3** bucket
 - Read the Prequrequisites and Setup section of the following READMEs (setup and upload images to ECR repositories):
     1. [news_sentiment_analyser/README.md](../news_sentiment_analyser/README.md)
     2. [fox_news_scraper/README.md](../fox_news_scraper/README.md)

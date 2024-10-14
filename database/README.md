@@ -41,12 +41,11 @@ The database can also be further seeded with dummy data to tests [daily-emailing
     python3 pipeline_fn.py
     ```
 
-## Files 
+## 📁 Files 
 
 - `schema.sql` defines the database schema and static data using SQL.
 - `connect.sh` can be used to connect to the database remotely. 
 - `seed.sh` is used to seed the data with master data 
-
 
 - `generate_dummy_data.py` handles fake data generation and insertion.
 - `test_dummy.py` contains unit tests for `generate_dummy_data.py` 

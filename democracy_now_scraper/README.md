@@ -61,7 +61,7 @@ The Fox News web scraper can also be ran locally by:
     python3 pipeline_fn.py
     ```
 
-## Files
+## 📁 Files
 
 - `extract_dn.py`: This file handles the extraction of articles from Democracy Now web pages. It uses `BeautifulSoup` to scrape the full content of the articles.
 
@@ -70,3 +70,9 @@ The Fox News web scraper can also be ran locally by:
 - `load_dn.py`: Uploads the dataframe as a CSV to the S3 bucket.
 
 - `pipeline_dn.py`: This file contains the main Lambda handler function that runs the ETL pipeline for the Democracy News scraper.
+
+### Testing and coverage 
+
+Run `pytest -vv` to generate a detailed test report. 
+
+Run `pytest --cov -vv` to include coverage results.

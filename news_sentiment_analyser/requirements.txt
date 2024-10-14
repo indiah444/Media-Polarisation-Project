@@ -3,6 +3,7 @@ openai
 python-dotenv
 pandas
 pytest
+pytest-cov
 boto3
 bs4
 nltk
