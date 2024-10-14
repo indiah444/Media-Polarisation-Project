@@ -1,13 +1,20 @@
-# 🗽 Democracy Now News Scraper
+# <img src="../assets/DN_logo.png" alt="Fox" width="50" height="50"> Democracy Now News Scraper
 
-## 🌐 Overview
+## 📋 Overview
 
 This module is responsible (at present) for extracting articles from various democracy now web pages and cleaning the extracted content. The extraction process involves:
     1. scraping all topics in https://www.democracynow.org/topics/browse, 
     2. retrieving all article links for each topic, filtering for those no older than 3 days, 
     3. extracting article content, and then cleaning the text to remove unwanted characters, stopwords, and trailing whitespace.
 
-## 📂 Setup
+## 🛠️ Prerequisites
+- **Docker** installed.
+- Setup **ECR** repository to store Democracy Now scraper docker image.  
+
+Optional:
+- **Python** installed (For running locally)
+
+## ⚙️ Setup
 1. Create a `.env` file and fill with the following variables
     ```env
     # AWS Configuration
@@ -60,6 +67,6 @@ The Fox News web scraper can also be ran locally by:
 
 - `transform_dn.py`: Contains function to combine the results into a pandas dataframe.
 
-- `load_dn.py`: Uploads the dataframe as a CSV to teh S3 bucket.
+- `load_dn.py`: Uploads the dataframe as a CSV to the S3 bucket.
 
-- `pipeline_dn.py`: This file contains the main Lambda handler function for the Democracy News scraper.
+- `pipeline_dn.py`: This file contains the main Lambda handler function that runs the ETL pipeline for the Democracy News scraper.

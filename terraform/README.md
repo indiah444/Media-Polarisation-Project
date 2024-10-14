@@ -20,7 +20,7 @@ The project is designed to be deployed on the cloud using AWS services via terra
     5. [weekly-emailing/README.md](../weekly-emailing/README.md)
 - Read [database/README.md](../database/README.md) to initalise the database
 
-## 📂 Setup
+## ⚙️ Setup
 
 1. Create `terraform.tfvars` file and fill with the following variables
     ```bash

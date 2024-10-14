@@ -1,9 +1,9 @@
-# The Database
+# 🗄️ The Database
 
-## Overview 
+## 📋 Overview 
 The database created is a PostgreSQL database, hosted on an AWS RDS instance.
 
-## Setup 
+## ⚙️ Setup 
 
 1. `python3 -m venv venv` to create a virtual environment.
 

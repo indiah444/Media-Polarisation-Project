@@ -1,6 +1,6 @@
-# 🦊 Fox News Scraper
+# <img src="../assets/FN_logo.png" alt="Fox" width="50" height="50"> Fox News Scraper
 
-## 🌐 Overview
+## 📋 Overview
 
 This module is responsible for extracting articles from various Fox News RSS feeds, cleaning the extracted content, and loading the final cleaned data. The extraction process involves fetching the RSS feed data, retrieving the full article content, and then cleaning the text to remove unwanted characters, stopwords, and trailing whitespace. The cleaned data is then transformed into a CSV and loaded into the correct S3 bucket.
 
@@ -11,7 +11,7 @@ This module is responsible for extracting articles from various Fox News RSS fee
 Optional:
 - **Python** installed (For running locally)
 
-## 📂 Setup
+## ⚙️ Setup
 1. Create a `.env` file and fill with the following variables
     ```env
     # AWS Configuration

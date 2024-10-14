@@ -9,7 +9,7 @@ The pipeline is designed to retrieve dataframes stored in an S3 bucket and then 
 Optional:
 - **Python** installed (For running locally)
 
-## 📂 Setup 
+## ⚙️ Setup 
 1. Create a `.env` file and fill with the following variables
     ```env
     # AWS Configuration
