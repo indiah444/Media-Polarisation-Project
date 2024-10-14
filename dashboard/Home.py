@@ -33,14 +33,14 @@ if __name__ == "__main__":
                 
     This dashboard aggregates data from a range of news outlets, analysing articles for both **sentiment** and **frequency of coverage**.
     We perform hourly updates using RSS feeds from these sources, and the data is then processed to determine how positively or negatively each topic is discussed.
-    Additionally, you can **subscribe** to daily or weekly email updates, ensuring you stay informed on how the media landscape evolves over time.
+    Additionally, you can **subscribe** to daily or weekly email updates, ensuring you stay informed on how the media landscape evolves.
                 
     ## Explore the Data
                 
-    Use the tabs on the side bar to begin exploring the data:
+    Use the tabs on the sidebar to begin exploring the data:
     - **Subscribe**: The sign-up page for email updates. You can update your details, or unsubscribe from email updates if you wish from here.
-    - **Topic Filter**: See jpw different outlets cover the same topics.
+    - **Topic Filter**: See how different outlets cover the same topics.
     - **Word Clouds**: See a quick snapshot of the most common words used by different outlets.
                 
-    Our goal is to provide you with a clearer picture of how sentiment and emotions shape media, giving you the tools to become a more critical consumer of news.
+    Our goal is to provide you a clearer picture of how sentiment and emotions shape media, giving you the tools to become a more critical news consumer.
     """)
