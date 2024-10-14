@@ -513,7 +513,7 @@ resource "aws_instance" "pipeline_ec2" {
               sudo yum install -y python3
               EOF
     lifecycle {
-      prevent_destroy = true
+      prevent_destroy = false
     }
 }
 
