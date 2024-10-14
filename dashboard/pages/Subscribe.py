@@ -49,7 +49,7 @@ if __name__ == "__main__":
         check_submission(first_name, surname, email, daily, weekly)
 
     with st.form("unsubscribe_form"):
-        st.write("If you want to unsubscribe!")
+        st.write("If you want to unsubscribe")
         email2 = st.text_input("Enter your email to unsubscribe")
 
         unsubscribe_button = st.form_submit_button(label="Unsubscribe")
