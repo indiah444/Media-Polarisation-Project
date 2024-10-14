@@ -612,7 +612,7 @@ resource "aws_iam_role_policy" "eventbridge_lambda_invocation_policy" {
 resource "aws_scheduler_schedule" "daily_email_schedule" {
     name        = "c13-boudicca-daily-email-schedule"
     description = "Scheduled rule to trigger the short-term ETL lambda every minute"
-    schedule_expression = "cron(0 9 * * ? *)"
+    schedule_expression = "cron(0 8 * * ? *)"
 
     flexible_time_window {
         mode = "OFF"
@@ -627,7 +627,7 @@ resource "aws_scheduler_schedule" "daily_email_schedule" {
 resource "aws_scheduler_schedule" "weekly_email_schedule" {
     name        = "c13-boudicca-weekly-email-schedule"
     description = "Scheduled rule to trigger the short-term ETL lambda every minute"
-    schedule_expression = "cron(0 9 ? * 1 *)"
+    schedule_expression = "cron(0 8 ? * 1 *)"
 
     flexible_time_window {
         mode = "OFF"
