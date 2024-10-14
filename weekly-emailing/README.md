@@ -30,8 +30,9 @@ Before running the project, ensure you have the following set up:
 - `requirements.txt`: Python dependencies
 - `.env`: Environment variables (not included in version control)
 
-## Set-up and Running Locally
-1. Create a `.env` file with the following environment variables:
+## Set-up: Environmental variables
+
+Create a `.env` file with the following environment variables:
 ```
 DB_NAME=your_database_name
 DB_USER=your_database_user
@@ -46,12 +47,15 @@ ECR_REGISTRY_ID=your_ecr_registry_id
 ECR_REPO_NAME=your_ecr_repo_name
 IMAGE_NAME=your_docker_image_name
 ```
-2. Create a virtual environment.
-3. Install the required dependencies with:
+
+## Running Locally
+
+1. Create a virtual environment.
+2. Install the required dependencies with:
 ```
 pip install -r requirements.txt
 ```
-4. Run the script with:
+3. Run the script with:
 ```
 python3 weekly_email.py
 ```
