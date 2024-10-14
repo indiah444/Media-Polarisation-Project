@@ -31,6 +31,15 @@ def generate_warning_message(source_to_topics: dict) -> str:
         for s, t in source_to_topics])
 
 
+def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataframe with the maximum date published for each source."""
+    last_point_df = df.groupby('source_name').apply(
+        lambda x: x.loc[x['date_published'].idxmax()]
+    ).reset_index(drop=True)
+
+    return last_point_df
+
+
 def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     """Visualise changes in sentiment over time"""
 
@@ -38,7 +47,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         alt.Color("source_name:N", title='Source Name').legend(None)
     ).properties(
         width=500
-    )
+    ).interactive()
 
     if not by_title:
         y_axis = ('content_polarity_score', "Content Polarity Score")
@@ -57,21 +66,19 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         width=500
     )
 
-    last_point = base.mark_circle(size=100, color='red').encode(
+    last_point = get_last_point(df)
+
+    points = alt.Chart(last_point).mark_circle(size=100).encode(
         x='date_published:T',
-        y=f'{y_axis[0]}:Q'
-    ).transform_window(
-        rank='rank(date_published)',
-        sort=[alt.SortField('date_published', order='descending')],
-        groupby=['source_name:N']
-    ).transform_filter(
-        alt.datum.rank == 1
+        y=f'{y_axis[0]}:Q',
+        tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
+        color=alt.Color('source_name:N')
     )
 
-    source_names = last_point.mark_text(
+    source_names = points.mark_text(
         align="left", dx=10).encode(text="source_name")
 
-    return last_point + source_names + line
+    return points + source_names + line
 
 
 def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
@@ -91,7 +98,6 @@ def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
                 averaged, by_title=sent_by_title)
 
             if len(data["source_name"].unique()) > 1:
-                print(data["source_name"].unique())
                 avg_line = visualise_change_over_time(
                     averaged_over_sources, by_title=sent_by_title)
                 st.altair_chart(line_graph + avg_line)
