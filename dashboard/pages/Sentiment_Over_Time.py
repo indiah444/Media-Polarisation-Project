@@ -49,6 +49,9 @@ def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
 
 if __name__ == "__main__":
     st.title("Changes in Sentiment Over Time")
+    st.markdown("""This page shows trends in **compound** sentiment scores over time.
+                The 'granularity' may be altered to smooth out the data: at the lower end, sentiment scores
+                are averaged over time periods of an hour, and this can be increased.""")
     topic_names = get_topic_names()
     st.sidebar.header("Topic")
 
