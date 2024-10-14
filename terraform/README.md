@@ -29,12 +29,12 @@ The project is designed to be deployed on the cloud using AWS services via terra
     AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
     # AWS Region and Network Config
-    REGION                = "your-region"
-    VPC_ID                = "your-vpc-id"
-    SUBNET_ID1            = "your-first-subnet-id"
-    SUBNET_ID2            = "your-second-subnet-id"
-    SUBNET_ID3            = "your-third-subnet-id"
-    ECS_CLUSTER_NAME      = "your-aws-ecs-cluster-name"
+    REGION                = "the-AWS-region"
+    VPC_ID                = "the-vpc-id"
+    SUBNET_ID1            = "the-first-subnet-id"
+    SUBNET_ID2            = "the-second-subnet-id"
+    SUBNET_ID3            = "the-third-subnet-id"
+    ECS_CLUSTER_NAME      = "the-aws-ecs-cluster-name"
 
     # S3 Bucket Name
     S3_BUCKET_NAME        = "name-of-S3-bucket"
@@ -47,11 +47,11 @@ The project is designed to be deployed on the cloud using AWS services via terra
     WEEKLY_EMAIL_ECR_REPO           = "ecr-repo-name-for-weekly-emailer"
 
     # RDS Database Config
-    DB_HOST               = "your-RDS-host"
-    DB_PORT               = "your-RDS-port"
-    DB_NAME               = "your-RDS-name"
-    DB_USER               = "your-RDS-user"
-    DB_PASSWORD           = "your-RDS-password"
+    DB_HOST               = "the-RDS-host-address"
+    DB_PORT               = "the-RDS-port-number"
+    DB_NAME               = "the-RDS-name"
+    DB_USER               = "the-RDS-username"
+    DB_PASSWORD           = "the-RDS-password"
 
     # OpenAI API Key
     OPENAI_API_KEY        = "your-open-ai-key"
