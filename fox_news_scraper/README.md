@@ -49,7 +49,7 @@ The Fox News web scraper can also be ran locally by:
     ```
 2. Run the entire process locally (fetching, cleaning, and uploading to S3):
     ```bash
-    python3 pipeline_analysis.py
+    python3 pipeline_fn.py
     ```
 
 ## Files
