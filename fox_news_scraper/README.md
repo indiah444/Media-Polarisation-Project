@@ -4,22 +4,53 @@
 
 This module is responsible for extracting articles from various Fox News RSS feeds, cleaning the extracted content, and loading the final cleaned data. The extraction process involves fetching the RSS feed data, retrieving the full article content, and then cleaning the text to remove unwanted characters, stopwords, and trailing whitespace. The cleaned data is then transformed into a CSV and loaded into the correct S3 bucket.
 
-## Setup
+## 🛠️ Prerequisites
+- **Docker** installed.
+- Setup **ECR** repository to store Fox News scraper docker image.  
 
-1. `python3 -m venv venv` to create a virtual environment.
-2. `source venv/bin/activate` to activate the virtual environment.
-3. `pip install -r requirements.txt` to install the required packages.
-4. Configure your environment `.env` file with the following variables:
+Optional:
+- **Python** installed (For running locally)
 
-```sh 
-AWS_ACCESS_KEY_BOUDICCA=XXXXXX
-AWS_ACCESS_SECRET_KEY_BOUDICCA=XXXXXX
-DB_HOST=XXXXXX
-DB_PORT=XXXXX
-DB_PASSWORD=XXXXXX
-DB_USER=XXXXX
-DB_NAME=XXXXX
-```
+## 📂 Setup
+1. Create a `.env` file and fill with the following variables
+    ```env
+    # AWS Configuration
+    AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
+    AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
+
+    # S3 Bucket Configuration
+    S3_BUCKET_NAME=<s3_bucket_name>
+
+    # ECR Configuration
+    ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
+    ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
+    IMAGE_NAME=article-analyser-image  # or any other appropriate name
+    ```
+
+### ☁️ Pushing to the Cloud
+1. Make sure you have the Docker application running in the background
+2. Dockerise and upload the application:
+    ```bash
+    bash dockerise.sh
+    ```
+    This will:
+    - Authenticate your aws credentials with docker
+    - Create the docker image
+    - Tag the docker image
+    - Upload tagged imgae to the ECR repository
+
+### 💻 Running Locally (MacOS)
+The Fox News web scraper can also be ran locally by:
+
+1. Creating and activating virtual environment:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+2. Run the entire process locally (fetching, cleaning, and uploading to S3):
+    ```bash
+    python3 pipeline_analysis.py
+    ```
 
 ## Files
 
@@ -32,51 +63,6 @@ DB_NAME=XXXXX
 - `pipeline_fn.py`: This file contains the main Lambda handler function for the Fox News scraper. It orchestrates the entire flow from fetching data from RSS feeds to uploading the processed data to S3.
 
 - `Dockerfile`: This file is dockerises `pipeline_fn.py` so that it can be run on the cloud.
-
-## Usage
-
-### Running the Entire Pipeline
-
-To run the entire process locally (fetching, cleaning, and uploading to S3), execute the following command:
-
-```sh
-python3 pipeline_fn.py
-```
-
-### Running the Extraction Process
-
-If you want to run the extraction process separately, you can execute:
-
-```sh
-python3 extract_fn.py
-```
-
-
-### Running the Cleaning Process
-
-To run the cleaning process separately, you can execute:
-
-```sh
-python3 clean_fn.py
-```
-
-### Docker Setup
-
-To build the Docker image, run the following command from the project directory:
-
-```sh
-docker build -t c13-boudicca-mp-fox-news-scraper . --platform "linux/amd64"
-```
-
-Once built, the Docker image can be pushed to an ECR repository named `c13-boudicca-mp-fox-news-scraper`. To push it, run the following commands:
-
-```sh
-aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 129033205317.dkr.ecr.eu-west-2.amazonaws.com
-
-docker tag c13-boudicca-mp-fox-news-scraper:latest 129033205317.dkr.ecr.eu-west-2.amazonaws.com/c13-boudicca-mp-fox-news-scraper:latest
-
-docker push 129033205317.dkr.ecr.eu-west-2.amazonaws.com/c13-boudicca-mp-fox-news-scraper:latest
-```
 
 ### Testing and coverage 
 
