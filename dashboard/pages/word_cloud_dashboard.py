@@ -94,9 +94,9 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
     wordcloud = WordCloud(
-        width=800, height=400, background_color="white", colormap=colormap).generate_from_frequencies(word_freq)
+        width=1000, height=500, max_words=100, background_color="white", colormap=colormap).generate_from_frequencies(word_freq)
 
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
     plt.title(title, fontsize=20)
@@ -120,13 +120,9 @@ if __name__ == "__main__":
     democracy_now_word_freq = get_word_frequency(
         dn_articles, custom_stop_words)
 
-    cols = st.columns(2)
+    st.header("Fox News Word Cloud")
+    generate_wordcloud(fox_news_word_freq, "Fox News", colormap="Reds_r")
 
-    with cols[0]:
-        st.header("Fox News Word Cloud")
-        generate_wordcloud(fox_news_word_freq, "Fox News", colormap="winter")
-
-    with cols[1]:
-        st.header("Democracy Now! Word Cloud")
-        generate_wordcloud(democracy_now_word_freq,
-                           "Democracy Now!", colormap="winter")
+    st.header("Democracy Now! Word Cloud")
+    generate_wordcloud(democracy_now_word_freq,
+                       "Democracy Now!", colormap="PuBu")
