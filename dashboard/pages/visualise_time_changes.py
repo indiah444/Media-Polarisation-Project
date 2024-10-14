@@ -3,18 +3,17 @@
 from datetime import datetime
 import streamlit as st
 import pandas as pd
+import numpy as np
 import altair as alt
 from db_functions import get_scores_topic, get_topic_names
 
 
-def resample_dataframe(df: pd.DataFrame, time_interval: str, avg_over_source: bool):
+def resample_dataframe(df: pd.DataFrame, time_interval: str):
     """Resamples the dataframe to return the average sentiment scores by source, topic 
     over a set of grouped time intervals"""
 
     df['date_published'] = pd.to_datetime(df['date_published'])
 
-    if avg_over_source:
-        df["source_name"] = "Average"
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
         time_interval, on='date_published').mean().reset_index()
 
@@ -33,10 +32,9 @@ def generate_warning_message(source_to_topics: dict) -> str:
 
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
-    last_point_df = df.groupby('source_name').apply(
+    last_point_df = df.dropna().groupby('source_name').apply(
         lambda x: x.loc[x['date_published'].idxmax()]
-    ).reset_index(drop=True)
-
+    )
     return last_point_df
 
 
@@ -57,14 +55,26 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     line = base.mark_line().encode(
         x=alt.X('date_published:T', axis=alt.Axis(
             offset=-150, title='Date Published', titleAnchor="end")),
+
         y=alt.Y(f'{y_axis[0]}:Q', scale=alt.Scale(
             domain=[-1, 1]), title=y_axis[1]),
-        tooltip=[alt.Tooltip(field="source_name", title="Source Name"),
-                 alt.Tooltip(field=f"{y_axis[0]}",
-                             title=f"Average {y_axis[1]}")]
+
+        tooltip=[
+            alt.Tooltip(field="source_name", title="Source Name"),
+            alt.Tooltip(field=f"{y_axis[0]}", title=f"Average {y_axis[1]}")
+        ]
     ).properties(
-        width=500
-    ).interactive()
+        width=500)
+
+    overall_avg_df = df[['date_published', y_axis[0]]].groupby(
+        'date_published').mean().reset_index()
+
+    avg_line = alt.Chart(overall_avg_df).mark_line(strokeDash=[5, 5], color='red').encode(
+        x='date_published:T',
+        y=alt.Y(f'{y_axis[0]}:Q', scale=alt.Scale(domain=[-1, 1])),
+        tooltip=[alt.Tooltip(field=f'{y_axis[0]}',
+                             title=f'Overall Avg {y_axis[1]}')]
+    ).properties(width=500)
 
     last_point = get_last_point(df)
 
@@ -78,7 +88,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     source_names = points.mark_text(
         align="left", dx=10).encode(text="source_name")
 
-    return points + source_names + line
+    return line + points + source_names
 
 
 def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
@@ -89,20 +99,14 @@ def construct_streamlit_time_graph(selected_topic: str, sent_by_title: bool):
 
         if data.empty:
             st.text("No data to display.")
-        else:
-            averaged = resample_dataframe(data, sampling, False).dropna()
-            averaged_over_sources = resample_dataframe(
-                data, sampling, True).dropna()
+            return
 
-            line_graph = visualise_change_over_time(
-                averaged, by_title=sent_by_title)
+        averaged = resample_dataframe(data, sampling).dropna()
 
-            if len(data["source_name"].unique()) > 1:
-                avg_line = visualise_change_over_time(
-                    averaged_over_sources, by_title=sent_by_title)
-                st.altair_chart(line_graph + avg_line)
-            else:
-                st.altair_chart(line_graph)
+        line_graph = visualise_change_over_time(
+            averaged, by_title=sent_by_title)
+
+        st.altair_chart(line_graph)
 
 
 if __name__ == "__main__":
