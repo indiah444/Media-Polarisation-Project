@@ -14,9 +14,9 @@ The pipeline is designed to retrieve dataframes stored in an S3 bucket and then 
 
     ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
     ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
-    IMAGE_NAME=article-analyser-image  # or any name of your choice
+    IMAGE_NAME=article-analyser-image  # or any name other appropriate name
 
-    OPENAI_API_KEY="<your_openai_key>"
+    OPENAI_API_KEY=<your_openai_key>
     ```
 
 ### Pushing to the Cloud
