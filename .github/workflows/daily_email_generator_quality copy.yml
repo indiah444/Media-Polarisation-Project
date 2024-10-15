@@ -34,7 +34,7 @@ jobs:
     # Run pytest and check coverage
     - name: Run pytest and check test coverage
       run: |
-        pytest ./daily-emailing/ --cov
+        pytest ./daily-emailing/ --cov --cov-exclude='*test_*.py'
       continue-on-error: false
     
     # Run pylint
