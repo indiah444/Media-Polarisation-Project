@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
+from d_db_funcs import get_yesterday_links
+
 
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     """Pivots dataframe so topics are rows and sources are columns."""
@@ -31,6 +33,17 @@ def add_topic_rows(df: pd.DataFrame) -> str:
             else:
                 html += f"<td style='background-color: white;'>{score}</td>"
         html += "</tr>"
+    return html
+
+
+def generate_html_with_links() -> str:
+    """Creates a list of yesterdays articles urls."""
+    urls = get_yesterday_links()
+    html = "<h2>Yesterday's articles:</h2>\n<ul>\n"
+    for url in urls:
+        html += f'  <li><a href="{url}">{url}</a></li>\n'
+    html += "</ul>"
+
     return html
 
 
@@ -75,6 +88,9 @@ def generate_html(df) -> str:
     html += """
             </tbody>
         </table>
+        """
+    html += generate_html_with_links()
+    html += """
     </body>
     </html>
     """

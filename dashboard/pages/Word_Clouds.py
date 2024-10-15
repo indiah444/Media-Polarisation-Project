@@ -17,6 +17,7 @@ from psycopg2.extensions import connection
 
 def create_connection() -> connection:
     """Creates a connection to the RDS with postgres."""
+
     load_dotenv()
     conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
@@ -93,6 +94,10 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
 def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
+    if not word_freq:
+        st.warning(f"No words found to generate the word cloud for {title}.")
+        return
+
     wordcloud = WordCloud(
         width=1000, height=500, max_words=100, background_color="white", colormap=colormap).generate_from_frequencies(word_freq)
 
@@ -100,7 +105,7 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
     plt.title(title, fontsize=20)
-    st.pyplot(plt)
+    st.pyplot(plt.gcf())
 
 
 if __name__ == "__main__":
