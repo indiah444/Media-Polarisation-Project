@@ -22,26 +22,27 @@ def test_send_email(mock_mime_multipart, mock_get_ses_client, mock_generate_html
     mock_mime_multipart.return_value = mock_message
 
     send_email()
-    assert mock_client.send_raw_email.call_count == 1
-    assert mock_client.send_raw_email.call_args[1]['Destinations'] == [
-        'user1@example.com', 'user2@example.com']
+    mock_client.send_raw_email.assert_called_once_with(
+        Source='from@example.com',
+        Destinations=['user1@example.com', 'user2@example.com'],
+        RawMessage={'Data': mock_message.as_string()})
 
 
 class TestLambdaHandler:
     @patch('daily_email.send_email')
     def test_success(self, mock_send_email):
         mock_send_email.return_value = None
-        event = {}
-        context = {}
-        response = lambda_handler(event, context)
+
+        response = lambda_handler({}, {})
+
         assert response['statusCode'] == 200
         assert response['body'] == "Daily emails sent."
 
     @patch('daily_email.send_email')
     def test_failure(self, mock_send_email):
         mock_send_email.side_effect = Exception("Test Exception")
-        event = {}
-        context = {}
-        response = lambda_handler(event, context)
+
+        response = lambda_handler({}, {})
+
         assert response['statusCode'] == 500
         assert "Error: Test Exception" in response['body']

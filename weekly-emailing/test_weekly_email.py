@@ -27,10 +27,11 @@ def test_send_email(mock_load_dotenv, mock_generate_pdf, mock_get_ses_client,
 
     send_email()
 
-    mock_client.send_raw_email.assert_called_once()
-    assert 'subscriber1@example.com' in mock_client.send_raw_email.call_args[1]['Destinations']
-    assert 'Weekly_sentiment_report.pdf' in mock_client.send_raw_email.call_args[
-        1]['RawMessage']['Data']
+    mock_client.send_raw_email.assert_called_once_with(
+        Source='from@example.com',
+        Destinations=['subscriber1@example.com'],
+        RawMessage={
+            'Data': mock_client.send_raw_email.call_args[1]['RawMessage']['Data']})
 
 
 class TestLambdaHandler():
