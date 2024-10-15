@@ -6,7 +6,16 @@ import altair as alt
 import pandas as pd
 
 
-def create_sentiment_distribution_chart(df):
+def chart_to_base64(chart) -> str:
+    """Converts chart to base64 image so can be emailed."""
+    chart_image = BytesIO()
+    chart.save(chart_image, format='png')
+    chart_image.seek(0)
+    base64_img = base64.b64encode(chart_image.read()).decode('utf-8')
+    return base64_img
+
+
+def create_sentiment_distribution_chart(df) -> str:
     """Creates a distribution graph of average score by topic and source."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
@@ -32,7 +41,7 @@ def create_sentiment_distribution_chart(df):
     return chart_to_base64(chart)
 
 
-def create_bar_graph(df):
+def create_bar_graph(df) -> str:
     """Creates a bar chart of sentiment scores with alternating bars for sources."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
@@ -62,12 +71,3 @@ def create_bar_graph(df):
     )
 
     return chart_to_base64(chart)
-
-
-def chart_to_base64(chart):
-    """Converts chart to base64 image so can be emailed."""
-    chart_image = BytesIO()
-    chart.save(chart_image, format='png')
-    chart_image.seek(0)
-    base64_img = base64.b64encode(chart_image.read()).decode('utf-8')
-    return base64_img
