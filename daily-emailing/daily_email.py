@@ -1,9 +1,8 @@
 """A script to send a html email of the previous days articles."""
+
 from os import environ as ENV
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
-from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 import boto3
@@ -43,6 +42,7 @@ def send_email() -> None:
 
 def lambda_handler(event: dict, context: dict) -> dict:
     """AWS Lambda handler function."""
+
     try:
         send_email()
         print("Daily emails sent!")
