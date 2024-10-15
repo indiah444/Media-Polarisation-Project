@@ -24,7 +24,7 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     return pd.DataFrame(df_avg)
 
 
-def construct_streamlit_time_graph(data: pd.DataFrame, avg_col, count_col, sent_by_title: bool):
+def construct_streamlit_time_graph(data: pd.DataFrame, avg_col, count_col, sent_by_title: bool, sampling: str):
     """Constructs a streamlit time graph."""
 
     averaged = resample_dataframe(data, sampling, "mean").dropna()
@@ -52,12 +52,13 @@ def add_year_month_day_columns(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def construct_streamlit_heatmap(data: pd.DataFrame, container, by_title: bool, colourscheme: str = "yellowgreen"):
+def construct_streamlit_heatmap(heatmaps_container, data: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen'):
     """Constructs a streamlit heatmap"""
 
     vals = "title_polarity_score" if by_title else "content_polarity_score"
 
     data = data[["month", "weekday", vals]]
+    data = data.groupby(["month", "weekday"], as_index=False)[vals].mean()
 
     heatmap = alt.Chart(data).mark_rect().encode(
         x=alt.X('month:O', title='Month'),
@@ -70,7 +71,7 @@ def construct_streamlit_heatmap(data: pd.DataFrame, container, by_title: bool, c
         height=300
     )
 
-    container.altair_chart(heatmap, use_container_width=True)
+    heatmaps_container.altair_chart(heatmap)
 
 
 if __name__ == "__main__":
@@ -81,6 +82,7 @@ if __name__ == "__main__":
 
     selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
     data = pd.DataFrame(get_scores_topic(selected_topic))
+
     selected_frequency = st.sidebar.slider(
         label="Granularity (hours)", min_value=1, max_value=100, step=1)
 
@@ -96,23 +98,29 @@ if __name__ == "__main__":
                 at the lower end, sentiment scores are averaged over time periods of an hour, 
                 and this can be increased up to 100 hours.""")
 
-        sampling = str(selected_frequency) + 'h'
+        sampling_rate = str(selected_frequency) + 'h'
 
         line_graphs = st.container()
         line_graphs.header(f"Polarity by Article Titles")
         col1, col2 = line_graphs.columns(2)
 
         construct_streamlit_time_graph(data,
-                                       col1, col2, sent_by_title=True)
+                                       col1, col2,
+                                       sent_by_title=True,
+                                       sampling=sampling_rate)
 
         line_graphs.header(f"Polarity by Article Content")
         col3, col4 = line_graphs.columns(2)
         construct_streamlit_time_graph(data,
-                                       col3, col4, sent_by_title=False)
+                                       col3, col4,
+                                       sent_by_title=False,
+                                       sampling=sampling_rate)
 
         heatmaps = st.container()
         heatmaps.header("Heatmap of Polarity Scores")
+
         data = add_year_month_day_columns(data)
+
         years = data["year"].unique().tolist()
         sources = data["source_name"].unique().tolist() + ["All"]
 
@@ -124,4 +132,7 @@ if __name__ == "__main__":
         if source != "All":
             data = data[data["source_name"] == source]
 
-        construct_streamlit_heatmap(data, heatmaps, False)
+        heatmaps.subheader("By Title")
+        construct_streamlit_heatmap(heatmaps, data, True)
+        heatmaps.subheader("By Content")
+        construct_streamlit_heatmap(heatmaps, data, False)
