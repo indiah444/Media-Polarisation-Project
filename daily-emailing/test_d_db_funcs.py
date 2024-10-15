@@ -99,9 +99,8 @@ class TestGetYesterdayLinks:
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
     @patch('d_db_funcs.get_yesterday_date')
-    def test_get_yesterday_links_with_data(self, mock_get_yesterday_date, mock_get_cursor, mock_create_conn):
+    def test_get_yesterday_links_with_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
 
-        mock_get_yesterday_date.return_value = '2024-01-01'
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
         mock_create_conn.return_value.__enter__.return_value = mock_conn
@@ -120,7 +119,8 @@ class TestGetYesterdayLinks:
 
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
-    def test_get_yesterday_links_no_data(self, mock_create_conn, mock_get_cursor):
+    @patch('d_db_funcs.get_yesterday_date')
+    def test_get_yesterday_links_no_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
 
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
