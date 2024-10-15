@@ -1,16 +1,19 @@
 """Some functions for interacting with the RDS."""
+
 from os import environ as ENV
 from datetime import datetime, timedelta
 
-import pandas as pd
+
+from psycopg2.extensions import connection, cursor
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
-from psycopg2.extensions import connection
 from dotenv import load_dotenv
+import pandas as pd
 
 
 def create_connection() -> connection:
     """Creates a connection to the RDS with postgres."""
+
     load_dotenv()
     conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
@@ -20,9 +23,18 @@ def create_connection() -> connection:
     return conn
 
 
+def get_cursor(conn: connection) -> cursor:
+    """Return cursor object to execute sql commands"""
+
+    return conn.cursor()
+
+
 def get_avg_polarity_last_week():
-    """Returns a dataframe of  average sentiment for each topic and score
-    in the last week."""
+    """
+    Returns a dataframe of  average sentiment for each topic and score
+    in the last week.
+    """
+
     last_week = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
     today = datetime.now().strftime('%Y-%m-%d')
 
@@ -43,12 +55,12 @@ def get_avg_polarity_last_week():
             cur.execute(query, (last_week, today))
             data = cur.fetchall()
 
-    # Convert to DataFrame
     return pd.DataFrame(data)
 
 
 def get_weekly_subscribers() -> list[str]:
     """Returns the emails of subscribers for weekly emails."""
+
     query = """
         SELECT subscriber_email 
         FROM subscriber
@@ -58,6 +70,7 @@ def get_weekly_subscribers() -> list[str]:
         with conn.cursor() as cur:
             cur.execute(query)
             data = cur.fetchall()
-    if data:
-        return [subscriber['subscriber_email'] for subscriber in data]
-    return []
+    if not data:
+        return []
+
+    return [subscriber['subscriber_email'] for subscriber in data]
