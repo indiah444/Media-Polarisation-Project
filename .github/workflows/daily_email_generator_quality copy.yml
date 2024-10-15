@@ -1,4 +1,4 @@
-name: Test and Lint daily email generator
+name: Test and Lint daily-emailing
 
 on:
   push:
