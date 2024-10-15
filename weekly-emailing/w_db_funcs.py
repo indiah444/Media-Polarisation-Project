@@ -51,7 +51,7 @@ def get_avg_polarity_last_week():
     """
 
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query, (last_week, today))
             data = cur.fetchall()
 
@@ -65,9 +65,9 @@ def get_weekly_subscribers() -> list[str]:
         SELECT subscriber_email 
         FROM subscriber
         WHERE weekly = TRUE
-            """
+        """
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query)
             data = cur.fetchall()
     if not data:
