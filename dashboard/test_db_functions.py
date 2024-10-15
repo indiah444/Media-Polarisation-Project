@@ -2,21 +2,36 @@
 from unittest.mock import patch, MagicMock
 
 import pandas as pd
+from psycopg2.extensions import connection
 
 from db_functions import (create_connection, get_topic_names, get_topic_dict, get_scores_topic,
                           get_average_score_per_source_for_a_topic, get_title_and_content_data_for_a_topic,
                           get_subscriber_emails, updates_subscriber, add_new_subscriber,
-                          remove_subscription, get_avg_polarity_all_topics)
+                          remove_subscription, get_avg_polarity_all_topics, RealDictCursor)
 
 
 @patch('db_functions.connect')
+@patch('db_functions.ENV', {
+    "DB_NAME": "test_db",
+    "DB_USER": "test_user",
+    "DB_HOST": "test_host",
+    "DB_PASSWORD": "test_password",
+    "DB_PORT": "5432"
+})
 def test_create_connection(fake_connect):
-    """Test create_connection function."""
-    fake_conn = MagicMock()
+    """Tests the create_connection function."""
+    fake_conn = MagicMock(spec=connection)
     fake_connect.return_value = fake_conn
     conn = create_connection()
 
-    fake_connect.assert_called_once()
+    fake_connect.assert_called_once_with(
+        dbname="test_db",
+        user="test_user",
+        host="test_host",
+        password="test_password",
+        port="5432",
+        cursor_factory=RealDictCursor
+    )
     assert conn == fake_conn
 
 
