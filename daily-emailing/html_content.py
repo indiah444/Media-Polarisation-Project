@@ -33,8 +33,8 @@ def add_topic_rows(df: pd.DataFrame) -> str:
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
-                html += f"<td style='background-color: {
-                    color};'>{score:.2f}</td>"
+                html += \
+                    f"<td style='background-color: {color};'>{score:.2f}</td>"
             else:
                 html += f"<td style='background-color: white;'>{score}</td>"
         html += "</tr>"
