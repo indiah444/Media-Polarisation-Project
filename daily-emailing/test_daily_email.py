@@ -10,6 +10,7 @@ from daily_email import send_email, lambda_handler
 @patch('daily_email.generate_html')
 @patch('daily_email.get_ses_client')
 @patch('daily_email.MIMEMultipart')
+@patch.dict('os.environ', {'FROM_EMAIL': 'from@example.com'})
 def test_send_email(mock_mime_multipart, mock_get_ses_client, mock_generate_html, mock_get_avg_polarity, mock_get_subscribers):
 
     mock_get_subscribers.return_value = ['user1@example.com',
