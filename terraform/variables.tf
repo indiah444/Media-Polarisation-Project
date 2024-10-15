@@ -30,4 +30,3 @@ variable "DB_NAME" {type = string}
 variable "FROM_EMAIL" {type = string}
 
 variable "OPENAI_API_KEY" {type = string}
-variable "OPENAI_MODEL" {type = string}
