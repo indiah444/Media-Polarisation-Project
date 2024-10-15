@@ -1,4 +1,5 @@
 """Script to create the graphs to be sent as an email."""
+
 from io import BytesIO
 import base64
 
@@ -8,6 +9,7 @@ import pandas as pd
 
 def chart_to_base64(chart) -> str:
     """Converts chart to base64 image so can be emailed."""
+
     chart_image = BytesIO()
     chart.save(chart_image, format='png')
     chart_image.seek(0)
@@ -17,6 +19,7 @@ def chart_to_base64(chart) -> str:
 
 def create_sentiment_distribution_chart(df) -> str:
     """Creates a distribution graph of average score by topic and source."""
+
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
 
@@ -43,6 +46,7 @@ def create_sentiment_distribution_chart(df) -> str:
 
 def create_bar_graph(df) -> str:
     """Creates a bar chart of sentiment scores with alternating bars for sources."""
+
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
     bars = alt.Chart(df).mark_bar(opacity=0.8).encode(
