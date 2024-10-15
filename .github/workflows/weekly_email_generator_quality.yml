@@ -1,4 +1,4 @@
-name: Test and Lint email_generator
+name: Test and Lint weekly-emailing
 
 on:
   push:
@@ -29,15 +29,15 @@ jobs:
     - name: Install packages
       run: |
         pip install pylint pytest pytest--cov
-        pip install -r ./email_generator/requirements.txt
+        pip install -r ./weekly-emailing/requirements.txt
     
     # Run pytest and check coverage
     - name: Run pytest and check test coverage
       run: |
-        pytest ./email_generator/ --cov
+        pytest ./weekly-emailing/ --cov
       continue-on-error: false
     
     # Run pylint
     - name: Run pylint
       run: |
-        find ./email_generator/ -name "*.py" | xargs pylint --fail-under=8
+        find ./weekly-emailing/ -name "*.py" | xargs pylint --fail-under=8

@@ -1,51 +1,89 @@
-# Cloud Deployment using Terraform
+# ☁️ Cloud Deployment using Terraform
 
-##  Prerequisites
+The project is designed to be deployed on the cloud using AWS services via terraform. Assuming some prerequisite setup explained int this document, the cloud infrastructure can be deployed using a single command.
+
+## 🛠️ Prerequisites
 - **Terraform** installed
-- **AWS ECR** repos for the following:
+- **AWS ECR** repositories for the following:
     - Fox news scraper image
     - Democracy now scraper image
     - Article analyser image
-    - Email generator image
-- Provision **AWS RDS (PostgreSQL)** instance
-- Provision **AWS S3**
-- Read the following READMEs to setup containers, database and upload:
-    1. news_sentiment_analyser/README.md
-    2. fox_news_scraper/README.md
-    3. democracy_now_scraper/RADME.md
-    4. dashboard/README.md
-    5. database/README.md
+    - Daily email image
+    - Weekly email image
+- Provision an **AWS RDS (PostgreSQL)** instance to host database
+- Provision an **AWS S3** bucket
+- Read the Prequrequisites and Setup section of the following READMEs (setup and upload images to ECR repositories):
+    1. [news_sentiment_analyser/README.md](../news_sentiment_analyser/README.md)
+    2. [fox_news_scraper/README.md](../fox_news_scraper/README.md)
+    3. [democracy_now_scraper/README.md](../democracy_now_scraper/README.md)
+    4. [daily-emailing/README.md](../daily-emailing/README.md)
+    5. [weekly-emailing/README.md](../weekly-emailing/README.md)
+- Read [database/README.md](../database/README.md) to initalise the database
 
-
-##  Setup
+## ⚙️ Setup
 
 1. Create `terraform.tfvars` file and fill with the following variables
-```bash
-AWS_ACCESS_KEY        = "your-aws-access-key"
-AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
+    ```bash
+    # AWS Credentials
+    AWS_ACCESS_KEY        = "your-aws-access-key"
+    AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
-REGION                = "your-region"
-VPC_ID                = "your-vpc-id"
-SUBNET_ID1            = "your-first-subnet-id"
-SUBNET_ID2            = "your-second-subnet-id"
-SUBNET_ID3            = "your-third-subnet-id"
-ECS_CLUSTER_NAME      = "your-aws-ecs-cluster-name"
+    # AWS Region and Network Config
+    REGION                = "the-AWS-region"
+    VPC_ID                = "the-vpc-id"
+    SUBNET_ID1            = "the-first-subnet-id"
+    SUBNET_ID2            = "the-second-subnet-id"
+    SUBNET_ID3            = "the-third-subnet-id"
+    ECS_CLUSTER_NAME      = "the-aws-ecs-cluster-name"
 
-S3_BUCKET_NAME  = "name-of-S3-bucket"
+    # S3 Bucket Name
+    S3_BUCKET_NAME        = "name-of-S3-bucket"
 
-FOX_NEWS_SCRAPER_ECR_REPO       ="ecr-repo-name-for-fox-news-scraper"
-DEMOCARCY_NOW_SCRAPER_ECR_REPO  ="ecr-repo-name-for-democracy-now-news-scraper"
-ARTICLE_ANALYSER_ECR_REPO       ="ecr-repo-name-for-article-analyser"
-DAILY_EMAIL_ECR_REPO        ="ecr-repo-name-for-daily-emailer"
-WEEKLY_EMAIL_ECR_REPO        ="ecr-repo-name-for-weekly-emailer"
+    # ECR Repositories
+    FOX_NEWS_SCRAPER_ECR_REPO       = "ecr-repo-name-for-fox-news-scraper"
+    DEMOCRACY_NOW_SCRAPER_ECR_REPO  = "ecr-repo-name-for-democracy-now-news-scraper"
+    ARTICLE_ANALYSER_ECR_REPO       = "ecr-repo-name-for-article-analyser"
+    DAILY_EMAIL_ECR_REPO            = "ecr-repo-name-for-daily-emailer"
+    WEEKLY_EMAIL_ECR_REPO           = "ecr-repo-name-for-weekly-emailer"
 
-DB_HOST               = "your-RDS-host"
-DB_PORT               = "your-RDS-port"
-DB_NAME               = "your-RDS-name"
-DB_USER               = "your-RDS-user"
-DB_PASSWORD           = "your-RDS-password"
+    # RDS Database Config
+    DB_HOST               = "the-RDS-host-address"
+    DB_PORT               = "the-RDS-port-number"
+    DB_NAME               = "the-RDS-name"
+    DB_USER               = "the-RDS-username"
+    DB_PASSWORD           = "the-RDS-password"
 
-OPENAI_API_KEY        = "your-open-ai-key"
+    # OpenAI API Key configuration
+    OPENAI_API_KEY        = "your-open-ai-key"
+    OPENAI_MODEL          ="your-openai-model"
 
-FROM_EMAIL            = "address-to-send-emails-from"
-```
+    # Email Config
+    FROM_EMAIL            = "address-to-send-emails-from"
+    ```
+
+2. Initialise terraform:
+    ```bash
+    terraform init
+    ```
+
+3. Deploy cloud services:
+    ```bash
+    terraform apply
+    ```
+    - Enter yes when it asks to approve changes.
+    - Can be used to redeploy if resource definitions have been changed.
+    - Keep note of the `EC2_public_dns` output for step 4.
+    
+4. Transfer dashboard to EC2 by reading [dashboard/README.md](../dashboard/README.md)
+
+5. To bring down the cloud infrastructure:
+    ```bash
+    terraform destroy
+    ```
+    - To recreate start again from step 3.
+
+## 📝 Notes
+
+- Remember to add any `*.env` or `*.tfvars` files to gitignore if note already listed.
+- Each time the `terraform apply` is run, the EC2 will be recreated with a new dns address meaning the [dashboard setup](../dashboard/README.md) will need top be redone each time.
+
