@@ -1,4 +1,5 @@
 """Script to generate the pdf report."""
+
 from io import BytesIO
 
 import pandas as pd
@@ -9,6 +10,7 @@ from graphs import create_bar_graph, create_sentiment_distribution_chart
 
 def generate_html_report(df: pd.DataFrame) -> str:
     """Returns the contents as html."""
+
     avg_polarity_chart_img = create_bar_graph(df)
     sentiment_dist_chart_img = create_sentiment_distribution_chart(df)
     html_content = f"""
@@ -52,8 +54,9 @@ def generate_html_report(df: pd.DataFrame) -> str:
     return html_content
 
 
-def generate_pdf(df: pd.DataFrame):
+def generate_pdf(df: pd.DataFrame) -> BytesIO:
     """Converts the html to a pdf."""
+
     html_content = generate_html_report(df)
     pdf_buffer = BytesIO()
     pisa.CreatePDF(html_content, dest=pdf_buffer)
