@@ -1,4 +1,4 @@
-name: Test and Lint email_generator
+name: Test and Lint weekly email generator
 
 on:
   push:
