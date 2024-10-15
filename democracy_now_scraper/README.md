@@ -3,9 +3,11 @@
 ## 📋 Overview
 
 This module is responsible (at present) for extracting articles from various democracy now web pages and cleaning the extracted content. The extraction process involves:
-    1. scraping all topics in https://www.democracynow.org/topics/browse, 
-    2. retrieving all article links for each topic, filtering for those no older than 3 days, 
-    3. extracting article content, and then cleaning the text to remove unwanted characters, stopwords, and trailing whitespace.
+    1. Scraping all topics in https://www.democracynow.org/topics/browse
+    2. Retrieving all article links for each topic, filtering for those no older than 3 days
+    3. Extracting article title and content
+    4. Cleaning the text to remove unwanted characters and trailing whitespace
+    5. Transforming the data into a dataframe and loading as a CSV into the correct S3 bucket.
 
 ## 🛠️ Prerequisites
 - **Docker** installed.
@@ -42,7 +44,7 @@ To deploy the overall cloud infrastructure the Fox News scraper must be containe
     - Authenticate your aws credentials with docker
     - Create the docker image
     - Tag the docker image
-    - Upload tagged imgage to the ECR repository
+    - Upload tagged image to the ECR repository
 
 ### 💻 Running Locally (MacOS)
 The Fox News web scraper can also be ran locally by:
@@ -62,17 +64,17 @@ The Fox News web scraper can also be ran locally by:
     ```
 
 ## 📁 Files
-
 - `extract_dn.py`: This file handles the extraction of articles from Democracy Now web pages. It uses `BeautifulSoup` to scrape the full content of the articles.
-
 - `transform_dn.py`: Contains function to combine the results into a pandas dataframe.
-
 - `load_dn.py`: Uploads the dataframe as a CSV to the S3 bucket.
-
 - `pipeline_dn.py`: This file contains the main Lambda handler function that runs the ETL pipeline for the Democracy News scraper.
 
-### Testing and coverage 
-
-Run `pytest -vv` to generate a detailed test report. 
-
-Run `pytest --cov -vv` to include coverage results.
+### ✅ Test coverage
+To generate a detailed test report:
+```bash
+pytest -vv
+```
+To include coverage results:
+```bash
+pytest --cov -vv
+```

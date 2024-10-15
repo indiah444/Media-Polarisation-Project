@@ -173,6 +173,10 @@ resource "aws_ecs_task_definition" "mp_article_analyser" {
                     name  = "OPENAI_API_KEY"
                     value = var.OPENAI_API_KEY
                 },
+                {
+                    name  = "OPENAI_MODEL"
+                    value = var.OPENAI_MODEL
+                }
             ]
             logConfiguration = {
                 logDriver = "awslogs"

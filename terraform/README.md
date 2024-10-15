@@ -53,8 +53,9 @@ The project is designed to be deployed on the cloud using AWS services via terra
     DB_USER               = "the-RDS-username"
     DB_PASSWORD           = "the-RDS-password"
 
-    # OpenAI API Key
+    # OpenAI API Key configuration
     OPENAI_API_KEY        = "your-open-ai-key"
+    OPENAI_MODEL          ="your-openai-model"
 
     # Email Config
     FROM_EMAIL            = "address-to-send-emails-from"

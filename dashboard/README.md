@@ -31,7 +31,7 @@ Optional:
     KEY_PATH=../terraform/c13-boudicca-mp-key-pair.pem
     ```
 
-### ☁️ Pushing to the Cloud
+### ☁️ Transferring to EC2
 As part of deploying the overall cloud infrastructure, the dashboard files must be transferred to the EC2 and then run in the background:
 
 1. upload and upload the application:
@@ -64,3 +64,13 @@ The daily email generator can also be ran locally by:
 - `d_graphs.py`: Where you can put any functions that create graphs.
 - `pages` folder: Where you can put your dashboard page. Name it what you want it to be in the side bar, e.g. `Topic_Filter.py` shows as Topic Filter
 - Create any other files that you need!
+
+### ✅ Test coverage
+To generate a detailed test report:
+```bash
+pytest -vv
+```
+To include coverage results:
+```bash
+pytest --cov -vv
+```

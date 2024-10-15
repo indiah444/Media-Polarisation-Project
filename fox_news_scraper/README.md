@@ -2,7 +2,10 @@
 
 ## 📋 Overview
 
-This module is responsible for extracting articles from various Fox News RSS feeds, cleaning the extracted content, and loading the final cleaned data. The extraction process involves fetching the RSS feed data, retrieving the full article content, and then cleaning the text to remove unwanted characters, stopwords, and trailing whitespace. The cleaned data is then transformed into a CSV and loaded into the correct S3 bucket.
+This module is responsible for extracting articles from various Fox News RSS feeds, cleaning the extracted content, and loading the final cleaned data. The extraction process involves:
+    1. Fetching the RSS feed data, retrieving the full article content
+    2. Cleaning the article text to remove unwanted characters and trailing whitespace. 
+    3. Transforming the data into a dataframe and loading as a CSV into the correct S3 bucket.
 
 ## 🛠️ Prerequisites
 - **Docker** installed.
@@ -39,7 +42,7 @@ To deploy the overall cloud infrastructure the Fox News scraper must be containe
     - Authenticate your aws credentials with docker
     - Create the docker image
     - Tag the docker image
-    - Upload tagged imgage to the ECR repository
+    - Upload tagged image to the ECR repository
 
 ### 💻 Running Locally (MacOS)
 The Fox News web scraper can also be ran locally by:
@@ -59,19 +62,18 @@ The Fox News web scraper can also be ran locally by:
     ```
 
 ## 📁 Files
-
 - `extract_fn.py`: This file handles the extraction of articles from Fox News RSS feeds. It uses the `feedparser` library to parse RSS feeds and `BeautifulSoup` to scrape the full content of the articles.
-
 - `clean_fn.py`: This file cleans the extracted article content by removing URLs, punctuation, and stopwords using regular expressions and NLTK's stopword corpus.
-
 - `load_fn.py`: This file converts the cleaned data into a Pandas DataFrame and uploads it as a CSV to an S3 bucket. It combines the fetching, cleaning, and uploaded processes.
-
 - `pipeline_fn.py`: This file contains the main Lambda handler function for the Fox News scraper. It orchestrates the entire flow from fetching data from RSS feeds to uploading the processed data to S3.
-
 - `Dockerfile`: This file is dockerises `pipeline_fn.py` so that it can be run on the cloud.
 
-### Testing and coverage 
-
-Run `pytest -vv` to generate a detailed test report. 
-
-Run `pytest --cov -vv` to include coverage results.
+### ✅ Test coverage
+To generate a detailed test report:
+```bash
+pytest -vv
+```
+To include coverage results:
+```bash
+pytest --cov -vv
+```
