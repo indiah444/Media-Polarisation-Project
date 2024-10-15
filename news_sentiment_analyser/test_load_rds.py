@@ -40,6 +40,18 @@ class TestLoad(unittest.TestCase):
             articles, {"Article 1": 101, "Article 2": 102})
         fake_insert_into_assignment.assert_called_once_with(processed_df)
 
+    @patch('load_rds.insert_into_articles')
+    @patch('load_rds.process_df_for_assignment_insert')
+    @patch('load_rds.insert_into_assignment')
+    def test_load_with_empty_dataframe(self, fake_insert_into_assignment, fake_process_df_for_assignment_insert, fake_insert_into_articles):
+        """Test that no methods are called when the dataframe is empty."""
+        empty_articles = pd.DataFrame()
+        load(empty_articles)
+
+        fake_insert_into_articles.assert_not_called()
+        fake_process_df_for_assignment_insert.assert_not_called()
+        fake_insert_into_assignment.assert_not_called()
+
 
 class TestInsertIntoArticles(unittest.TestCase):
     """Tests for the insert_into_articles function."""

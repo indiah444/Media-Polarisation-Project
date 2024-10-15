@@ -64,6 +64,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     )
     return final_chart
 
+
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
     last_point_df = df.dropna().groupby('source_name').apply(
@@ -111,7 +112,8 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         align="left", dx=10).encode(text="source_name")
 
     return line + points + source_names
-=======
+
+
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],

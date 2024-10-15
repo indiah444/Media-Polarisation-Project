@@ -170,6 +170,31 @@ class TestFindArticleTopics(unittest.TestCase):
         }
         self.assertEqual(result, expected_result)
 
+    @patch('openai_topics.OpenAI')
+    def test_json_with_code_block(self, fake_OpenAI):
+        """Test handling of OpenAI response wrapped in ```json code block."""
+        fake_ai_client = MagicMock(spec=OpenAI)
+        fake_OpenAI.return_value = fake_ai_client
+        fake_chat = MagicMock()
+        fake_ai_client.chat = fake_chat
+        fake_response = MagicMock()
+        fake_response.choices = [MagicMock()]
+        fake_response.choices[0].message.content = "```json\n" + json.dumps([
+            {"title": "Article 1", "topics": ["Technology"]},
+            {"title": "Article 2", "topics": ["Health"]}
+        ]) + "\n```"
+        fake_chat.completions.create.return_value = fake_response
+        article_titles = ["Article 1", "Article 2"]
+        topics = ["Technology", "Health", "Sports"]
+        result = find_article_topics(article_titles, topics, fake_ai_client)
+
+        expected_result = {
+            "Article 1": ["Technology"],
+            "Article 2": ["Health"]
+        }
+        fake_chat.completions.create.assert_called_once()
+        self.assertEqual(result, expected_result)
+
 
 class TestChunkList(unittest.TestCase):
     """Tests chuck_list function."""

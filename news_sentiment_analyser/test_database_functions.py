@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from psycopg2.extensions import connection
 
-from database_functions import create_connection, get_topic_names, RealDictCursor, get_topic_dict, get_source_dict
+from database_functions import create_connection, get_topic_names, RealDictCursor, get_topic_dict, get_source_dict, get_article_titles
 
 
 @patch('database_functions.connect')
@@ -86,3 +86,22 @@ def test_get_source_dict(fake_create_connection):
         "SELECT source_name, source_id FROM source;")
 
     assert result == {"The Sun": 77, "The Moon": 22}
+
+
+@patch('database_functions.create_connection')
+def test_get_article_titles(fake_create_connection):
+    """Tests the get_article_titles function."""
+    fake_conn = MagicMock()
+    fake_cursor = MagicMock()
+    fake_create_connection.return_value.__enter__.return_value = fake_conn
+    fake_conn.cursor.return_value.__enter__.return_value = fake_cursor
+    fake_cursor.fetchall.return_value = [
+        {"article_title": "Dogs"},
+        {"article_title": "Cats"}
+    ]
+    result = get_article_titles()
+
+    fake_cursor.execute.assert_called_once_with(
+        "SELECT article_title FROM article;")
+
+    assert result == ["Dogs", "Cats"]
