@@ -64,7 +64,54 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     )
     return final_chart
 
+def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataframe with the maximum date published for each source."""
+    last_point_df = df.dropna().groupby('source_name').apply(
+        lambda x: x.loc[x['date_published'].idxmax()]
+    )
+    return last_point_df
 
+
+def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
+    """Visualise changes in sentiment over time. """
+    base = alt.Chart(df).encode(
+        alt.Color("source_name:N", title='Source Name').legend(None)
+    ).properties(
+        width=500
+    ).interactive()
+
+    if not by_title:
+        y_axis = ('content_polarity_score', "Content Polarity Score")
+    else:
+        y_axis = ('title_polarity_score', "Title Polarity Score")
+
+    line = base.mark_line().encode(
+        x=alt.X('date_published:T', axis=alt.Axis(
+            offset=-150, title='Date Published', titleAnchor="end")),
+
+        y=alt.Y(f'{y_axis[0]}:Q', title=y_axis[1]),
+
+        tooltip=[
+            alt.Tooltip(field="source_name", title="Source Name"),
+            alt.Tooltip(field=f"{y_axis[0]}", title=f"Average {y_axis[1]}")
+        ]
+    ).properties(
+        width=500).interactive()
+
+    last_point = get_last_point(df)
+
+    points = alt.Chart(last_point).mark_circle(size=100).encode(
+        x='date_published:T',
+        y=alt.Y(f'{y_axis[0]}:Q'),
+        tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
+        color=alt.Color('source_name:N')
+    )
+
+    source_names = points.mark_text(
+        align="left", dx=10).encode(text="source_name")
+
+    return line + points + source_names
+=======
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
