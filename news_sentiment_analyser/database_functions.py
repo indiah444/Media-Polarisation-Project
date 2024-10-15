@@ -56,8 +56,9 @@ def get_article_titles() -> list[str]:
         with conn.cursor() as cur:
             cur.execute(query)
             res = cur.fetchall()
-
-    return [article['article_title'] for article in res]
+    if res:
+        return [article['article_title'] for article in res]
+    return []
 
 
 if __name__ == "__main__":

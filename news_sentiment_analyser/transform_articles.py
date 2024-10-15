@@ -76,33 +76,4 @@ def drop_duplicate_titles(articles: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    fake_data = {
-        "title": [
-            "Trump Criticizes 2024 Election Process",
-            "Harris Advocates for Climate Change Action",
-            "Natural Disaster Strikes Coastal City",
-            "Supreme Court Rules on Abortion Laws"
-        ],
-        "content": [
-            "In a recent rally, Donald Trump h...",
-            "Vice President Kamala Harris urged the...",
-            "A devastating hurricane hit the...",
-            "The Supreme Court ruled on..."
-        ],
-        "source_name": ["Fox News", "Democracy Now!", "Democracy Now!", "Fox News"],
-        "published": [
-            datetime(2023, 8, 12),
-            datetime(2024, 3, 5),
-            datetime(2024, 1, 22),
-            datetime(2023, 10, 14)
-        ],
-        "link": [
-            "https://example.com/trump-2024-criticism",
-            "https://example.com/harris-climate-change",
-            "https://example.com/natural-disaster-coast",
-            "https://example.com/supreme-court-abortion"
-        ]
-    }
-    fake_articles = pd.DataFrame(fake_data)
-
-    print(transform(fake_articles))
+    pass
