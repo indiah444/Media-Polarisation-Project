@@ -38,9 +38,11 @@ if __name__ == "__main__":
     ## 🚀 Explore the Data
                 
     Use the tabs on the sidebar to begin exploring the data:
-    - <span style='color:red; font-weight:bold;'>**Subscribe**</span>: The sign-up page for email updates. You can update your details, or unsubscribe from email updates if you wish from here.
-    - <span style='color:blue; font-weight:bold;'>**Topic Filter**</span>: See how different outlets cover the same topics.
-    - <span style='color:red; font-weight:bold;'>**Word Clouds**</span>: See a quick snapshot of the most common words used by different outlets.
+    - <span style='color:red; font-weight:bold;'>**Overview**</span>: Get a broad understanding of media polarisation, including key visualisations that summarise the sentiment and coverage across different outlets.
+    - <span style='color:blue; font-weight:bold;'>**Sentiment Over Time**</span>: See how sentiment has shifted over time for various topics. This page provides interactive charts to help you visualise trends in media coverage.
+    - <span style='color:red; font-weight:bold;'>**Topic Filter**</span>: Dive deep into specific topics and compare how different outlets cover them. You can filter by topics to see the varying sentiments used.
+    - <span style='color:blue; font-weight:bold;'>**Word Clouds**</span>: Visualise the most frequently used words by different media outlets. This page provides quick insights into the language and framing used in coverage.
+    - <span style='color:red; font-weight:bold;'>**Subscribe**</span>: Sign up for daily or weekly email updates. You can manage your subscription preferences and ensure you stay informed about new insights and changes in media coverage.
                 
     Our goal is to provide you a clearer picture of how sentiment and emotions shape media, giving you the tools to become a more critical news consumer.
     """, unsafe_allow_html=True)
