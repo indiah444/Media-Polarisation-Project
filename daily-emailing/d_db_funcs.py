@@ -1,16 +1,19 @@
 """Some functions for interacting with the RDS."""
+
 from os import environ as ENV
 from datetime import datetime, timedelta
 
-import pandas as pd
+
+from psycopg2.extensions import connection, cursor
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
-from psycopg2.extensions import connection, cursor
 from dotenv import load_dotenv
+import pandas as pd
 
 
 def create_connection() -> connection:
     """Creates a connection to the RDS with postgres."""
+
     load_dotenv()
     conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
@@ -28,11 +31,13 @@ def get_cursor(conn: connection) -> cursor:
 
 def get_yesterday_date() -> str:
     """Return yesterdays date in '%Y-%m-%d' format"""
+
     return (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
 def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
     """Returns a dataframe of average content polarity by topic and source."""
+
     yesterday = get_yesterday_date()
 
     query = f"""
@@ -51,11 +56,13 @@ def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
         with get_cursor(conn) as cur:
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
+
     return pd.DataFrame(data)
 
 
 def get_daily_subscribers() -> list[str]:
     """Returns the emails of subscribers for daily emails."""
+
     query = """
         SELECT subscriber_email 
         FROM subscriber
@@ -68,11 +75,13 @@ def get_daily_subscribers() -> list[str]:
 
     if not data:
         return []
+
     return [subscriber['subscriber_email'] for subscriber in data]
 
 
 def get_yesterday_links() -> list[str]:
     """Returns the article links from yesterday."""
+
     yesterday = get_yesterday_date()
     query = """
             SELECT article_url
@@ -86,4 +95,5 @@ def get_yesterday_links() -> list[str]:
 
     if not data:
         return []
+
     return [article['article_url'] for article in data]
