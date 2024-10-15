@@ -108,9 +108,8 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     st.pyplot(plt.gcf())
 
 
-if __name__ == "__main__":
-
-    load_dotenv()
+def run_app():
+    """Runs the Word Cloud Streamlit page."""
 
     download_nltk_data()
 
@@ -131,3 +130,8 @@ if __name__ == "__main__":
     st.header("Democracy Now! Word Cloud")
     generate_wordcloud(democracy_now_word_freq,
                        "Democracy Now!", colormap="PuBu")
+
+
+if __name__ == "__main__":
+
+    run_app()
