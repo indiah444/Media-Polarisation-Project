@@ -11,6 +11,14 @@ from html_content import generate_html
 from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers, get_yesterday_date
 
 
+def get_ses_client():
+    """Return boto3 ses client to send emails with"""
+
+    return boto3.client("ses", region_name="eu-west-2",
+                        aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
+                        aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
+
+
 def send_email() -> None:
     """Sends an email"""
 
@@ -19,15 +27,12 @@ def send_email() -> None:
     df = get_avg_polarity_by_topic_and_source_yesterday()
     html = generate_html(df)
     yesterday = get_yesterday_date()
-    client = boto3.client("ses", region_name="eu-west-2",
-                          aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
-                          aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
+
+    client = get_ses_client()
     message = MIMEMultipart()
 
     message["Subject"] = f"Media Sentiment Report for {yesterday}"
-    body = MIMEText(
-        html,
-        "html")
+    body = MIMEText(html, "html")
     message.attach(body)
 
     client.send_raw_email(
