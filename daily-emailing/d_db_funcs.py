@@ -67,7 +67,7 @@ def get_daily_subscribers() -> list[str]:
         SELECT subscriber_email 
         FROM subscriber
         WHERE daily = TRUE
-            """
+    """
     with create_connection() as conn:
         with get_cursor(conn) as cur:
             cur.execute(query)
@@ -84,9 +84,10 @@ def get_yesterday_links() -> list[str]:
 
     yesterday = get_yesterday_date()
     query = """
-            SELECT article_url
-            FROM article
-            WHERE date_published = %s """
+        SELECT article_url
+        FROM article
+        WHERE date_published = %s 
+    """
 
     with create_connection() as conn:
         with get_cursor(conn) as cur:
