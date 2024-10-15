@@ -64,6 +64,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     )
     return final_chart
 
+
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
     last_point_df = df.dropna(subset=['date_published']).groupby('source_name').agg({
@@ -115,7 +116,8 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         align="left", dx=10).encode(text="source_name")
 
     return line + points + source_names
-=======
+
+
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
@@ -156,7 +158,8 @@ def add_source_columns(df: pd.DataFrame) -> str:
     color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
     html = ""
     for source in df.columns:
-        html += f"<th style='background-color: white; color: {color_scheme[source]};'>{source}</th>"
+        html += f"<th style='background-color: white; color: {
+            color_scheme[source]};'>{source}</th>"
     return html
 
 
@@ -168,7 +171,8 @@ def add_topic_rows(df: pd.DataFrame) -> str:
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
-                html += f"<td style='background-color: {color};'>{score:.2f}</td>"
+                html += f"<td style='background-color: {
+                    color};'>{score:.2f}</td>"
             else:
                 html += f"<td style='background-color: white;'>{score}</td>"
         html += "</tr>"
