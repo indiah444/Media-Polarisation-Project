@@ -61,9 +61,13 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
 
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
-    last_point_df = df.dropna().groupby('source_name').apply(
-        lambda x: x.loc[x['date_published'].idxmax()]
-    )
+    last_point_df = df.dropna(subset=['date_published']).groupby('source_name').agg({
+        'topic_name': 'last',
+        'date_published': 'max',
+        'title_polarity_score': 'last',
+        'content_polarity_score': 'last'
+    }).reset_index()
+
     return last_point_df
 
 
@@ -93,7 +97,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     ).properties(
         width=500).interactive()
 
-    last_point = get_last_point(df)
+    last_point = get_last_point(df).reset_index(drop=True)
 
     points = alt.Chart(last_point).mark_circle(size=100).encode(
         x='date_published:T',
