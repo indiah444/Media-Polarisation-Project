@@ -26,9 +26,14 @@ def get_cursor(conn: connection) -> cursor:
     return conn.cursor()
 
 
+def get_yesterday_date() -> str:
+    """Return yesterdays date in '%Y-%m-%d' format"""
+    return (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+
 def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
     """Returns a dataframe of average content polarity by topic and source."""
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    yesterday = get_yesterday_date()
 
     query = f"""
         SELECT t.topic_name, s.source_name,
@@ -57,7 +62,7 @@ def get_daily_subscribers() -> list[str]:
         WHERE daily = TRUE
             """
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query)
             data = cur.fetchall()
     if data:
@@ -74,7 +79,7 @@ def get_yesterday_links() -> list[str]:
             WHERE date_published = %s """
 
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
     if data:

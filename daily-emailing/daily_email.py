@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import boto3
 
 from html_content import generate_html
-from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers
+from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers, get_yesterday_date
 
 
 def send_email() -> None:
@@ -19,7 +19,7 @@ def send_email() -> None:
     emails = get_daily_subscribers()
     df = get_avg_polarity_by_topic_and_source_yesterday()
     html = generate_html(df)
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%d-%m-%Y')
+    yesterday = get_yesterday_date()
     client = boto3.client("ses", region_name="eu-west-2",
                           aws_access_key_id=ENV["AWS_ACCESS_KEY_BOUDICCA"],
                           aws_secret_access_key=ENV["AWS_ACCESS_SECRET_KEY_BOUDICCA"])
