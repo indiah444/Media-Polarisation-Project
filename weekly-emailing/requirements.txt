@@ -5,3 +5,4 @@ boto3
 psycopg2-binary
 altair
 vl-convert-python
+pytest
