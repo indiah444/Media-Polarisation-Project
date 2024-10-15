@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
-from psycopg2.extensions import connection
+from psycopg2.extensions import connection, cursor
 from dotenv import load_dotenv
 
 
@@ -18,6 +18,12 @@ def create_connection() -> connection:
                    cursor_factory=RealDictCursor)
 
     return conn
+
+
+def get_cursor(conn: connection) -> cursor:
+    """Return cursor object to execute sql commands"""
+
+    return conn.cursor()
 
 
 def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
@@ -37,7 +43,7 @@ def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
     """
 
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
     return pd.DataFrame(data)
