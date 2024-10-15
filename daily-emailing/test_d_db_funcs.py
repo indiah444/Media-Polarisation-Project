@@ -61,9 +61,33 @@ class TestGetAvgPolarityByTopicAndSourceYesterday:
 
 
 class TestGetDailySubscribers:
+
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
-    def test_get_daily_subscribers_with_data(self, mock_create_conn, mock_get_cursor):
+    @patch('d_db_funcs.get_yesterday_date')
+    def test_correct_cursor_call_and_empty_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
+
+        mock_cursor = MagicMock()
+        mock_conn = MagicMock()
+        mock_create_conn.return_value.__enter__.return_value = mock_conn
+        mock_get_cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.fetchall.return_value = []
+
+        query = """
+        SELECT subscriber_email 
+        FROM subscriber
+        WHERE daily = TRUE
+    """
+
+        result = get_daily_subscribers()
+
+        mock_cursor.execute.assert_called_once_with(query)
+        assert len(result) == 0
+
+    @patch('d_db_funcs.get_cursor')
+    @patch('d_db_funcs.create_connection')
+    def test_with_data(self, mock_create_conn, mock_get_cursor):
 
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
@@ -81,7 +105,7 @@ class TestGetDailySubscribers:
 
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
-    def test_get_daily_subscribers_no_data(self, mock_create_conn, mock_get_cursor):
+    def test_no_data(self, mock_create_conn, mock_get_cursor):
 
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
@@ -96,10 +120,35 @@ class TestGetDailySubscribers:
 
 
 class TestGetYesterdayLinks:
+
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
     @patch('d_db_funcs.get_yesterday_date')
-    def test_get_yesterday_links_with_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
+    def test_correct_cursor_call_and_empty_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
+
+        mock_get_yesterday_date.return_value = '2024-01-01'
+        mock_cursor = MagicMock()
+        mock_conn = MagicMock()
+        mock_create_conn.return_value.__enter__.return_value = mock_conn
+        mock_get_cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.fetchall.return_value = []
+
+        query = """
+        SELECT article_url
+        FROM article
+        WHERE date_published = %s 
+    """
+
+        result = get_yesterday_links()
+
+        mock_cursor.execute.assert_called_once_with(query, ('2024-01-01',))
+        assert len(result) == 0
+
+    @patch('d_db_funcs.get_cursor')
+    @patch('d_db_funcs.create_connection')
+    @patch('d_db_funcs.get_yesterday_date')
+    def test_with_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
 
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
@@ -120,7 +169,7 @@ class TestGetYesterdayLinks:
     @patch('d_db_funcs.get_cursor')
     @patch('d_db_funcs.create_connection')
     @patch('d_db_funcs.get_yesterday_date')
-    def test_get_yesterday_links_no_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
+    def test_no_data(self, mock_get_yesterday_date, mock_create_conn, mock_get_cursor):
 
         mock_cursor = MagicMock()
         mock_conn = MagicMock()
