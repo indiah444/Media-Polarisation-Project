@@ -91,6 +91,7 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     return word_freq
 
 
+@st.cache_data
 def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
@@ -108,6 +109,7 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     st.pyplot(plt.gcf())
 
 
+@st.cache_data
 def run_app():
     """Runs the Word Cloud Streamlit page."""
 
