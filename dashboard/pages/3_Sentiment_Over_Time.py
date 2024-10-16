@@ -23,8 +23,6 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
         raise ValueError(
             f"The aggregate parameter must be one of {AGGREGATES}.")
 
-    df['date_published'] = pd.to_datetime(df['date_published'])
-
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
         time_interval, on='date_published').agg({"title_polarity_score": aggregate,
                                                  "content_polarity_score": aggregate}).reset_index()
@@ -71,10 +69,8 @@ def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     return data_df
 
 
-def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
-                                data_df: pd.DataFrame, by_title: bool,
-                                colourscheme: str = 'yellowgreen'):
-    """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
+def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
+    """Returns an altair heatmap"""
     vals = "title_polarity_score" if by_title else "content_polarity_score"
     data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
 
@@ -93,6 +89,14 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
         height=300
     )
 
+
+def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
+                                weekly_data: pd.DataFrame, sent_by_title: bool,
+                                colour: str = 'yellowgreen'):
+    """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
+    header_text = "By Article Title" if sent_by_title else "By Article Content"
+    heatmaps_container.header(header_text)
+    heatmap = visualise_heatmap(weekly_data, sent_by_title, colour)
     heatmaps_container.altair_chart(heatmap)
 
 
