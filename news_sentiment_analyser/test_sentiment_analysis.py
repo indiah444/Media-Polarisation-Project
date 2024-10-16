@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 """Tests sentiment analysis script"""
 
 import pytest

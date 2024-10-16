@@ -1,4 +1,5 @@
 # pylint: skip-file
+
 """Tests the content cleaning methods"""
 
 import pytest
