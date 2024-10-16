@@ -63,8 +63,7 @@ The daily email generator can also be ran locally by:
 ## 📁 Files
 - `db_functions.py`: Where you can put any functions that interact with the database
 - `d_graphs.py`: Where you can put any functions that create graphs
-- `pages` folder: Where you can put your dashboard page. Name it what you want it to be in the side bar, e.g. `Topic_Filter.py` shows as Topic Filter
-- Feel free to add any new pages to the dashboard by placing the `*.py` file in the `pages/` subfolder
+- `pages/` folder: Where you can add additional dashboard pages. Name it what you want it to be in the side bar, e.g. `Topic_Filter.py` shows as Topic Filter
 
 ### ✅ Test coverage
 To generate a detailed test report:
