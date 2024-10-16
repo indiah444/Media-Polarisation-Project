@@ -35,7 +35,7 @@ def mock_sia():
 def test_get_sentiments_correct_cols(mock_sia, sample_df):
     """Asserts that get_sentiments returns a dataframe with the correct columns"""
 
-    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text')
 
     assert 'pos' in sentiments.columns
     assert 'neg' in sentiments.columns
@@ -46,7 +46,7 @@ def test_get_sentiments_correct_cols(mock_sia, sample_df):
 def test_get_sentiments_correct_vals(mock_sia, sample_df):
     """Asserts that get_sentiments returns a dataframe with the correct values"""
 
-    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text')
 
     assert pytest.approx(sentiments['pos'][0], rel=1e-4) == 0.6369
     assert pytest.approx(sentiments['neg'][1], rel=1e-4) == 0.4939
@@ -63,7 +63,7 @@ def test_get_sentiments_type_error():
     })
 
     with pytest.raises(TypeError):
-        get_sentiments(MagicMock(), df_non_string, 'text', 'topic', 'source')
+        get_sentiments(MagicMock(), df_non_string, 'text')
 
 
 def test_get_sentiments_type_error_mixed_types():
@@ -77,14 +77,14 @@ def test_get_sentiments_type_error_mixed_types():
     })
 
     with pytest.raises(TypeError):
-        get_sentiments(MagicMock(), df_non_string, 'text', 'topic', 'source')
+        get_sentiments(MagicMock(), df_non_string, 'text')
 
 
 def test_get_avg_sentiment_correct_shape(mock_sia, sample_df):
     """Asserts that get_avg_sentiment returns a dataframe
     of the correct shape."""
 
-    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text')
 
     avg_sentiments = get_avg_sentiment(sentiments, 'topic', 'source')
 
@@ -95,7 +95,7 @@ def test_get_avg_sentiment_correct_values(mock_sia, sample_df):
     """Asserts that get_avg_sentiment returns a dataframe
     with the correct values."""
 
-    sentiments = get_sentiments(mock_sia, sample_df, 'text', 'topic', 'source')
+    sentiments = get_sentiments(mock_sia, sample_df, 'text')
 
     avg_sentiments = get_avg_sentiment(sentiments, 'topic', 'source')
 

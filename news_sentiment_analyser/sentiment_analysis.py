@@ -3,11 +3,12 @@
 import pandas as pd
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from clean_content import clean_content
 
 nltk.download('vader_lexicon')
 
 
-def get_sentiments(sia, df: pd.DataFrame, text_col: str, topic_col: str, source_col: str) -> pd.DataFrame:
+def get_sentiments(sia, df: pd.DataFrame, text_col: str) -> pd.DataFrame:
     """Get sentiment data for a given text column.
     Returns a dataframe containing:
     text column, topic column and sentiments (pos,neg,neut,compound)."""
@@ -15,6 +16,8 @@ def get_sentiments(sia, df: pd.DataFrame, text_col: str, topic_col: str, source_
     if not pd.api.types.is_string_dtype(df[text_col]):
         raise TypeError("The text column must contain strings.")
 
+    df[text_col] = df[text_col].apply(
+        lambda x: clean_content(x, is_html=False))
     sents = df[text_col].apply(lambda x: sia.polarity_scores(x))
 
     sentiments = df.copy()
