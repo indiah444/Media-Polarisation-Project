@@ -1,6 +1,5 @@
 """File that holds the main lambda handler function for the Fox News scraper."""
 
-import grequests
 from dotenv import load_dotenv
 
 from load_csv_fn import process_rss_feeds_and_upload
@@ -18,7 +17,7 @@ RSS_FEED_URLS = [
 ]
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):  # pylint: disable=W0613
     """AWS Lambda handler function."""
 
     try:
@@ -28,7 +27,7 @@ def lambda_handler(event, context):
             "body": "RSS feed data processed and uploaded to S3 successfully."
         }
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=W0718
         return {
             "statusCode": 500,
             "body": f"Error: {str(e)}"
