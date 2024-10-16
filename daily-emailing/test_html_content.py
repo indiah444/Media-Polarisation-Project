@@ -85,22 +85,25 @@ class TestAddTopicRows:
 
 class TestGenerateHtmlWithLinks:
 
-    @patch('html_content.get_yesterday_links')
+    @patch('html_content.get_yesterday_links_and_titles')
     def test_with_links(self, mock_get_yesterday_links):
-        mock_get_yesterday_links.return_value = ['http://example.com/article1',
-                                                 'http://example.com/article2']
+        mock_get_yesterday_links.return_value = [{'title': 'article1', 'link': 'http://example.com/article1', 'topic': 'topic1'},
+                                                 {'title': 'article2', 'link': 'http://example.com/article2', 'topic': 'topic2'}]
         result = generate_html_with_links()
-        expected = ("<h2>Yesterday's articles:</h2>\n<ul>\n"
-                    '  <li><a href="http://example.com/article1">http://example.com/article1</a></li>\n'
-                    '  <li><a href="http://example.com/article2">http://example.com/article2</a></li>\n'
+        expected = ("<h2>Yesterday's articles:</h2>"
+                    '<h4>topic1</h4>\n<ul>\n'
+                    '  <li><a href="http://example.com/article1">article1</a></li>\n'
+                    "</ul>"
+                    '<h4>topic2</h4>\n<ul>\n'
+                    '  <li><a href="http://example.com/article2">article2</a></li>\n'
                     "</ul>")
         assert result == expected
 
-    @patch('html_content.get_yesterday_links')
+    @patch('html_content.get_yesterday_links_and_titles')
     def test_with_no_links(self, mock_get_yesterday_links):
         mock_get_yesterday_links.return_value = []
         result = generate_html_with_links()
-        expected = ("<h2>Yesterday's articles:</h2>\n<ul>\n</ul>")
+        expected = ("<h2>Yesterday's articles:</h2>")
         assert result == expected
 
 

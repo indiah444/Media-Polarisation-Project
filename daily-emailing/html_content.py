@@ -5,7 +5,7 @@ from os import environ as ENV
 
 import pandas as pd
 
-from d_db_funcs import get_yesterday_links
+from d_db_funcs import get_yesterday_links_and_titles
 
 
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,11 +45,16 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 def generate_html_with_links() -> str:
     """Creates a list of yesterdays articles urls."""
 
-    urls = get_yesterday_links()
-    html = "<h2>Yesterday's articles:</h2>\n<ul>\n"
-    for url in urls:
-        html += f'  <li><a href="{url}">{url}</a></li>\n'
-    html += "</ul>"
+    urls = get_yesterday_links_and_titles()
+    topics = sorted(set([row['topic'] for row in urls]))
+    html = "<h2>Yesterday's articles:</h2>"
+    for topic in topics:
+        html += f'<h4>{topic}</h4>\n<ul>\n'
+        for url in urls:
+            if url['topic'] == topic:
+                html += f'  <li><a href="{url['link']
+                                          }">{url['title']}</a></li>\n'
+        html += "</ul>"
 
     return html
 
@@ -112,3 +117,7 @@ def generate_html(df) -> str:
     """
 
     return html
+
+
+if __name__ == "__main__":
+    print(generate_html_with_links())
