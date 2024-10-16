@@ -13,7 +13,6 @@ WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
 def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     """Resamples the dataframe to return the aggregate sentiment scores by 
     (source, topic) over a set of grouped time intervals."""
-
     if not aggregate in AGGREGATES:
         raise ValueError(
             f"The aggregate parameter must be one of {AGGREGATES}.")
@@ -28,7 +27,6 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
 
 def construct_streamlit_time_graph(data: pd.DataFrame, avg_col, count_col, sent_by_title: bool, sampling: str):
     """Constructs a streamlit time graph."""
-
     averaged = resample_dataframe(data, sampling, "mean").dropna()
 
     counts = resample_dataframe(data, sampling, "count").dropna()
@@ -89,7 +87,6 @@ def construct_streamlit_heatmap(heatmaps_container, data: pd.DataFrame, by_title
 
 
 if __name__ == "__main__":
-
     topic_names = get_topic_names()
 
     st.sidebar.header("Settings")
