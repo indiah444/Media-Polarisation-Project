@@ -3,7 +3,7 @@ source .env
 EC2_USER="ec2-user"
 DASHBOARD_DIR="~/dashboard"
 
-scp -i "$KEY_PATH" d_graphs.py Home.py verify_identity.py db_functions.py visualise_time_changes.py requirements.txt .env $EC2_USER@$EC2_HOST:$DASHBOARD_DIR/
+scp -i "$KEY_PATH" d_graphs.py 1_Home.py verify_identity.py db_functions.py requirements.txt .env $EC2_USER@$EC2_HOST:$DASHBOARD_DIR/
 scp -i "$KEY_PATH" -r pages/ $EC2_USER@$EC2_HOST:$DASHBOARD_DIR/
 
 ssh -i "$KEY_PATH" $EC2_USER@$EC2_HOST << EOF
@@ -23,5 +23,5 @@ ssh -i "$KEY_PATH" $EC2_USER@$EC2_HOST << EOF
     pip install -r requirements.txt
     
     echo "Running Streamlit"
-    streamlit run Home.py --server.port 8501 --server.address 0.0.0.0
+    streamlit run 1_Home.py --server.port 8501 --server.address 0.0.0.0
 EOF

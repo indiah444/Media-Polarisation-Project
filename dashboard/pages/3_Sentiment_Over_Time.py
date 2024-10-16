@@ -8,6 +8,7 @@ from d_graphs import visualise_change_over_time
 AGGREGATES = ["mean", "count"]
 
 
+@st.cache_data
 def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     """Resamples the dataframe to return the aggregate sentiment scores by 
     (source, topic) over a set of grouped time intervals."""
@@ -44,6 +45,7 @@ def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col, count_col, se
     count_col.altair_chart(count_graph, use_container_width=True)
 
 
+@st.cache_data
 def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     """Adds year, month, and weekday columns to a dataframe"""
     data_df["year"] = data_df["date_published"].dt.year
