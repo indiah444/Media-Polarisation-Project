@@ -171,10 +171,12 @@ def run_app():
     articles = get_all_article_content()
     filtered_articles = filter_articles_by_date(articles, time_range)
 
-    fn_articles = [
-        article["article_content"] for article in filtered_articles if article["source_name"] == "Fox News"]
-    dn_articles = [
-        article["article_content"] for article in filtered_articles if article["source_name"] == "Democracy Now!"]
+    fn_articles = [article["article_content"]
+                   for article in filtered_articles
+                   if article["source_name"] == "Fox News"]
+    dn_articles = [article["article_content"]
+                   for article in filtered_articles
+                   if article["source_name"] == "Democracy Now!"]
 
     fox_news_word_freq = get_word_frequency(fn_articles, custom_stop_words)
     democracy_now_word_freq = get_word_frequency(
