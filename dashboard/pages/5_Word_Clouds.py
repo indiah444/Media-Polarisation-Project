@@ -114,7 +114,7 @@ def run_app():
     download_nltk_data()
 
     custom_stop_words = ["fox", "news", "said",
-                         "get", "also", "would", "could", "get"]
+                         "get", "also", "would", "could", "click"]
 
     st.title("Article Content Word Cloud by News Source")
 
