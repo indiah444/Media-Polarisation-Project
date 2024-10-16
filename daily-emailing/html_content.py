@@ -46,7 +46,7 @@ def generate_html_with_links() -> str:
     """Creates a list of yesterdays articles urls."""
 
     urls = get_yesterday_links_and_titles()
-    topics = sorted(set([row['topic'] for row in urls]))
+    topics = sorted({row['topic'] for row in urls})
     html = "<h2>Yesterday's articles:</h2>"
     for topic in topics:
         html += f'<h4>{topic}</h4>\n<ul>\n'

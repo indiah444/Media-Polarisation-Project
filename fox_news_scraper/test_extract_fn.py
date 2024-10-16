@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 """Test file for functions in extract_fn.py"""
 
 from unittest.mock import patch, MagicMock

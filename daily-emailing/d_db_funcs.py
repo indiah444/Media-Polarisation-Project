@@ -99,4 +99,6 @@ def get_yesterday_links_and_titles() -> list[str]:
     if not data:
         return []
 
-    return [{'title': article['article_title'], 'link': article['article_url'], 'topic': article['topic_name']} for article in data]
+    return [{'title': article['article_title'],
+             'link': article['article_url'],
+             'topic': article['topic_name']} for article in data]
