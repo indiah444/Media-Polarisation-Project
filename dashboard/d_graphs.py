@@ -28,6 +28,7 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
 
 def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     """Returns a scatter graph for title vs content score."""
+
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
     scatter_chart = alt.Chart(df).mark_point(filled=True).encode(
@@ -67,6 +68,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
 
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
+
     last_point_df = df.dropna(subset=['date_published']).groupby('source_name').agg({
         'topic_name': 'last',
         'date_published': 'max',
@@ -79,6 +81,7 @@ def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
 
 def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     """Visualise changes in sentiment over time. """
+
     base = alt.Chart(df).encode(
         alt.Color("source_name:N", title='Source Name').legend(None)
     ).properties(
@@ -120,6 +123,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
 
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
+
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])
 
@@ -148,6 +152,7 @@ def create_sentiment_distribution_chart(df):
 
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     """Pivots dataframe so topics are rows and sources are columns."""
+
     pivoted_df = df.pivot(index='topic_name', columns='source_name',
                           values='avg_polarity_score').fillna('N/A')
     return pivoted_df
@@ -155,6 +160,7 @@ def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
+
     color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
     html = ""
     for source in df.columns:
@@ -165,6 +171,7 @@ def add_source_columns(df: pd.DataFrame) -> str:
 
 def add_topic_rows(df: pd.DataFrame) -> str:
     """Build the rows of the table with topic and score, with color based on score."""
+
     html = ""
     for topic, row in df.iterrows():
         html += f"<tr><td style='background-color: white;'>{topic}</td>"
@@ -181,6 +188,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
 def generate_html(df) -> str:
     """generate html body"""
+
     score_df = pivot_df(df)
     html = """
     <html>
@@ -202,7 +210,7 @@ def generate_html(df) -> str:
         </style>
     </head>
     """
-    html += f"""
+    html += """
     <body>
         <table>
             <thead>
