@@ -137,7 +137,7 @@ class TestGenerateHtml:
         df = pd.DataFrame(data)
         result = generate_html(df)
 
-        assert 'Average Content Polarity Score by Topic and Source' in result
+        assert 'Average Content Polarity Score by Topic and Source (Published Yesterday - ' in result
         assert 'Yesterday\'s articles:' in result
         assert "<a href='http://example.com/article1'>http://example.com/article1</a>" in result
         assert '<th style=\'background-color: #fafafa;\'>source1</th>' in result

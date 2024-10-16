@@ -40,7 +40,7 @@ def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
 
     yesterday = get_yesterday_date()
 
-    query = f"""
+    query = """
         SELECT t.topic_name, s.source_name,
         AVG(a.content_polarity_score) AS avg_polarity_score
         FROM article_topic_assignment ata

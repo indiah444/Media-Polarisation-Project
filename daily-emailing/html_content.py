@@ -18,10 +18,10 @@ def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
 
-    html = ""
+    html = []
     for source in df.columns:
-        html += f"<th style='background-color: white;'>{source}</th>"
-    return html
+        html.append(f"<th style='background-color: white;'>{source}</th>")
+    return "".join(html)
 
 
 def add_topic_rows(df: pd.DataFrame) -> str:
@@ -80,7 +80,8 @@ def generate_html(df) -> str:
     """
     html += f"""
     <body>
-        <h2>Average Content Polarity Score by Topic and Source (Published Yesterday - {yesterday})</h2>
+        <h2>Average Content Polarity Score by Topic and Source \
+(Published Yesterday - {yesterday})</h2>
         <table>
             <thead>
                 <tr>
