@@ -6,6 +6,8 @@ from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time
 
 AGGREGATES = ["mean", "count"]
+WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
+                 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
 def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
@@ -71,13 +73,10 @@ def construct_streamlit_heatmap(heatmaps_container, data: pd.DataFrame, by_title
     data = data.groupby(["week_num", "week_text", "weekday", "date_name"],
                         as_index=False)[vals].mean()
 
-    weekday_order = ['Monday', 'Tuesday', 'Wednesday',
-                     'Thursday', 'Friday', 'Saturday', 'Sunday']
-
     heatmap = alt.Chart(data).mark_rect().encode(
         x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
             field='week_num', order='ascending')),
-        y=alt.Y('weekday:O', title='Day of the Week',  sort=weekday_order),
+        y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
         color=alt.Color(f'{vals}:Q', title='Polarity Score',
                         scale=alt.Scale(scheme=colourscheme)),
         tooltip=[vals, 'date_name', 'weekday']
