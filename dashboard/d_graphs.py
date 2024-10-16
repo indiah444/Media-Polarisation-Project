@@ -2,8 +2,10 @@
 
 import pandas as pd
 import altair as alt
+import streamlit as st
 
 
+@st.cache_data
 def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
     """Returns a bubble chart of sentiment for a source by topic."""
 
@@ -26,6 +28,7 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
     return chart
 
 
+@st.cache_data
 def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     """Returns a scatter graph for title vs content score."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
@@ -65,6 +68,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     return final_chart
 
 
+@st.cache_data
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
     last_point_df = df.dropna(subset=['date_published']).groupby('source_name').agg({
@@ -77,6 +81,7 @@ def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     return last_point_df
 
 
+@st.cache_data
 def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     """Visualise changes in sentiment over time. """
     base = alt.Chart(df).encode(
@@ -84,7 +89,8 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     ).properties(
         width=500
     ).interactive()
-
+    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
+                            range=['red', 'blue'])
     if not by_title:
         y_axis = ('content_polarity_score', "Content Polarity Score")
     else:
@@ -109,7 +115,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         x='date_published:T',
         y=alt.Y(f'{y_axis[0]}:Q'),
         tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
-        color=alt.Color('source_name:N')
+        color=alt.Color('source_name:N', scale=color_scale)
     )
 
     source_names = points.mark_text(
@@ -118,6 +124,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     return line + points + source_names
 
 
+@st.cache_data
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
@@ -146,6 +153,7 @@ def create_sentiment_distribution_chart(df):
     return chart
 
 
+@st.cache_data
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     """Pivots dataframe so topics are rows and sources are columns."""
     pivoted_df = df.pivot(index='topic_name', columns='source_name',
@@ -153,6 +161,7 @@ def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     return pivoted_df
 
 
+@st.cache_data
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
     color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
@@ -163,6 +172,7 @@ def add_source_columns(df: pd.DataFrame) -> str:
     return html
 
 
+@st.cache_data
 def add_topic_rows(df: pd.DataFrame) -> str:
     """Build the rows of the table with topic and score, with color based on score."""
     html = ""
@@ -179,6 +189,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
     return html
 
 
+@st.cache_data
 def generate_html(df) -> str:
     score_df = pivot_df(df)
     html = """
