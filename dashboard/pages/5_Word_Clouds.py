@@ -149,13 +149,23 @@ def run_app():
 
     st.title("Article Content Word Cloud by News Source")
 
+    time_range_options = ["Last hour", "Last 24 hours", "Last 7 days"]
+    selected_time_range = st.sidebar.select_slider(
+        "Select time range",
+        options=time_range_options,
+        value="Last 24 hours"
+    )
+
+    time_range_mapping = {
+        "Last hour": 0,
+        "Last 24 hours": 1,
+        "Last 7 days": 2
+    }
+    time_range = time_range_mapping[selected_time_range]
+
+    st.write(f"Time Range Selected: {selected_time_range}")
+
     articles = get_all_article_content()
-
-    time_range = st.session_state.get("time_range", 1)
-
-    time_range_dict = {0: "Last hour", 1: "Last 24 hours", 2: "Last 7 days"}
-    st.write(f"Time Range Selected: {time_range_dict[time_range]}")
-
     filtered_articles = filter_articles_by_date(articles, time_range)
 
     fn_articles = [
@@ -177,6 +187,4 @@ def run_app():
 
 if __name__ == "__main__":
 
-    time_range = st.slider("Select time range", 0, 2, 1)
-    st.session_state["time_range"] = time_range
     run_app()
