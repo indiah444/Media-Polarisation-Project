@@ -1,9 +1,9 @@
-'''Generates dummy data'''
+"""Generates dummy data"""
 
 from os import environ as ENV
 import random
-from faker import Faker
 
+from faker import Faker
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2 import extras
@@ -40,7 +40,8 @@ FOX_HEADLINES = {
 
 
 def connect(dbname, host: str, user: str, port: str, password: str):
-    '''Return a connection to the RDS database.'''
+    """Return a connection to the RDS database."""
+
     return psycopg2.connect(dbname=dbname,
                             host=host,
                             user=user,
@@ -50,7 +51,7 @@ def connect(dbname, host: str, user: str, port: str, password: str):
 
 
 def generate_fake_subscribers(fake: Faker, num: int) -> list[tuple]:
-    '''Generates fake subscribers.'''
+    """Generates fake subscribers."""
 
     subscribers = []
 
@@ -66,7 +67,7 @@ def generate_fake_articles(
         faker: Faker, num_articles: int, source_id: int,
         source_headlines: list
 ) -> list[tuple]:
-    '''Generates fake article table entries.'''
+    """Generates fake article table entries."""
 
     rows = []
 
@@ -83,8 +84,7 @@ def generate_fake_articles(
 
 
 def generate_article_topic_assignment(headlines: dict, ordered_topics: list) -> list[tuple]:
-    '''Generates fake article_topic_assignment table rows.
-    '''
+    """Generates fake article_topic_assignment table rows."""
 
     assignments = []
 
@@ -99,9 +99,9 @@ def generate_article_topic_assignment(headlines: dict, ordered_topics: list) -> 
     return assignments
 
 
-def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple], assignments: list[tuple]
-                      ):
-    '''Inserts fake data into the database'''
+def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple],
+                      assignments: list[tuple]):
+    """Inserts fake data into the database"""
 
     with conn.cursor() as cursor:
 
@@ -111,8 +111,8 @@ def insert_data_to_db(conn, fake_subs: list[tuple], fake_articles: list[tuple], 
             subscriber_surname) 
             VALUES %s""", fake_subs)
 
-        extras.execute_values(cursor, """INSERT INTO article (article_title, 
-            polarity_score, source_id, date_published, article_url) 
+        extras.execute_values(cursor, """INSERT INTO article (article_title,
+            polarity_score, source_id, date_published, article_url)
             VALUES %s""", fake_articles)
 
         extras.execute_values(cursor, """

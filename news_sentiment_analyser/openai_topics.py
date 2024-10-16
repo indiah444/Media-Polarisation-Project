@@ -1,4 +1,5 @@
 """Script to find the topics of an article using openai."""
+
 from os import environ as ENV
 import json
 
@@ -32,7 +33,7 @@ def add_topics_to_dataframe(articles: pd.DataFrame) -> pd.DataFrame:
     return df_filtered
 
 
-def chunk_list(lst, chunk_size):
+def chunk_list(lst: list, chunk_size: int):
     """Chunks the list of titles into batches."""
     for i in range(0, len(lst), chunk_size):
         yield lst[i:i + chunk_size]
@@ -59,7 +60,7 @@ def find_article_topics(article_titles: list[str], topics: list[str],
     except OpenAIError as e:
         print(f"OpenAI API error: {e}")
         return {title: [] for title in article_titles}
-    except Exception as e:
+    except Exception as e:  # pylint: disable=W0718
         print(f"Unexpected error: {e}")
         return {title: [] for title in article_titles}
     try:
@@ -84,8 +85,8 @@ def find_article_topics(article_titles: list[str], topics: list[str],
 def create_message(topics: list[str]) -> str:
     """Creates the message to be sent to the openAI, as the system content."""
     content_topics = ", ".join(topics)
-    message = f"""Your job is to return a object with the structure 
-    'title': title, 'topics': list of topics (or empty list if none), 
+    message = f"""Your job is to return a object with the structure
+    'title': title, 'topics': list of topics (or empty list if none),
     for each article title, in a list. The topics are: {content_topics}"""
 
     return message

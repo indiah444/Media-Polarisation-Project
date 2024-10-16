@@ -1,3 +1,5 @@
+"""Function to upload DataFrame object as CSV to S3 bucket."""
+
 from os import environ as ENV
 from io import StringIO
 

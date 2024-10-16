@@ -54,7 +54,7 @@ def get_article_content(article_url: str) -> str:
         content = parse_article_content(response)
         return content
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=W0718
         return f"Failed to fetch full content from {article_url}: {e}"
 
 
@@ -101,8 +101,8 @@ def fetch_from_multiple_feeds(feed_urls: list[str]) -> list[dict]:
             entries = parse_feed_entries(feed)
             all_entries.extend(entries)
         else:
-            print(f"Failed to fetch feed from {response.url if response else "No URL"}, status_code: {
-                  response.status_code if response else "No response"}")
+            print(f'Failed to fetch feed from {response.url if response else "No URL"}, '
+                  'status_code: {response.status_code if response else "No response"}')
 
     return all_entries
 

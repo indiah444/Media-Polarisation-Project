@@ -1,5 +1,4 @@
 """Script to transform the dataframe for inserting into RDS, adding topics, adding scores."""
-from datetime import datetime
 
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer

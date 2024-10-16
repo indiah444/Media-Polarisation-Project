@@ -1,4 +1,4 @@
-'''Methods for analysing sentiment of content.'''
+"""Methods for analysing sentiment of content."""
 
 import pandas as pd
 import nltk
@@ -17,8 +17,10 @@ def get_sentiments(sia, df: pd.DataFrame, text_col: str) -> pd.DataFrame:
         raise TypeError("The text column must contain strings.")
 
     df[text_col] = df[text_col].apply(
-        lambda x: clean_content(x, is_html=False))
-    sents = df[text_col].apply(lambda x: sia.polarity_scores(x))
+        lambda x: clean_content(x))  # pylint: disable=W0108
+
+    sents = df[text_col].apply(
+        lambda x: sia.polarity_scores(x))  # pylint: disable=W0108
 
     sentiments = df.copy()
 

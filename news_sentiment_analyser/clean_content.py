@@ -1,5 +1,7 @@
-'''Cleaning HTML content'''
+"""Cleaning HTML content"""
+
 import re
+
 from bs4 import BeautifulSoup
 
 STOP_PHRASES = ["fox news", "democracy now", "democracy now!"]
@@ -29,14 +31,8 @@ def remove_stop_phrases(text: str, phrases: list[str]) -> str:
     return pattern.sub('', text)
 
 
-def clean_content(content: str, is_html: bool):
+def clean_content(content: str):
     """Cleans HTML content including removal of ads and handling the extra
     whitespace."""
-    if is_html:
-        content = clean_html_tags(content)
     content = clean_multiple_spaces(content)
     return remove_stop_phrases(content, STOP_PHRASES)
-
-
-if __name__ == "__main__":
-    ...

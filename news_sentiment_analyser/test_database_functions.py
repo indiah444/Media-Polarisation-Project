@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for the database_functions.py file."""
+
 from unittest.mock import patch, MagicMock
 
 from psycopg2.extensions import connection

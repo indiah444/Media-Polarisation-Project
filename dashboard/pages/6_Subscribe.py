@@ -1,12 +1,18 @@
+# pylint: disable=C0103, E0401
+
 """Page for subscribing, altering subscription, and removing subscription."""
 
 import streamlit as st
 
-from db_functions import get_subscriber_emails, updates_subscriber, add_new_subscriber, remove_subscription
+from db_functions import (get_subscriber_emails, updates_subscriber,
+                          add_new_subscriber, remove_subscription)
 
 
 def check_submission(first_name: str, surname: str, email: str, daily: bool, weekly: bool):
-    if daily == False and weekly == False:
+    """Check if email is already registered and then return appropriate response for
+    their selections"""
+
+    if daily is False and weekly is False:
         st.error("You need to be subscribed to either weekly or daily.")
     else:
         email_list = get_subscriber_emails()
@@ -20,6 +26,8 @@ def check_submission(first_name: str, surname: str, email: str, daily: bool, wee
 
 
 def check_unsubscribe(email: str):
+    """Check if user is already """
+
     email_list = get_subscriber_emails()
     if email in email_list:
         remove_subscription(email)
@@ -37,16 +45,17 @@ if __name__ == "__main__":
              at 9am on a Monday with a sentiment distribution and bar chat.""")
 
     with st.form("subscription_form"):
-        first_name = st.text_input("Enter your first name")
-        surname = st.text_input("Enter your surname")
-        email = st.text_input("Enter your email")
-        daily = st.checkbox("Daily", value=False)
-        weekly = st.checkbox("Weekly", value=False)
+        first_name_inp = st.text_input("Enter your first name")
+        surname_inp = st.text_input("Enter your surname")
+        email_inp = st.text_input("Enter your email")
+        daily_inp = st.checkbox("Daily", value=False)
+        weekly_inp = st.checkbox("Weekly", value=False)
 
         submit_button = st.form_submit_button(label="Submit")
 
     if submit_button:
-        check_submission(first_name, surname, email, daily, weekly)
+        check_submission(first_name_inp, surname_inp,
+                         email_inp, daily_inp, weekly_inp)
 
     with st.form("unsubscribe_form"):
         st.write("If you want to unsubscribe")
