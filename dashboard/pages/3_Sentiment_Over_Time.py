@@ -1,7 +1,12 @@
+# pylint: disable=C0103, E0401
+
 """Script to create visualisations of changes over time"""
+
 import streamlit as st
+from streamlit.delta_generator import DeltaGenerator
 import altair as alt
 import pandas as pd
+
 from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time
 
@@ -20,12 +25,14 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     df['date_published'] = pd.to_datetime(df['date_published'])
 
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
-        time_interval, on='date_published').agg({"title_polarity_score": aggregate, "content_polarity_score": aggregate}).reset_index()
+        time_interval, on='date_published').agg({"title_polarity_score": aggregate,
+                                                 "content_polarity_score": aggregate}).reset_index()
 
     return pd.DataFrame(df_avg)
 
 
-def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col, count_col, sent_by_title: bool, sampling: str):
+def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerator,
+                                   count_col: DeltaGenerator, sent_by_title: bool, sampling: str):
     """Constructs a streamlit time graph."""
 
     averaged = resample_dataframe(data_df, sampling, "mean").dropna()
@@ -54,7 +61,8 @@ def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     return data_df
 
 
-def construct_streamlit_heatmap(heatmaps_container, data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'blues'):
+def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator, data_df: pd.DataFrame,
+                                by_title: bool, colourscheme: str = 'blues'):
     """Constructs a streamlit heatmap"""
 
     vals = "title_polarity_score" if by_title else "content_polarity_score"
@@ -96,6 +104,7 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
+        # pylint: disable=C0301
         st.markdown("""This page shows trends in <span style='color:blue; font-weight:bold;'>**compound**</span> sentiment scores over time.
                 The <span style='color:red;'>'granularity'</span> may be altered to smooth out the data: 
                 at the lower end, sentiment scores are averaged over time periods of an hour, 

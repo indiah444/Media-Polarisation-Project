@@ -1,3 +1,5 @@
+# pylint: disable=C0103, E0401
+
 """A file to generate word clouds based on article word frequency by source."""
 
 import re
@@ -99,8 +101,9 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
         st.warning(f"No words found to generate the word cloud for {title}.")
         return
 
-    wordcloud = WordCloud(
-        width=1000, height=500, max_words=100, background_color="white", colormap=colormap).generate_from_frequencies(word_freq)
+    wordcloud = WordCloud(width=1000, height=500,
+                          max_words=100, background_color="white",
+                          colormap=colormap).generate_from_frequencies(word_freq)
 
     plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")

@@ -201,7 +201,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
 @st.cache_data
 def generate_html(df) -> str:
-    """generate html body"""
+    """Generate html body"""
 
     score_df = pivot_df(df)
     html = """
