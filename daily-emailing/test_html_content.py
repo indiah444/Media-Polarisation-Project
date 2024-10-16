@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from html_content import pivot_df, add_source_columns, add_topic_rows, generate_html_with_links, generate_html, add_unsubscribe_link
+from html_content import pivot_df, add_source_columns, add_topic_rows, generate_html_with_links, generate_html, add_unsubscribe_link, get_url_html
 
 
 class TestPivot:
@@ -85,17 +85,21 @@ class TestAddTopicRows:
 
 class TestGenerateHtmlWithLinks:
 
+    @patch('html_content.get_url_html')
     @patch('html_content.get_yesterday_links_and_titles')
-    def test_with_links(self, mock_get_yesterday_links):
+    def test_with_links(self, mock_get_yesterday_links, mock_get_url_html):
         mock_get_yesterday_links.return_value = [{'title': 'article1', 'link': 'http://example.com/article1', 'topic': 'topic1'},
                                                  {'title': 'article2', 'link': 'http://example.com/article2', 'topic': 'topic2'}]
+        mock_get_url_html.side_effect = lambda url: f'<li><a href="{
+            url["link"]}">{url["title"]}</a></li>'.strip()
         result = generate_html_with_links()
+
         expected = ("<h2>Yesterday's articles:</h2>"
                     '<h4>topic1</h4>\n<ul>\n'
-                    '  <li><a href="http://example.com/article1">article1</a></li>\n'
+                    '<li><a href="http://example.com/article1">article1</a></li>'
                     "</ul>"
                     '<h4>topic2</h4>\n<ul>\n'
-                    '  <li><a href="http://example.com/article2">article2</a></li>\n'
+                    '<li><a href="http://example.com/article2">article2</a></li>'
                     "</ul>")
         assert result == expected
 
@@ -105,6 +109,11 @@ class TestGenerateHtmlWithLinks:
         result = generate_html_with_links()
         expected = ("<h2>Yesterday's articles:</h2>")
         assert result == expected
+
+    def test_get_url_html(self):
+        url_details = {'title': 'title', 'link': 'link'}
+        res = get_url_html(url_details)
+        assert res == '<li><a href="link">title</a></li>'
 
 
 class TestAddUnsubscribeLink:

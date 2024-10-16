@@ -42,6 +42,11 @@ def add_topic_rows(df: pd.DataFrame) -> str:
     return html
 
 
+def get_url_html(url: dict) -> str:
+    """Returns a formatted string for a URL."""
+    return f'<li><a href="{url['link']}">{url['title']}</a></li>'
+
+
 def generate_html_with_links() -> str:
     """Creates a list of yesterdays articles urls."""
 
@@ -50,10 +55,7 @@ def generate_html_with_links() -> str:
     html = "<h2>Yesterday's articles:</h2>"
     for topic in topics:
         html += f'<h4>{topic}</h4>\n<ul>\n'
-        for url in urls:
-            if url['topic'] == topic:
-                html += f'  <li><a href="{url['link']
-                                          }">{url['title']}</a></li>\n'
+        html += "".join([get_url_html(u) for u in urls if u['topic'] == topic])
         html += "</ul>"
 
     return html
