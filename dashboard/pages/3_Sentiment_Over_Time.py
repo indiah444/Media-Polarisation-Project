@@ -115,10 +115,15 @@ if __name__ == "__main__":
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
         # pylint: disable=C0301
-        st.markdown("""This page shows trends in <span style='color:blue; font-weight:bold;'>**compound**</span> sentiment scores over time.
-                The <span style='color:red;'>'granularity'</span> may be altered to smooth out the data: 
-                at the lower end, sentiment scores are averaged over time periods of an hour, 
-                and this can be increased up to 100 hours.""")
+        st.markdown(
+            """
+    This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
+    The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
+    at the lower end, sentiment scores are averaged over time periods of an hour, 
+    and this can be increased up to 100 hours.
+    """,
+            unsafe_allow_html=True
+        )
 
         sampling_rate = str(selected_frequency) + 'h'
 

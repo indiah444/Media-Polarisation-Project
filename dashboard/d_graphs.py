@@ -184,17 +184,17 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
     html = ""
     for topic, row in df.iterrows():
-        html += f"<tr><td style='background-color: white; color: black;'>{
-            topic}</td>"
+        html += ("<tr><td style='background-color: white; color: "
+                 f"black;'>{topic}</td>")
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
 
-                html += f"<td style='background-color: {
-                    color}; color: black;'>{score:.2f}</td>"
+                html += (f"<td style='background-color: {color}; "
+                         f"color: black;'>{score:.2f}</td>")
             else:
-                html += f"<td style='background-color: white; color: black;'>{
-                    score}</td>"
+                html += ("<td style='background-color: white; "
+                         f"color: black;'>{score}</td>")
         html += "</tr>"
     return html
 
