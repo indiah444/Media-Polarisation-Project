@@ -26,7 +26,7 @@ The database created is a PostgreSQL database, hosted on an AWS RDS instance.
     - Create the necessary tables
     - Seed the database with fixed data
 
-## (**Optional**) ✨ Generating fake data 
+### (**Optional**) ✨ Generating fake data 
 Fake subscriber and article data can be generated for Fox News. This is useful for testing/developing the cloud architecture. The sentiment score is generated using a random truncated distribution, with a mode of `-0.5`. This was chosen, mostly as a placeholder, and for the purpose of testing visualisations. 
 
 The mapping between article headlines and topics can be used for validation later on in the pipeline.
