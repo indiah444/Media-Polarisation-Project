@@ -4,6 +4,7 @@
 
 import re
 from os import environ as ENV
+from datetime import datetime, timedelta
 
 import streamlit as st
 from wordcloud import WordCloud
@@ -46,7 +47,7 @@ def get_all_article_content():
 
     with create_connection() as conn:
         query = """
-        SELECT article_content, source_name
+        SELECT article_content, source_name, date_published
         FROM article
         JOIN source on article.source_id = source.source_id;
         """
@@ -54,12 +55,7 @@ def get_all_article_content():
             cur.execute(query)
             articles = cur.fetchall()
 
-    fox_news_articles = [article["article_content"]
-                         for article in articles if article["source_name"] == "Fox News"]
-    democracy_now_articles = [article["article_content"]
-                              for article in articles if article["source_name"] == "Democracy Now!"]
-
-    return fox_news_articles, democracy_now_articles
+    return articles
 
 
 W_TOKENIZER = WhitespaceTokenizer()
@@ -89,6 +85,26 @@ def clean_text(text: str, custom_stopwords: list) -> str:
     return lemmatized_words
 
 
+def filter_articles_by_date(articles: list, time_range: str):
+    """Filters the articles based on the selected time range."""
+
+    now = datetime.now()
+
+    if time_range == 0:
+        cutoff_date = now - timedelta(hours=1)
+    elif time_range == 1:
+        cutoff_date = now - timedelta(days=1)
+    elif time_range == 2:
+        cutoff_date = now - timedelta(days=7)
+    else:
+        return articles
+
+    filtered_articles = [
+        article for article in articles if article["date_published"] > cutoff_date.date()]
+
+    return filtered_articles
+
+
 @st.cache_data
 def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     """Counts word frequencies in a given list of articles."""
@@ -108,7 +124,6 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     return word_freq
 
 
-@st.cache_data
 def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
@@ -127,7 +142,6 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     st.pyplot(plt.gcf())
 
 
-@st.cache_data
 def run_app():
     """Runs the Word Cloud Streamlit page."""
 
@@ -138,7 +152,29 @@ def run_app():
 
     st.title("Article Content Word Cloud by News Source")
 
-    fn_articles, dn_articles = get_all_article_content()
+    time_range_options = ["Last hour", "Last 24 hours", "Last 7 days"]
+    selected_time_range = st.sidebar.select_slider(
+        "Select time range",
+        options=time_range_options,
+        value="Last 24 hours"
+    )
+
+    time_range_mapping = {
+        "Last hour": 0,
+        "Last 24 hours": 1,
+        "Last 7 days": 2
+    }
+    time_range = time_range_mapping[selected_time_range]
+
+    st.write(f"Time Range Selected: {selected_time_range}")
+
+    articles = get_all_article_content()
+    filtered_articles = filter_articles_by_date(articles, time_range)
+
+    fn_articles = [
+        article["article_content"] for article in filtered_articles if article["source_name"] == "Fox News"]
+    dn_articles = [
+        article["article_content"] for article in filtered_articles if article["source_name"] == "Democracy Now!"]
 
     fox_news_word_freq = get_word_frequency(fn_articles, custom_stop_words)
     democracy_now_word_freq = get_word_frequency(
