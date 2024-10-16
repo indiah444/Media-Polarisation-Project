@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for db_functions.py script."""
+
 from unittest.mock import patch, MagicMock
 
 import pandas as pd

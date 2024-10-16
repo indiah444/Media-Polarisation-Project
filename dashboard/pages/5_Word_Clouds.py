@@ -9,7 +9,7 @@ import streamlit as st
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
-from nltk.corpus import stopwords, wordnet
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
