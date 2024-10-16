@@ -31,7 +31,7 @@ def remove_stop_phrases(text: str, phrases: list[str]) -> str:
     return pattern.sub('', text)
 
 
-def clean_content(content: str, is_html: bool):
+def clean_content(content: str):
     """Cleans HTML content including removal of ads and handling the extra
     whitespace."""
     content = clean_multiple_spaces(content)
