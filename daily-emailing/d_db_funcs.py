@@ -79,14 +79,16 @@ def get_daily_subscribers() -> list[str]:
     return [subscriber['subscriber_email'] for subscriber in data]
 
 
-def get_yesterday_links() -> list[str]:
+def get_yesterday_links_and_titles() -> list[str]:
     """Returns the article links from yesterday."""
 
     yesterday = get_yesterday_date()
     query = """
-        SELECT article_url
-        FROM article
-        WHERE date_published = %s 
+        SELECT a.article_url, a.article_title, t.topic_name
+        FROM article_topic_assignment ata
+        JOIN article a ON ata.article_id = a.article_id
+        JOIN topic t ON ata.topic_id = t.topic_id
+        WHERE a.date_published = %s 
     """
 
     with create_connection() as conn:
@@ -97,4 +99,4 @@ def get_yesterday_links() -> list[str]:
     if not data:
         return []
 
-    return [article['article_url'] for article in data]
+    return [{'title': article['article_title'], 'link': article['article_url'], 'topic': article['topic_name']} for article in data]
