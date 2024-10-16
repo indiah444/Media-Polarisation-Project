@@ -72,16 +72,16 @@ def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
-                                data: pd.DataFrame, by_title: bool,
+                                data_df: pd.DataFrame, by_title: bool,
                                 colourscheme: str = 'yellowgreen'):
     """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
     vals = "title_polarity_score" if by_title else "content_polarity_score"
-    data = data[["week_num", "weekday", vals, "week_text", "date_name"]]
+    data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
 
-    data = data.groupby(["week_num", "week_text", "weekday", "date_name"],
-                        as_index=False)[vals].mean()
+    data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
+                              as_index=False)[vals].mean()
 
-    heatmap = alt.Chart(data).mark_rect().encode(
+    heatmap = alt.Chart(data_df).mark_rect().encode(
         x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
             field='week_num', order='ascending')),
         y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
