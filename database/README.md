@@ -13,7 +13,7 @@ Optional:
 ## ⚙️ Setup
 1. Create a `.env` file and fill with the following variables
     ```env
-    # RDS Database Config
+    # Database Configuration
     DB_HOST=<the-RDS-host-address>
     DB_PORT=<the-RDS-port-number>
     DB_NAME=<the-RDS-name>

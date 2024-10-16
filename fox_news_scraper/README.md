@@ -15,20 +15,20 @@ Optional:
 - **Python** installed (For running locally)
 
 ## ⚙️ Setup
-1. Create a `.env` file and fill with the following variables
-    ```env
-    # AWS Configuration
-    AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
-    AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
+Create a `.env` file and fill with the following variables
+```env
+# AWS Configuration
+AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
+AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
 
-    # S3 Bucket Configuration
-    S3_BUCKET_NAME=<s3_bucket_name>
+# S3 Bucket Configuration
+S3_BUCKET_NAME=<s3_bucket_name>
 
-    # ECR Configuration
-    ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
-    ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
-    IMAGE_NAME=article-analyser-image  # or any other appropriate name
-    ```
+# ECR Configuration
+ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
+ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
+IMAGE_NAME=article-analyser-image  # or any other appropriate name
+```
 
 ### ☁️ Pushing to the Cloud
 To deploy the overall cloud infrastructure the Fox News scraper must be containerised and hosted on the cloud:
@@ -44,7 +44,7 @@ To deploy the overall cloud infrastructure the Fox News scraper must be containe
     - Tag the docker image
     - Upload tagged image to the ECR repository
 
-### (**Optional**) 💻 Running Locally (MacOS)
+### 💻 Running Locally (MacOS, **Optional**)
 The Fox News web scraper can also be ran locally by:
 
 1. Creating and activating virtual environment:
