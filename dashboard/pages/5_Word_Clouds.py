@@ -60,14 +60,14 @@ def get_all_article_content():
     return fox_news_articles, democracy_now_articles
 
 
-w_tokenizer = WhitespaceTokenizer()
-lemmatizer = WordNetLemmatizer()
+W_TOKENIZER = WhitespaceTokenizer()
+LEMMATIZER = WordNetLemmatizer()
 
 
 def lemmatize_text(text: str) -> str:
     """Lemmatizes a given text, returning the lemmatized form of each word."""
 
-    return ' '.join([lemmatizer.lemmatize(w) for w in w_tokenizer.tokenize(text)])
+    return ' '.join([LEMMATIZER.lemmatize(w) for w in W_TOKENIZER.tokenize(text)])
 
 
 def clean_text(text: str, custom_stopwords: list) -> str:
@@ -80,6 +80,7 @@ def clean_text(text: str, custom_stopwords: list) -> str:
 
     words = word_tokenize(text)
     words = [word for word in words if word not in stop_words and word.isalpha()]
+    words = [word for word in words if len(word) > 2]
 
     lemmatized_words = lemmatize_text(' '.join(words))
 
