@@ -43,19 +43,35 @@ def download_nltk_data():
 
 @st.cache_data
 def get_all_article_content():
-    """Returns all article content from the database."""
+    """Returns all article content from the database, along with their
+    topics."""
 
     with create_connection() as conn:
         query = """
-        SELECT article_content, source_name, date_published
+        SELECT article.article_id, article.article_content, source.source_name, article.date_published, 
+               topic.topic_name
         FROM article
-        JOIN source on article.source_id = source.source_id;
+        JOIN source ON article.source_id = source.source_id
+        LEFT JOIN article_topic_assignment ON article.article_id = article_topic_assignment.article_id
+        LEFT JOIN topic ON article_topic_assignment.topic_id = topic.topic_id;
         """
         with conn.cursor() as cur:
             cur.execute(query)
             articles = cur.fetchall()
 
     return articles
+
+
+def get_unique_topics():
+    """Fetches unique topics from the database."""
+
+    with create_connection() as conn:
+        query = "SELECT topic_name FROM topic;"
+        with conn.cursor() as cur:
+            cur.execute(query)
+            topics = cur.fetchall()
+
+    return [topic["topic_name"] for topic in topics]
 
 
 W_TOKENIZER = WhitespaceTokenizer()
@@ -103,6 +119,14 @@ def filter_articles_by_date(articles: list, time_range: str):
         article for article in articles if article["date_published"] > cutoff_date.date()]
 
     return filtered_articles
+
+
+def get_articles_by_source(filtered_articles: list, source_name: str) -> list:
+    """Returns article contents for a given source from the filtered articles."""
+
+    return [
+        article["article_content"] for article in filtered_articles if article["source_name"] == source_name
+    ]
 
 
 @st.cache_data
@@ -168,13 +192,20 @@ def run_app():
 
     st.write(f"Time Range Selected: {selected_time_range}")
 
+    unique_topics = get_unique_topics()
+    selected_topics = st.sidebar.multiselect(
+        "Select topics", options=unique_topics)
+
     articles = get_all_article_content()
     filtered_articles = filter_articles_by_date(articles, time_range)
 
-    fn_articles = [
-        article["article_content"] for article in filtered_articles if article["source_name"] == "Fox News"]
-    dn_articles = [
-        article["article_content"] for article in filtered_articles if article["source_name"] == "Democracy Now!"]
+    if selected_topics:
+        filtered_articles = [
+            article for article in filtered_articles if article["topic_name"] in selected_topics
+        ]
+
+    fn_articles = get_articles_by_source(filtered_articles, "Fox News")
+    dn_articles = get_articles_by_source(filtered_articles, "Democracy Now!")
 
     fox_news_word_freq = get_word_frequency(fn_articles, custom_stop_words)
     democracy_now_word_freq = get_word_frequency(
