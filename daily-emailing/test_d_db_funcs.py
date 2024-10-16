@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers, get_yesterday_links
+from d_db_funcs import get_avg_polarity_by_topic_and_source_yesterday, get_daily_subscribers, get_yesterday_links_and_titles
 
 
 class TestGetAvgPolarityByTopicAndSourceYesterday:
@@ -135,12 +135,14 @@ class TestGetYesterdayLinks:
         mock_cursor.fetchall.return_value = []
 
         query = """
-        SELECT article_url
-        FROM article
-        WHERE date_published = %s 
+        SELECT a.article_url, a.article_title, t.topic_name
+        FROM article_topic_assignment ata
+        JOIN article a ON ata.article_id = a.article_id
+        JOIN topic t ON ata.topic_id = t.topic_id
+        WHERE a.date_published = %s 
     """
 
-        result = get_yesterday_links()
+        result = get_yesterday_links_and_titles()
 
         mock_cursor.execute.assert_called_once_with(query, ('2024-01-01',))
         assert len(result) == 0
@@ -155,14 +157,14 @@ class TestGetYesterdayLinks:
         mock_create_conn.return_value.__enter__.return_value = mock_conn
         mock_get_cursor.return_value.__enter__.return_value = mock_cursor
 
-        sample_data = [{'article_url': 'http://example.com/article1'},
-                       {'article_url': 'http://example.com/article2'}]
+        sample_data = [{'article_url': 'http://example.com/article1', 'article_title': 'article1', 'topic_name': 'topic1'},
+                       {'article_url': 'http://example.com/article2', 'article_title': 'article2', 'topic_name': 'topic2'}]
         mock_cursor.fetchall.return_value = sample_data
 
-        result = get_yesterday_links()
+        result = get_yesterday_links_and_titles()
         print(result)
-        expected_result = ['http://example.com/article1',
-                           'http://example.com/article2']
+        expected_result = [{'title': 'article1', 'link': 'http://example.com/article1', 'topic': 'topic1'},
+                           {'title': 'article2', 'link': 'http://example.com/article2', 'topic': 'topic2'}]
 
         assert result == expected_result
 
@@ -177,7 +179,7 @@ class TestGetYesterdayLinks:
         mock_get_cursor.return_value.__enter__.return_value = mock_cursor
         mock_cursor.fetchall.return_value = []
 
-        result = get_yesterday_links()
+        result = get_yesterday_links_and_titles()
         expected_result = []
 
         assert result == expected_result

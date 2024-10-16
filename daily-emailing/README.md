@@ -36,9 +36,13 @@ ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
 ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
 IMAGE_NAME=daily-email-image  # or any other appropriate name
 
+# EC2 Configuration
+EC2_HOST=<the-ec2-dns-or-ip-address>
+
 # Emailing Configuration
 FROM_EMAIL=<your_ses_verified_email>
 ```
+
 
 ### ☁️ Pushing to the Cloud
 To deploy the overall cloud infrastructure, the daily email generator must be containerised and hosted on the cloud:
