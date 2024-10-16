@@ -12,6 +12,7 @@ WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
                  'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
+@st.cache_data
 def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     """Resamples the dataframe to return the aggregate sentiment scores by 
     (source, topic) over a set of grouped time intervals."""

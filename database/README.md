@@ -5,13 +5,15 @@ This folder contains the schema and python script to seed the database with init
 The database created is a PostgreSQL database, hosted on an AWS RDS instance.
 
 ## 🛠️ Prerequisites
-- **Python** installed (For running locally)
-- **AWS RDS (PostgreSQL)** instance running.
+- **AWS RDS (PostgreSQL)** database running.
+
+Optional:
+- **Python** installed (For seeding dummy data)
 
 ## ⚙️ Setup
 1. Create a `.env` file and fill with the following variables
     ```env
-    # RDS Database Config
+    # Database Configuration
     DB_HOST=<the-RDS-host-address>
     DB_PORT=<the-RDS-port-number>
     DB_NAME=<the-RDS-name>
@@ -26,7 +28,11 @@ The database created is a PostgreSQL database, hosted on an AWS RDS instance.
     - Create the necessary tables
     - Seed the database with fixed data
 
-(**Optional**) The database can also be further seeded with dummy data to tests [daily-emailing](../daily-emailing/README.md)/[weekly-emailing](../weekly-emailing/REAME.md)/[dashboard functionality](../dashboard/README.md).
+### ✨ Generating fake data (**Optional**)
+Fake subscriber and article data can be generated for Fox News. This is useful for testing/developing the cloud architecture. The sentiment score is generated using a random truncated distribution, with a mode of `-0.5`. This was chosen, mostly as a placeholder, and for the purpose of testing visualisations. 
+
+The mapping between article headlines and topics can be used for validation later on in the pipeline.
+
 1. Creating and activating virtual environment:
     ```bash
     python3 -m venv .venv
@@ -57,14 +63,6 @@ To include coverage results:
 ```bash
 pytest --cov -vv
 ```
-
-## ✨ Generating fake data 
-Fake subscriber and article data can be generated for Fox News. This is useful for testing/developing the cloud architecture. The sentiment score is generated using a random truncated distribution, with a mode of `-0.5`. This was chosen, mostly as a placeholder, and for the purpose of testing visualisations. 
-
-The mapping between article headlines and topics can be used for validation later on in the pipeline.
-
-1. Reset the database
-2. Run `python3 -m generate_dummy_data.py` to seed the database with dummy data.
 
 ## 💬 Explanation of political leaning attribute in schema
 Within the `source` table of the database schema, there is a column entitled `source_political_leaning`. We thought it important to include this information about the political orientation of a source in the database, so that users of the finished project (including the dashboard) can filter for sources that sit at particular positions on the political spectrum. 
