@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
+from botocore.client import BaseClient
 import boto3
 
 from html_content import generate_html
@@ -12,7 +13,7 @@ from d_db_funcs import (get_avg_polarity_by_topic_and_source_yesterday,
                         get_daily_subscribers, get_yesterday_date)
 
 
-def get_ses_client():
+def get_ses_client() -> BaseClient:
     """Return boto3 ses client to send emails with"""
 
     return boto3.client("ses", region_name="eu-west-2",

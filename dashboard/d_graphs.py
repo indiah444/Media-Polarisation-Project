@@ -180,6 +180,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
 
 def generate_html(df) -> str:
+    """generate html body"""
     score_df = pivot_df(df)
     html = """
     <html>

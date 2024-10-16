@@ -53,7 +53,7 @@ def generate_html_with_links() -> str:
     return html
 
 
-def generate_html(df) -> str:
+def generate_html(df: pd.DataFrame) -> str:
     """Return HTML string to send in email body"""
 
     score_df = pivot_df(df)
