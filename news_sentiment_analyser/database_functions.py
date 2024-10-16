@@ -1,4 +1,5 @@
 """Functions that interact with the database"""
+
 from os import environ as ENV
 
 from psycopg2.extras import RealDictCursor

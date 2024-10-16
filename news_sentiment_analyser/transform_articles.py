@@ -1,5 +1,4 @@
 """Script to transform the dataframe for inserting into RDS, adding topics, adding scores."""
-from datetime import datetime
 
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -46,7 +45,7 @@ def get_polarity_scores(articles: pd.DataFrame) -> pd.DataFrame:
 
 def get_title_polarity_score(articles: pd.DataFrame, sia) -> pd.DataFrame:
     """Adds a polarity score for the title."""
-    articles = get_sentiments(sia, articles, 'title', 'topics', 'source_id')
+    articles = get_sentiments(sia, articles, 'title')
     articles = articles.drop(columns=['pos', 'neg', 'neut'])
     articles = articles.rename(columns={'compound': 'title_polarity_score'})
     return articles
@@ -54,7 +53,7 @@ def get_title_polarity_score(articles: pd.DataFrame, sia) -> pd.DataFrame:
 
 def get_content_polarity_score(articles: pd.DataFrame, sia) -> pd.DataFrame:
     """Adds a polarity score for the content."""
-    articles = get_sentiments(sia, articles, 'content', 'topics', 'source_id')
+    articles = get_sentiments(sia, articles, 'content')
     articles = articles.drop(columns=['pos', 'neg', 'neut'])
     articles = articles.rename(columns={'compound': 'content_polarity_score'})
     return articles

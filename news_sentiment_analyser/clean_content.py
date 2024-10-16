@@ -1,5 +1,7 @@
-'''Cleaning HTML content'''
+"""Cleaning HTML content"""
+
 import re
+
 from bs4 import BeautifulSoup
 
 
@@ -26,7 +28,3 @@ def clean_content(content: str, is_html: bool):
     if is_html:
         content = clean_html_tags(content)
     return clean_multiple_spaces(content)
-
-
-if __name__ == "__main__":
-    ...
