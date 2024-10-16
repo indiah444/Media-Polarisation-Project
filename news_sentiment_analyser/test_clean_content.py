@@ -42,6 +42,8 @@ def test_clean_multiple_spaces(html, expected):
      "fox news", "democracy now"], "Independent media."),
     ("Democracy Now! and Fox News are reporting.", [
      "fox news", "democracy now!"], " and  are reporting."),
+    ("", ["fox news"], ""),
+    ("a", [], "a")
 ])
 def test_case_insensitivity(text, phrases, expected):
     assert remove_stop_phrases(text, phrases) == expected
