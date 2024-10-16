@@ -10,11 +10,11 @@ from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns
 
 def test_get_last_point():
     data = {
-        'source_name': ['sourceA', 'sourceA', 'sourceB', 'sourceB'],
-        'topic_name': ['topic1', 'topic2', 'topic1', 'topic2'],
-        'date_published': ['2024-10-14', '2024-10-15', None, '2024-10-13'],
-        'title_polarity_score': [0.5, 0.6, 0.7, 0.8],
-        'content_polarity_score': [0.3, 0.4, 0.9, 0.7]
+        'source_name': ['sourceA', 'sourceA', 'sourceB'],
+        'topic_name': ['topic1', 'topic2',  'topic2'],
+        'date_published': ['2024-10-14', '2024-10-15', '2024-10-13'],
+        'title_polarity_score': [0.5, 0.6,  0.8],
+        'content_polarity_score': [0.3, 0.4,  0.7]
     }
 
     df = pd.DataFrame(data)
@@ -54,7 +54,7 @@ def test_add_source_cols_not_recognised():
         add_source_columns(df)
 
 
-@ pytest.fixture
+@pytest.fixture
 def example_df():
     """Returns an example dataframe"""
     return pd.DataFrame(
@@ -73,9 +73,9 @@ def example_df():
         ])
 
 
-@ patch('d_graphs.add_topic_rows')
-@ patch('d_graphs.add_source_columns')
-@ patch('d_graphs.pivot_df')
+@patch('d_graphs.add_topic_rows')
+@patch('d_graphs.add_source_columns')
+@patch('d_graphs.pivot_df')
 def test_generate_html(mock_pivot_df, mock_add_source_columns, mock_add_topic_rows):
     mock_pivot_df.return_value = pd.DataFrame({
         'sourceA': [0.5],
