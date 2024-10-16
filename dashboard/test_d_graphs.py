@@ -8,6 +8,34 @@ import datetime
 from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns
 
 
+def test_get_last_point():
+    data = {
+        'source_name': ['sourceA', 'sourceA', 'sourceB', 'sourceB'],
+        'topic_name': ['topic1', 'topic2', 'topic1', 'topic2'],
+        'date_published': ['2024-10-14', '2024-10-15', None, '2024-10-13'],
+        'title_polarity_score': [0.5, 0.6, 0.7, 0.8],
+        'content_polarity_score': [0.3, 0.4, 0.9, 0.7]
+    }
+
+    df = pd.DataFrame(data)
+    df['date_published'] = pd.to_datetime(
+        df['date_published'], errors='coerce')
+
+    expected_data = {
+        'source_name': ['sourceA', 'sourceB'],
+        'topic_name': ['topic2', 'topic2'],
+        'date_published': [pd.Timestamp('2024-10-15'), pd.Timestamp('2024-10-13')],
+        'title_polarity_score': [0.6, 0.8],
+        'content_polarity_score': [0.4, 0.7]
+    }
+
+    expected_df = pd.DataFrame(expected_data)
+
+    result_df = get_last_point(df)
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
+
+
 def test_add_source_cols():
     df = pd.DataFrame(columns={'Fox News': [], 'Democracy Now!': []})
     assert add_source_columns(
