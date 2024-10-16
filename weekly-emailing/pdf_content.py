@@ -45,7 +45,8 @@ def generate_html_report(df: pd.DataFrame) -> str:
         <h2>Average Polarity Scores by Topic and Source</h2>
         <img src="data:image/png;base64,{avg_polarity_chart_img}" alt="Average Polarity Chart">
         <h2>Sentiment Distribution</h2>
-        <img src="data:image/png;base64,{sentiment_dist_chart_img}" alt="Sentiment Distribution Chart">
+        <img src="data:image/png;base64,{sentiment_dist_chart_img}" \
+alt="Sentiment Distribution Chart">
         <p>Data is based on articles published over the past week.</p>
     </body>
     </html>
