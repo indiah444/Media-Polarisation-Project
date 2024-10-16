@@ -7,8 +7,9 @@ import streamlit as st
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords, wordnet
+from nltk.tokenize import word_tokenize, WhitespaceTokenizer
+from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
@@ -34,6 +35,7 @@ def download_nltk_data():
     nltk_download("punkt")
     nltk_download("stopwords")
     nltk_download('punkt_tab')
+    nltk_download("wordnet")
 
 
 @st.cache_data
@@ -58,6 +60,16 @@ def get_all_article_content():
     return fox_news_articles, democracy_now_articles
 
 
+W_TOKENIZER = WhitespaceTokenizer()
+LEMMATIZER = WordNetLemmatizer()
+
+
+def lemmatize_text(text: str) -> str:
+    """Lemmatizes a given text, returning the lemmatized form of each word."""
+
+    return ' '.join([LEMMATIZER.lemmatize(w) for w in W_TOKENIZER.tokenize(text)])
+
+
 def clean_text(text: str, custom_stopwords: list) -> str:
     """Cleans text by removing URLs, punctuation, and stopwords."""
 
@@ -68,8 +80,11 @@ def clean_text(text: str, custom_stopwords: list) -> str:
 
     words = word_tokenize(text)
     words = [word for word in words if word not in stop_words and word.isalpha()]
+    words = [word for word in words if len(word) > 2]
 
-    return ' '.join(words)
+    lemmatized_words = lemmatize_text(' '.join(words))
+
+    return lemmatized_words
 
 
 @st.cache_data
@@ -116,7 +131,7 @@ def run_app():
     download_nltk_data()
 
     custom_stop_words = ["fox", "news", "said",
-                         "get", "also", "would", "could", "click"]
+                         "get", "also", "would", "could", "click", "u"]
 
     st.title("Article Content Word Cloud by News Source")
 
