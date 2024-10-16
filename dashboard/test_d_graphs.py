@@ -1,11 +1,35 @@
 # pylint skip-file
 """Testing the d_graphs file"""
 import re
+import altair as alt
 import pytest
 from unittest.mock import patch
 import pandas as pd
 import datetime
-from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns
+from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns, create_bubble_chart
+
+
+@pytest.fixture
+def data():
+    return {
+        'source_name': ['Fox News', 'Democracy Now!', 'Fox News'],
+        'avg_polarity_score': [0.2, 0.5, -0.1],
+        'article_count': [100, 150, 80]
+    }
+
+
+def test_create_bubble_chart_creates_chart(data):
+    df = pd.DataFrame(data)
+    chart = create_bubble_chart(df)
+    assert isinstance(
+        chart, alt.Chart)
+
+
+def test_bubble_chart_size(data):
+    df = pd.DataFrame(data)
+    chart = create_bubble_chart(df)
+    assert chart.width == 800
+    assert chart.height == 400
 
 
 def test_get_last_point():
