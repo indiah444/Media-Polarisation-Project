@@ -53,7 +53,7 @@ To deploy the overall cloud infrastructure, the daily email generator must be co
     - Tag the docker image
     - Upload tagged image to the ECR repository
 
-### 💻 Running Locally (MacOS)
+### (**Optional**) 💻 Running Locally (MacOS)
 The daily email generator can also be ran locally by:
 
 1. Creating and activating virtual environment:

@@ -51,7 +51,7 @@ To deploy the overall cloud infrastructure the sentiment analyser pipeline must 
     - Tag the docker image
     - Upload tagged image to the ECR repository
 
-### 💻 Running Locally (MacOS)
+### (**Optional**) 💻 Running Locally (MacOS)
 The sentiment analysis pipeline can also be ran locally by:
 
 1. Creating and activating virtual environment:

@@ -46,7 +46,7 @@ To deploy the overall cloud infrastructure the Fox News scraper must be containe
     - Tag the docker image
     - Upload tagged image to the ECR repository
 
-### 💻 Running Locally (MacOS)
+### (**Optional**) 💻 Running Locally (MacOS)
 The Fox News web scraper can also be ran locally by:
 
 1. Creating and activating virtual environment:

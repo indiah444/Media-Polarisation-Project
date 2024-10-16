@@ -43,7 +43,7 @@ As part of deploying the overall cloud infrastructure, the dashboard files must 
     - Run the streamlit dashboard
 2. You can exit the EC2 terminal by pressing `CTRL + c` buttons together
 
-### 💻 Running Locally (MacOS)
+### (**Optional**) 💻 Running Locally (MacOS)
 The daily email generator can also be ran locally by:
 
 1. Creating and activating virtual environment:

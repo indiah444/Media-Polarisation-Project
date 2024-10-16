@@ -158,8 +158,8 @@ def add_source_columns(df: pd.DataFrame) -> str:
     color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
     html = ""
     for source in df.columns:
-        html += f"<th style='background-color: white; color: {
-            color_scheme[source]};'>{source}</th>"
+        html += ("<th style='background-color: white; color:"
+                 f"{color_scheme[source]};'>{source}</th>")
     return html
 
 
@@ -171,8 +171,8 @@ def add_topic_rows(df: pd.DataFrame) -> str:
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
-                html += f"<td style='background-color: {
-                    color};'>{score:.2f}</td>"
+                html += (f"<td style='background-color:"
+                         f"{color};'>{score:.2f}</td>")
             else:
                 html += f"<td style='background-color: white;'>{score}</td>"
         html += "</tr>"
