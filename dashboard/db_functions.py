@@ -180,7 +180,3 @@ def get_avg_polarity_all_topics():
             data = cur.fetchall()
 
     return pd.DataFrame(data)
-
-
-if __name__ == "__main__":
-    print(get_scores_topic("Donald Trump"))

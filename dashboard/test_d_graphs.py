@@ -1,9 +1,11 @@
 # pylint skip-file
 """Testing the d_graphs file"""
+import re
 import pytest
+from unittest.mock import patch
 import pandas as pd
 import datetime
-from d_graphs import pivot_df, get_last_point
+from d_graphs import pivot_df, get_last_point, generate_html
 
 
 @pytest.fixture
@@ -23,6 +25,63 @@ def example_df():
              'date_published': datetime.date(2024, 10, 9)}
 
         ])
+
+
+@patch('d_graphs.add_topic_rows')
+@patch('d_graphs.add_source_columns')
+@patch('d_graphs.pivot_df')
+def test_generate_html(mock_pivot_df, mock_add_source_columns, mock_add_topic_rows):
+    mock_pivot_df.return_value = pd.DataFrame({
+        'sourceA': [0.5],
+        'sourceB': [0.6]
+    }, index=['topic1'])
+
+    mock_add_source_columns.return_value = "<th>Source A</th><th>Source B</th>"
+    mock_add_topic_rows.return_value = "<tr><td>topic1</td><td>0.5</td><td>0.6</td></tr>"
+
+    df = pd.DataFrame({
+        'topic_name': ['topic1', "topic1"],
+        'source_name': ['sourceA', 'sourceB'],
+        'avg_polarity_score': [0.5, 0.6]
+    })
+
+    expected_html = """
+    <html>
+    <head>
+        <style>
+            table {
+                font-family: Arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th style='background-color: white; color: black'>Topic</th>
+                    <th>Source A</th><th>Source B</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>topic1</td><td>0.5</td><td>0.6</td></tr>
+            </tbody>
+        </table>
+    </body>
+    </html>
+    """
+    result = generate_html(df)
+    assert re.sub(r'\s+', ' ', result).strip() == re.sub(r'\s+',
+                                                         ' ', expected_html).strip()
 
 
 def test_pivot_df():
