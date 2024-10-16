@@ -1,6 +1,5 @@
 """Script to find the topics of an article using openai."""
 
-from typing import Generator
 from os import environ as ENV
 import json
 
