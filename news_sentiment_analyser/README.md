@@ -35,7 +35,6 @@ Optional:
 
     # OpenAI Configuration
     OPENAI_API_KEY=<your_openai_key>
-    OPENAI_MODEL=<your-openai-model>
     ```
 
 ### ☁️ Pushing to the Cloud

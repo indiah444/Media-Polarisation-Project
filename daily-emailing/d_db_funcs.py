@@ -1,16 +1,19 @@
 """Some functions for interacting with the RDS."""
+
 from os import environ as ENV
 from datetime import datetime, timedelta
 
-import pandas as pd
+
+from psycopg2.extensions import connection, cursor
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
-from psycopg2.extensions import connection
 from dotenv import load_dotenv
+import pandas as pd
 
 
 def create_connection() -> connection:
     """Creates a connection to the RDS with postgres."""
+
     load_dotenv()
     conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
                    host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
@@ -20,9 +23,22 @@ def create_connection() -> connection:
     return conn
 
 
+def get_cursor(conn: connection) -> cursor:
+    """Return cursor object to execute sql commands"""
+
+    return conn.cursor()
+
+
+def get_yesterday_date() -> str:
+    """Return yesterdays date in '%Y-%m-%d' format"""
+
+    return (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+
 def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
     """Returns a dataframe of average content polarity by topic and source."""
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+    yesterday = get_yesterday_date()
 
     query = f"""
         SELECT t.topic_name, s.source_name,
@@ -37,40 +53,48 @@ def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
     """
 
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
+
     return pd.DataFrame(data)
 
 
 def get_daily_subscribers() -> list[str]:
     """Returns the emails of subscribers for daily emails."""
+
     query = """
         SELECT subscriber_email 
         FROM subscriber
         WHERE daily = TRUE
-            """
+    """
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query)
             data = cur.fetchall()
-    if data:
-        return [subscriber['subscriber_email'] for subscriber in data]
-    return []
+
+    if not data:
+        return []
+
+    return [subscriber['subscriber_email'] for subscriber in data]
 
 
 def get_yesterday_links() -> list[str]:
     """Returns the article links from yesterday."""
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+    yesterday = get_yesterday_date()
     query = """
-            SELECT article_url
-            FROM article
-            WHERE date_published = %s """
+        SELECT article_url
+        FROM article
+        WHERE date_published = %s 
+    """
 
     with create_connection() as conn:
-        with conn.cursor() as cur:
+        with get_cursor(conn) as cur:
             cur.execute(query, (yesterday,))
             data = cur.fetchall()
-    if data:
-        return [article['article_url'] for article in data]
-    return []
+
+    if not data:
+        return []
+
+    return [article['article_url'] for article in data]
