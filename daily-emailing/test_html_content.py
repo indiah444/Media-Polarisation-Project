@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from html_content import pivot_df, add_source_columns, add_topic_rows, generate_html_with_links, generate_html
+from html_content import pivot_df, add_source_columns, add_topic_rows, generate_html_with_links, generate_html, add_unsubscribe_link
 
 
 class TestPivot:
@@ -102,6 +102,16 @@ class TestGenerateHtmlWithLinks:
         result = generate_html_with_links()
         expected = ("<h2>Yesterday's articles:</h2>\n<ul>\n</ul>")
         assert result == expected
+
+
+class TestAddUnsubscribeLink:
+
+    @patch('html_content.ENV', {
+        "EC2_HOST": "test_host"
+    })
+    def test_add_unsubscribe_link(self):
+        result = add_unsubscribe_link()
+        assert result == '<a href="test_host:8501/Subscribe" target="_blank">Unsubscribe here</a>'
 
 
 class TestGenerateHtml:
