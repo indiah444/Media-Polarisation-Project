@@ -37,6 +37,9 @@ Create a `.env` file with the following environment variables:
     IMAGE_NAME=daily-email-image  # or any other appropriate name
 
     FROM_EMAIL=<your_ses_verified_email>
+
+    # EC2 Configuration
+    EC2_HOST=<the-ec2-dns-or-ip-address>
     ```
 
 ### ☁️ Pushing to the Cloud

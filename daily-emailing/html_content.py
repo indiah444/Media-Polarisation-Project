@@ -1,6 +1,7 @@
 """Script to generate the html content."""
 
 from datetime import datetime, timedelta
+from os import environ as ENV
 
 import pandas as pd
 
@@ -53,6 +54,12 @@ def generate_html_with_links() -> str:
     return html
 
 
+def add_unsubscribe_link() -> str:
+    """Adds the link to the unsubscribe page."""
+    link = ENV['EC2_HOST'] + ":8501/Subscribe"
+    return f'<a href="{link}" target="_blank">Unsubscribe here</a>'
+
+
 def generate_html(df) -> str:
     """Return HTML string to send in email body"""
 
@@ -98,6 +105,7 @@ def generate_html(df) -> str:
         </table>
         """
     html += generate_html_with_links()
+    html += add_unsubscribe_link()
     html += """
     </body>
     </html>
