@@ -7,7 +7,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 nltk.download('vader_lexicon')
 
 
-def get_sentiments(sia, df: pd.DataFrame, text_col: str, topic_col: str, source_col: str) -> pd.DataFrame:
+def get_sentiments(sia, df: pd.DataFrame, text_col: str) -> pd.DataFrame:
     """Get sentiment data for a given text column.
     Returns a dataframe containing:
     text column, topic column and sentiments (pos,neg,neut,compound)."""
