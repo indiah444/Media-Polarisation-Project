@@ -1,5 +1,3 @@
-# pylint: disable=C0103
-
 """Our main home page - that would appear when you click on the link!"""
 
 import streamlit as st
@@ -16,6 +14,7 @@ if __name__ == "__main__":
     BLUE = '#4ea8de'
     RED = '#ff6f61'
 
+    # pylint: disable=C0103
     st.title("Welcome to the Media Polarisation Dashboard")
     st.markdown(f"""
     ## 📊 Understanding Polarised Media Coverage and Sentiment
