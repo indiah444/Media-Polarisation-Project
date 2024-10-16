@@ -177,14 +177,17 @@ def add_topic_rows(df: pd.DataFrame) -> str:
     """Build the rows of the table with topic and score, with color based on score."""
     html = ""
     for topic, row in df.iterrows():
-        html += f"<tr><td style='background-color: white;'>{topic}</td>"
+        html += f"<tr><td style='background-color: white; color: black;'>{
+            topic}</td>"
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
-                html += (f"<td style='background-color:"
-                         f"{color};'>{score:.2f}</td>")
+
+                html += f"<td style='background-color: {
+                    color}; color: black;'>{score:.2f}</td>"
             else:
-                html += f"<td style='background-color: white;'>{score}</td>"
+                html += f"<td style='background-color: white; color: black;'>{
+                    score}</td>"
         html += "</tr>"
     return html
 
@@ -217,7 +220,7 @@ def generate_html(df) -> str:
         <table>
             <thead>
                 <tr>
-                    <th style='background-color: white;'>Topic</th>
+                    <th style='background-color: white; color: black'>Topic</th>
     """
     html += add_source_columns(score_df)
     html += """
