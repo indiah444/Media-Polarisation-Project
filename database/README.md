@@ -5,8 +5,10 @@ This folder contains the schema and python script to seed the database with init
 The database created is a PostgreSQL database, hosted on an AWS RDS instance.
 
 ## 🛠️ Prerequisites
-- **Python** installed (For running locally)
-- **AWS RDS (PostgreSQL)** instance running.
+- **AWS RDS (PostgreSQL)** database running.
+
+Optional:
+- **Python** installed (For seeding dummy data)
 
 ## ⚙️ Setup
 1. Create a `.env` file and fill with the following variables
@@ -26,7 +28,7 @@ The database created is a PostgreSQL database, hosted on an AWS RDS instance.
     - Create the necessary tables
     - Seed the database with fixed data
 
-### (**Optional**) ✨ Generating fake data 
+### ✨ Generating fake data (**Optional**)
 Fake subscriber and article data can be generated for Fox News. This is useful for testing/developing the cloud architecture. The sentiment score is generated using a random truncated distribution, with a mode of `-0.5`. This was chosen, mostly as a placeholder, and for the purpose of testing visualisations. 
 
 The mapping between article headlines and topics can be used for validation later on in the pipeline.
