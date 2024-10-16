@@ -1,7 +1,9 @@
 """Script to create visualisations of changes over time"""
+
 import streamlit as st
 import altair as alt
 import pandas as pd
+
 from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time
 
