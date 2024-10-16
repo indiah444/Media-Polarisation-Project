@@ -1,4 +1,4 @@
-"""A file to extract information from various Fox News RSS feeds."""
+"""A file to webscrape article information from Democracy Now! A-Z Topics page."""
 
 from datetime import datetime, timedelta
 
@@ -160,7 +160,7 @@ def get_all_topic_links() -> list[str]:
 
         if response is None:
             print(
-                f'Democracy Now url "https://www.democracynow.org/topics/browse" not responding')
+                'Democracy Now url "https://www.democracynow.org/topics/browse" not responding')
             return []
 
         soup = fetch_response_html(response)
@@ -174,7 +174,7 @@ def get_all_topic_links() -> list[str]:
 
         return topic_links
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=W0718
         print(f"Failed to fetch topic links: {e}")
         return []
 
@@ -263,4 +263,4 @@ def scrape_democracy_now(days_old: int) -> list[dict]:
 
 
 if __name__ == "__main__":
-    print(scrape_democracy_now())
+    print(scrape_democracy_now(3))

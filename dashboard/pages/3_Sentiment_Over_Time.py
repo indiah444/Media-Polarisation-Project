@@ -1,6 +1,9 @@
+# pylint: disable=C0103, E0401
+
 """Script to create visualisations of changes over time"""
 
 import streamlit as st
+from streamlit.delta_generator import DeltaGenerator
 import altair as alt
 import pandas as pd
 
@@ -23,16 +26,18 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     df['date_published'] = pd.to_datetime(df['date_published'])
 
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
-        time_interval, on='date_published').agg({"title_polarity_score": aggregate, "content_polarity_score": aggregate}).reset_index()
+        time_interval, on='date_published').agg({"title_polarity_score": aggregate,
+                                                 "content_polarity_score": aggregate}).reset_index()
 
     return pd.DataFrame(df_avg)
 
 
-def construct_streamlit_time_graph(data: pd.DataFrame, avg_col, count_col, sent_by_title: bool, sampling: str):
+def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerator,
+                                   count_col: DeltaGenerator, sent_by_title: bool, sampling: str):
     """Constructs a streamlit time graph."""
-    averaged = resample_dataframe(data, sampling, "mean").dropna()
+    averaged = resample_dataframe(data_df, sampling, "mean").dropna()
 
-    counts = resample_dataframe(data, sampling, "count").dropna()
+    counts = resample_dataframe(data_df, sampling, "count").dropna()
 
     avg_graph = visualise_change_over_time(
         averaged, by_title=sent_by_title)
@@ -40,41 +45,43 @@ def construct_streamlit_time_graph(data: pd.DataFrame, avg_col, count_col, sent_
     count_graph = visualise_change_over_time(
         counts, by_title=sent_by_title)
 
-    avg_col.subheader(f"Average")
+    avg_col.subheader("Average")
     avg_col.altair_chart(avg_graph, use_container_width=True)
 
-    count_col.subheader(f"Count")
+    count_col.subheader("Count")
     count_col.altair_chart(count_graph, use_container_width=True)
 
 
-def add_year_month_day_columns(data: pd.DataFrame) -> pd.DataFrame:
+def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     """Adds year, week, and weekday columns to a dataframe"""
-    data["year"] = data["date_published"].dt.year
+    data_df["year"] = data_df["date_published"].dt.year
 
-    data["week_num"] = data["date_published"].dt.isocalendar().week
+    data_df["week_num"] = data_df["date_published"].dt.isocalendar().week
 
-    data["month_name"] = data["date_published"].dt.strftime('%b')
+    data_df["month_name"] = data_df["date_published"].dt.strftime('%b')
 
-    data["week_of_month"] = data["date_published"].apply(
+    data_df["week_of_month"] = data_df["date_published"].apply(
         lambda d: (d.day - 1) // 7 + 1)
 
-    data["week_text"] = data["month_name"] + \
-        " Week " + data["week_of_month"].astype(str)
+    data_df["week_text"] = data_df["month_name"] + \
+        " Week " + data_df["week_of_month"].astype(str)
 
-    data["weekday"] = data["date_published"].dt.day_name()
-    data["date_name"] = data["date_published"].dt.strftime('%d-%m-%Y')
-    return data
+    data_df["weekday"] = data_df["date_published"].dt.day_name()
+    data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
+    return data_df
 
 
-def construct_streamlit_heatmap(heatmaps_container, data: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen'):
+def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
+                                data_df: pd.DataFrame, by_title: bool,
+                                colourscheme: str = 'yellowgreen'):
     """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
     vals = "title_polarity_score" if by_title else "content_polarity_score"
-    data = data[["week_num", "weekday", vals, "week_text", "date_name"]]
+    data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
 
-    data = data.groupby(["week_num", "week_text", "weekday", "date_name"],
-                        as_index=False)[vals].mean()
+    data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
+                              as_index=False)[vals].mean()
 
-    heatmap = alt.Chart(data).mark_rect().encode(
+    heatmap = alt.Chart(data_df).mark_rect().encode(
         x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
             field='week_num', order='ascending')),
         y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
@@ -107,15 +114,16 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
-        st.markdown("""This page shows trends in **compound** sentiment scores over time.
-                The 'granularity' may be altered to smooth out the data: 
+        # pylint: disable=C0301
+        st.markdown("""This page shows trends in <span style='color:blue; font-weight:bold;'>**compound**</span> sentiment scores over time.
+                The <span style='color:red;'>'granularity'</span> may be altered to smooth out the data: 
                 at the lower end, sentiment scores are averaged over time periods of an hour, 
                 and this can be increased up to 100 hours.""")
 
         sampling_rate = str(selected_frequency) + 'h'
 
         line_graphs = st.container()
-        line_graphs.header(f"Polarity by Article Titles")
+        line_graphs.header("Polarity by Article Titles")
         col1, col2 = line_graphs.columns(2)
 
         construct_streamlit_time_graph(data,
@@ -123,7 +131,7 @@ if __name__ == "__main__":
                                        sent_by_title=True,
                                        sampling=sampling_rate)
 
-        line_graphs.header(f"Polarity by Article Content")
+        line_graphs.header("Polarity by Article Content")
         col3, col4 = line_graphs.columns(2)
         construct_streamlit_time_graph(data,
                                        col3, col4,

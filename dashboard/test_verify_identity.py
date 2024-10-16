@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for the verify_identity.py file."""
+
 import unittest
 from unittest.mock import patch, MagicMock
 

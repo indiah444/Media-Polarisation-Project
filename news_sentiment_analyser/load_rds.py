@@ -1,4 +1,5 @@
 """A script to load the dataframe into the database."""
+
 from datetime import datetime
 
 import pandas as pd

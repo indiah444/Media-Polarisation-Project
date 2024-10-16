@@ -1,4 +1,5 @@
 """The full pipeline for extracting articles, analysing them and uploading them to s3."""
+
 from extract_s3 import extract
 from transform_articles import transform
 from load_rds import load
@@ -13,7 +14,7 @@ def pipeline() -> None:
         print("Articles transformed.")
         load(articles)
         print("Articles inserted.")
-    except Exception as err:
+    except Exception as err:  # pylint: disable=W0718
         print(f"Error occurred: {err}")
 
 
