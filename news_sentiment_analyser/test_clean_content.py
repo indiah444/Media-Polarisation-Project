@@ -2,7 +2,7 @@
 """Tests the content cleaning methods"""
 
 import pytest
-from clean_content import clean_html_tags, clean_multiple_spaces, clean_content
+from clean_content import clean_html_tags, clean_multiple_spaces, clean_content, remove_stop_phrases
 
 
 def test_clean_content():
@@ -31,3 +31,19 @@ def test_clean_html_tags(html, expected):
 def test_clean_multiple_spaces(html, expected):
     '''Tests that html tags are cleaned as expected'''
     assert clean_multiple_spaces(html) == expected
+
+
+@pytest.mark.parametrize("text, phrases, expected", [
+    ("FOX News is covering the event.", [
+     "fox news"], " is covering the event."),
+    ("Democracy Now! is airing today.", [
+     "democracy now!"], " is airing today."),
+    ("Independent media.", [
+     "fox news", "democracy now"], "Independent media."),
+    ("Democracy Now! and Fox News are reporting.", [
+     "fox news", "democracy now!"], " and  are reporting."),
+    ("", ["fox news"], ""),
+    ("a", [], "a")
+])
+def test_case_insensitivity(text, phrases, expected):
+    assert remove_stop_phrases(text, phrases) == expected

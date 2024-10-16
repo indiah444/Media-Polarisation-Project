@@ -2,8 +2,10 @@
 
 import pandas as pd
 import altair as alt
+import streamlit as st
 
 
+@st.cache_data
 def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
     """Returns a bubble chart of sentiment for a source by topic."""
 
@@ -26,6 +28,7 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
     return chart
 
 
+@st.cache_data
 def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     """Returns a scatter graph for title vs content score."""
 
@@ -66,6 +69,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     return final_chart
 
 
+@st.cache_data
 def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataframe with the maximum date published for each source."""
 
@@ -79,6 +83,7 @@ def get_last_point(df: pd.DataFrame) -> pd.DataFrame:
     return last_point_df
 
 
+@st.cache_data
 def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     """Visualise changes in sentiment over time. """
 
@@ -87,7 +92,8 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     ).properties(
         width=500
     ).interactive()
-
+    color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
+                            range=['red', 'blue'])
     if not by_title:
         y_axis = ('content_polarity_score', "Content Polarity Score")
     else:
@@ -112,7 +118,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
         x='date_published:T',
         y=alt.Y(f'{y_axis[0]}:Q'),
         tooltip=[alt.Tooltip('source_name:N', title='Source Name')],
-        color=alt.Color('source_name:N')
+        color=alt.Color('source_name:N', scale=color_scale)
     )
 
     source_names = points.mark_text(
@@ -121,6 +127,7 @@ def visualise_change_over_time(df: pd.DataFrame, by_title: bool) -> alt.Chart:
     return line + points + source_names
 
 
+@st.cache_data
 def create_sentiment_distribution_chart(df):
     """Creates a distribution graph of average score by topic and source."""
 
@@ -150,6 +157,7 @@ def create_sentiment_distribution_chart(df):
     return chart
 
 
+@st.cache_data
 def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     """Pivots dataframe so topics are rows and sources are columns."""
 
@@ -158,34 +166,40 @@ def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
     return pivoted_df
 
 
+@st.cache_data
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
 
     color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
     html = ""
     for source in df.columns:
-        html += f"<th style='background-color: white; color: {
-            color_scheme[source]};'>{source}</th>"
+        html += ("<th style='background-color: white; color:"
+                 f"{color_scheme[source]};'>{source}</th>")
     return html
 
 
+@st.cache_data
 def add_topic_rows(df: pd.DataFrame) -> str:
     """Build the rows of the table with topic and score, with color based on score."""
 
     html = ""
     for topic, row in df.iterrows():
-        html += f"<tr><td style='background-color: white;'>{topic}</td>"
+        html += f"<tr><td style='background-color: white; color: black;'>{
+            topic}</td>"
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
+
                 html += f"<td style='background-color: {
-                    color};'>{score:.2f}</td>"
+                    color}; color: black;'>{score:.2f}</td>"
             else:
-                html += f"<td style='background-color: white;'>{score}</td>"
+                html += f"<td style='background-color: white; color: black;'>{
+                    score}</td>"
         html += "</tr>"
     return html
 
 
+@st.cache_data
 def generate_html(df) -> str:
     """generate html body"""
 
@@ -215,7 +229,7 @@ def generate_html(df) -> str:
         <table>
             <thead>
                 <tr>
-                    <th style='background-color: white;'>Topic</th>
+                    <th style='background-color: white; color: black'>Topic</th>
     """
     html += add_source_columns(score_df)
     html += """
