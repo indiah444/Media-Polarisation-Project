@@ -106,11 +106,12 @@ class TestGenerateHtmlWithLinks:
 
 class TestGenerateHtml:
 
+    @patch('html_content.add_unsubscribe_link')
     @patch('html_content.pivot_df')
     @patch('html_content.add_source_columns')
     @patch('html_content.add_topic_rows')
     @patch('html_content.generate_html_with_links')
-    def test_generate_html_with_data(self, mock_generate_html_with_links, mock_add_topic_rows, mock_add_source_columns, mock_pivot_df):
+    def test_generate_html_with_data(self, mock_generate_html_with_links, mock_add_topic_rows, mock_add_source_columns, mock_pivot_df, mock_add_unsubscribe_link):
 
         mock_pivot_df.return_value = pd.DataFrame({
             'source1': [0.3, 0.5],
@@ -127,7 +128,7 @@ class TestGenerateHtml:
             "<td style='background-color: #fabbb7;'>-0.70</td></tr>"
         )
         mock_generate_html_with_links.return_value = "<p>Yesterday's articles:</p><a href='http://example.com/article1'>http://example.com/article1</a>"
-
+        mock_add_unsubscribe_link.return_value = "<a>link<\a>"
         data = {
             'topic_name': ['topic1', 'topic2'],
             'source_name': ['source1', 'source2'],
@@ -144,16 +145,18 @@ class TestGenerateHtml:
         assert '<tr><td style=\'background-color: white;\'>topic1</td>' in result
         assert '<tr><td style=\'background-color: white;\'>topic2</td>' in result
 
+    @patch('html_content.add_unsubscribe_link')
     @patch('html_content.pivot_df')
     @patch('html_content.add_source_columns')
     @patch('html_content.add_topic_rows')
     @patch('html_content.generate_html_with_links')
-    def test_generate_html_with_empty_dataframe(self, mock_generate_html_with_links, mock_add_topic_rows, mock_add_source_columns, mock_pivot_df):
+    def test_generate_html_with_empty_dataframe(self, mock_generate_html_with_links, mock_add_topic_rows, mock_add_source_columns, mock_pivot_df, mock_add_unsubscribe_link):
 
         mock_pivot_df.return_value = pd.DataFrame(
             columns=['source1', 'source2'])
         mock_add_source_columns.return_value = "<th style='background-color: #fafafa;'>source1</th><th style='background-color: #fabbb7;'>source2</th>"
         mock_add_topic_rows.return_value = ""
+        mock_add_unsubscribe_link.return_value = "<a>link<\a>"
         mock_generate_html_with_links.return_value = "<p>Yesterday's articles:</p>"
 
         df = pd.DataFrame(columns=['topic_name', 'source_name',
