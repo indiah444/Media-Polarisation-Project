@@ -5,7 +5,24 @@ import pytest
 from unittest.mock import patch
 import pandas as pd
 import datetime
-from d_graphs import pivot_df, get_last_point, generate_html
+from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns
+
+
+def add_source_columns(df: pd.DataFrame) -> str:
+    """Add the source names as column titles."""
+    color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
+    html = ""
+    for source in df.columns:
+        html += ("<th style='background-color: white; color:"
+                 f"{color_scheme[source]};'>{source}</th>")
+    return html
+
+
+def test_add_source_cols():
+    df = pd.DataFrame(columns={'Fox News': [], 'Democracy Now!': []})
+    color_scheme = {'Fox News': 'red', 'Democracy Now!': 'blue'}
+    assert add_source_columns(
+        df) == "<th style='background-color: white; color:red;'>Fox News</th>" + "<th style='background-color: white; color:blue;'>Democracy Now!</th>"
 
 
 @pytest.fixture
