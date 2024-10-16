@@ -1,4 +1,4 @@
-# pylint: disable=C0103, E0401
+# pylint: disable=C0103, E0401, R0801
 
 """A file to generate word clouds based on article word frequency by source."""
 

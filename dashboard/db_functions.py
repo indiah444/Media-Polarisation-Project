@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """Some functions for interacting with the RDS."""
 
 from os import environ as ENV

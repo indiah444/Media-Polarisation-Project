@@ -52,26 +52,28 @@ def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerato
     count_col.altair_chart(count_graph, use_container_width=True)
 
 
-def add_year_month_day_columns(data: pd.DataFrame) -> pd.DataFrame:
+def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     """Adds year, week, and weekday columns to a dataframe"""
-    data["year"] = data["date_published"].dt.year
+    data_df["year"] = data_df["date_published"].dt.year
 
-    data["week_num"] = data["date_published"].dt.isocalendar().week
+    data_df["week_num"] = data_df["date_published"].dt.isocalendar().week
 
-    data["month_name"] = data["date_published"].dt.strftime('%b')
+    data_df["month_name"] = data_df["date_published"].dt.strftime('%b')
 
-    data["week_of_month"] = data["date_published"].apply(
+    data_df["week_of_month"] = data_df["date_published"].apply(
         lambda d: (d.day - 1) // 7 + 1)
 
-    data["week_text"] = data["month_name"] + \
-        " Week " + data["week_of_month"].astype(str)
+    data_df["week_text"] = data_df["month_name"] + \
+        " Week " + data_df["week_of_month"].astype(str)
 
-    data["weekday"] = data["date_published"].dt.day_name()
-    data["date_name"] = data["date_published"].dt.strftime('%d-%m-%Y')
-    return data
+    data_df["weekday"] = data_df["date_published"].dt.day_name()
+    data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
+    return data_df
 
 
-def construct_streamlit_heatmap(heatmaps_container, data: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen'):
+def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
+                                data: pd.DataFrame, by_title: bool,
+                                colourscheme: str = 'yellowgreen'):
     """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
     vals = "title_polarity_score" if by_title else "content_polarity_score"
     data = data[["week_num", "weekday", vals, "week_text", "date_name"]]
