@@ -1,5 +1,4 @@
-"""File that holds the main lambda handler function for the Fox News
-scraper."""
+"""File that holds the main lambda handler function for the Fox News scraper."""
 
 import grequests
 from dotenv import load_dotenv
