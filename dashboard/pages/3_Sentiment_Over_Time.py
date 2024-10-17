@@ -53,17 +53,12 @@ def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerato
 def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     """Adds year, week, and weekday columns to a dataframe"""
     data_df["year"] = data_df["date_published"].dt.year
-
     data_df["week_num"] = data_df["date_published"].dt.isocalendar().week
-
     data_df["month_name"] = data_df["date_published"].dt.strftime('%b')
-
     data_df["week_of_month"] = data_df["date_published"].apply(
         lambda d: (d.day - 1) // 7 + 1)
-
     data_df["week_text"] = data_df["month_name"] + \
         " Week " + data_df["week_of_month"].astype(str)
-
     data_df["weekday"] = data_df["date_published"].dt.day_name()
     data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
     return data_df
@@ -77,7 +72,7 @@ def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str =
     data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
                               as_index=False)[vals].mean()
 
-    heatmap = alt.Chart(data_df).mark_rect().encode(
+    return alt.Chart(data_df).mark_rect().encode(
         x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
             field='week_num', order='ascending')),
         y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
@@ -158,7 +153,5 @@ if __name__ == "__main__":
         if source != "All":
             data = data[data["source_name"] == source]
 
-        heatmaps.subheader("By Title")
         construct_streamlit_heatmap(heatmaps, data, True)
-        heatmaps.subheader("By Content")
         construct_streamlit_heatmap(heatmaps, data, False)
