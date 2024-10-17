@@ -517,6 +517,11 @@ resource "aws_instance" "pipeline_ec2" {
     }
 }
 
+resource "local_file" "instance_dns" {
+  content  = "EC2_HOST=${aws_instance.pipeline_ec2.public_dns}"
+  filename = "../dashboard/ec2.env"
+}
+
 # =========================== Emailing system ===========================
 
 resource "aws_lambda_function" "daily_email_lambda" {
@@ -532,6 +537,7 @@ resource "aws_lambda_function" "daily_email_lambda" {
             S3_BUCKET_NAME = var.S3_BUCKET_NAME
             AWS_ACCESS_KEY_BOUDICCA = var.AWS_ACCESS_KEY
             AWS_ACCESS_SECRET_KEY_BOUDICCA = var.AWS_SECRET_ACCESS_KEY
+            EC2_HOST = aws_instance.pipeline_ec2.public_dns
             DB_HOST = var.DB_HOST
             DB_PORT = var.DB_PORT
             DB_NAME = var.DB_NAME
