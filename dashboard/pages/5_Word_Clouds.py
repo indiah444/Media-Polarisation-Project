@@ -16,6 +16,9 @@ from nltk import download as nltk_download
 
 from db_functions import get_all_article_content, get_topic_names
 
+W_TOKENIZER = WhitespaceTokenizer()
+LEMMATIZER = WordNetLemmatizer()
+
 
 @st.cache_data
 def download_nltk_data():
@@ -25,10 +28,6 @@ def download_nltk_data():
     nltk_download("stopwords")
     nltk_download('punkt_tab')
     nltk_download("wordnet")
-
-
-W_TOKENIZER = WhitespaceTokenizer()
-LEMMATIZER = WordNetLemmatizer()
 
 
 def lemmatize_text(text: str) -> str:
