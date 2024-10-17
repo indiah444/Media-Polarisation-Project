@@ -95,16 +95,21 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
     heatmaps_container.altair_chart(heatmap)
 
 
+def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
+    """Constructs the Sidebar for the streamlit page.
+    Returns (topic, granularity)"""
+    st.sidebar.header("Settings")
+    topic = st.sidebar.selectbox("Topic", topics_list)
+    granularity_to_hours = {"1 hour": "1", "1 day": "24", "1 week": str(24*7)}
+    granularity = st.sidebar.selectbox(
+        "Granularity", granularity_to_hours.keys())
+    return topic, granularity_to_hours[granularity]
+
+
 if __name__ == "__main__":
     topic_names = get_topic_names()
-
-    st.sidebar.header("Settings")
-
-    selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
+    selected_topic, selected_frequency = construct_sidebar(topic_names)
     data = pd.DataFrame(get_scores_topic(selected_topic))
-
-    selected_frequency = st.sidebar.slider(
-        label="Granularity (hours)", min_value=1, max_value=100, step=1)
 
     if data.empty:
         st.warning(f"No data available for {selected_topic}")
