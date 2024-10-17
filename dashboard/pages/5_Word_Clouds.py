@@ -145,7 +145,7 @@ def run_app():
 
     st.write(f"Time Range Selected: {selected_time_range}")
 
-    unique_topics = get_unique_topics()
+    unique_topics = get_topic_names()
     selected_topics = st.sidebar.multiselect(
         "Select topics", options=unique_topics)
 
