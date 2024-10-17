@@ -1,5 +1,7 @@
 # pylint: skip-file
 
+from datetime import datetime
+
 import pytest
 import pandas as pd
 
@@ -40,7 +42,6 @@ def fake_heatmap_data():
 
 @pytest.fixture
 def example_df():
-    """Returns an example dataframe"""
     return pd.DataFrame(
         [
             {'topic_name': 'Donald Trump',
@@ -55,3 +56,11 @@ def example_df():
              'date_published': datetime.date(2024, 10, 9)}
 
         ])
+
+
+@pytest.fixture
+def sample_df():
+    data = {'Fox News': [0.7, -0.6, 'N/A'],
+            'Democracy Now!': [-0.8, 0.3, 'N/A']}
+    index = ['Topic 1', 'Topic 2', 'Topic 3']
+    return pd.DataFrame(data, index=index)

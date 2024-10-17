@@ -12,7 +12,7 @@ import altair as alt
 from d_graphs import (pivot_df, get_last_point, generate_html, add_source_columns,
                       create_bubble_chart, create_scatter_graph, create_horizontal_line,
                       create_vertical_line, visualise_change_over_time,
-                      create_sentiment_distribution_chart, visualise_heatmap)
+                      create_sentiment_distribution_chart, visualise_heatmap, add_topic_rows)
 
 
 class TestCreateBubbleChart:
@@ -150,6 +150,59 @@ def test_get_last_point():
     result_df = get_last_point(df)
 
     pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+class TestAddTopicRows:
+    def test_with_sample_data(self, sample_df):
+        expected_html = (
+            "<tr><td style='background-color: white; color: black;'>Topic 1</td>"
+            "<td style='background-color: #b6f7ae; color: black;'>0.70</td>"
+            "<td style='background-color: #fabbb7; color: black;'>-0.80</td>"
+            "</tr>"
+            "<tr><td style='background-color: white; color: black;'>Topic 2</td>"
+            "<td style='background-color: #fabbb7; color: black;'>-0.60</td>"
+            "<td style='background-color: #fafafa; color: black;'>0.30</td>"
+            "</tr>"
+            "<tr><td style='background-color: white; color: black;'>Topic 3</td>"
+            "<td style='background-color: white; color: black;'>N/A</td>"
+            "<td style='background-color: white; color: black;'>N/A</td>"
+            "</tr>"
+        )
+
+        result_html = add_topic_rows(sample_df)
+        assert result_html == expected_html
+
+    def test_with_empty_df(self):
+        empty_df = pd.DataFrame()
+        expected_html = ""
+        result_html = add_topic_rows(empty_df)
+        assert result_html == expected_html
+
+    def test_with_non_float_values(self):
+        df = pd.DataFrame(
+            {'Fox News': ['N/A'], 'Democracy Now!': ['N/A']}, index=['Topic 1'])
+        expected_html = (
+            "<tr><td style='background-color: white; color: black;'>Topic 1</td>"
+            "<td style='background-color: white; color: black;'>N/A</td>"
+            "<td style='background-color: white; color: black;'>N/A</td>"
+            "</tr>"
+        )
+
+        result_html = add_topic_rows(df)
+        assert result_html == expected_html
+
+    def test_with_positive_and_negative_scores(self):
+        df = pd.DataFrame(
+            {'Fox News': [0.6], 'Democracy Now!': [-0.7]}, index=['Topic 1'])
+        expected_html = (
+            "<tr><td style='background-color: white; color: black;'>Topic 1</td>"
+            "<td style='background-color: #b6f7ae; color: black;'>0.60</td>"
+            "<td style='background-color: #fabbb7; color: black;'>-0.70</td>"
+            "</tr>"
+        )
+
+        result_html = add_topic_rows(df)
+        assert result_html == expected_html
 
 
 class TestPivotDf:
