@@ -44,6 +44,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
 def get_url_html(url: dict) -> str:
     """Returns a formatted string for a URL."""
+
     return f'<li><a href="{url['link']}">{url['title']}</a></li>'
 
 
@@ -63,6 +64,7 @@ def generate_html_with_links() -> str:
 
 def add_unsubscribe_link() -> str:
     """Adds the link to the unsubscribe page."""
+
     link = ENV['EC2_HOST'] + ":8501/Subscribe"
     return f'<a href="{link}" target="_blank">Unsubscribe here</a>'
 
