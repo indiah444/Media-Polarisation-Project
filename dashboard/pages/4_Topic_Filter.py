@@ -11,8 +11,6 @@ from d_graphs import create_bubble_chart, create_scatter_graph
 
 if __name__ == "__main__":
 
-    st.markdown("<h1 style='color: #e3298c;'>By topic</h1>",
-                unsafe_allow_html=True)
     st.title("Topic-Based Polarity Analysis with Altair")
 
     st.sidebar.header("Select Topic")
