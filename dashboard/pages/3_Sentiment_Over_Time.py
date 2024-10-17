@@ -44,7 +44,7 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
     header_text = "By Article Title" if sent_by_title else "By Article Content"
     heatmaps_container.subheader(header_text)
     heatmap = visualise_heatmap(weekly_data, sent_by_title, colour)
-    heatmaps_container.altair_chart(heatmap)
+    heatmaps_container.altair_chart(heatmap, use_container_width=True)
 
 
 def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
