@@ -124,9 +124,8 @@ def filter_articles_by_date(articles: list, time_range: str):
 def get_articles_by_source(filtered_articles: list, source_name: str) -> list:
     """Returns article contents for a given source from the filtered articles."""
 
-    return [
-        article["article_content"] for article in filtered_articles if article["source_name"] == source_name
-    ]
+    return [article["article_content"] for article in filtered_articles 
+            if article["source_name"] == source_name]
 
 
 @st.cache_data
