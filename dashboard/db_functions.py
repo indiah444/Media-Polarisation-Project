@@ -185,3 +185,24 @@ def get_avg_polarity_all_topics():
             data = cur.fetchall()
 
     return pd.DataFrame(data)
+
+
+@st.cache_data
+def get_all_article_content():
+    """Returns all article content from the database, along with their
+    topics."""
+
+    with create_connection() as conn:
+        query = """
+        SELECT article.article_id, article.article_content, source.source_name, article.date_published, 
+               topic.topic_name
+        FROM article
+        JOIN source ON article.source_id = source.source_id
+        LEFT JOIN article_topic_assignment ON article.article_id = article_topic_assignment.article_id
+        LEFT JOIN topic ON article_topic_assignment.topic_id = topic.topic_id;
+        """
+        with conn.cursor() as cur:
+            cur.execute(query)
+            articles = cur.fetchall()
+
+    return articles

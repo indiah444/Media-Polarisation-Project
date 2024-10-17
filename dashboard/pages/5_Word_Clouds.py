@@ -9,13 +9,13 @@ from datetime import datetime, timedelta
 import streamlit as st
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from dotenv import load_dotenv
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
 
-from db_functions import create_connection
+from db_functions import create_connection, get_all_article_content
 
 
 @st.cache_data
@@ -26,27 +26,6 @@ def download_nltk_data():
     nltk_download("stopwords")
     nltk_download('punkt_tab')
     nltk_download("wordnet")
-
-
-@st.cache_data
-def get_all_article_content():
-    """Returns all article content from the database, along with their
-    topics."""
-
-    with create_connection() as conn:
-        query = """
-        SELECT article.article_id, article.article_content, source.source_name, article.date_published, 
-               topic.topic_name
-        FROM article
-        JOIN source ON article.source_id = source.source_id
-        LEFT JOIN article_topic_assignment ON article.article_id = article_topic_assignment.article_id
-        LEFT JOIN topic ON article_topic_assignment.topic_id = topic.topic_id;
-        """
-        with conn.cursor() as cur:
-            cur.execute(query)
-            articles = cur.fetchall()
-
-    return articles
 
 
 def get_unique_topics():
