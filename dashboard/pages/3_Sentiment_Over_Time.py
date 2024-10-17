@@ -7,7 +7,7 @@ from streamlit.delta_generator import DeltaGenerator
 import altair as alt
 import pandas as pd
 
-from db_functions import get_scores_topic, get_topic_names, get_scores_all_topics
+from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time, visualise_heatmap
 
 AGGREGATES = ["mean", "count"]
@@ -84,10 +84,17 @@ def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
     return topic, granularity_to_hours[granularity]
 
 
+def select_data_by_topic(topic_name: str) -> pd.DataFrame:
+    """Selects the data for a topic by name"""
+    data = get_scores_topic(topic_name)
+    return pd.DataFrame(data)
+
+
 if __name__ == "__main__":
     topic_names = get_topic_names()
     selected_topic, sampling_rate = construct_sidebar(topic_names)
-    data = pd.DataFrame(get_scores_topic(selected_topic))
+
+    data = select_data_by_topic(selected_topic)
 
     if data.empty:
         st.warning(f"No data available for {selected_topic}")
