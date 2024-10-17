@@ -12,7 +12,7 @@ if __name__ == "__main__":
     st.title("Welcome to the Media Polarisation Dashboard")
 
     st.markdown("""
-    ## 📊 Overview of Media Polarisation
+    ## Overview of Media Polarisation
 
     Welcome to the <span style='color:blue; font-weight:bold;'>Overview</span> page of the Media Polarisation Dashboard. 
     Here, we provide insights into the <span style='color:red; font-weight:bold;'>sentiment scores</span> associated with various topics covered by different media outlets.

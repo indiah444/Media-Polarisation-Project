@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ## 🚀 Explore the Data
 
     Use the tabs on the sidebar to begin exploring the data:
-    - <a href="http://ec2-35-179-130-166.eu-west-2.compute.amazonaws.com:8501/Overview" style='color:red; font-weight:bold;'>**Overview**</a>: Get a broad understanding of media polarisation, including key visualisations that summarise the sentiment and coverage across different outlets.
+    - <a href="http://ec2-35-179-130-166.eu-west-2.compute.amazonaws.com:8501/Home" style='color:red; font-weight:bold;'>**Home**</a>: Receive an introduction to media polarisation, including key visualisations that summarise the sentiment and coverage across different outlets.
     - <a href="http://ec2-35-179-130-166.eu-west-2.compute.amazonaws.com:8501/Sentiment_Over_Time" style='color:blue; font-weight:bold;'>**Sentiment Over Time**</a>: See how sentiment has shifted over time for various topics. This page provides interactive charts to help you visualise trends in media coverage.
     - <a href="http://ec2-35-179-130-166.eu-west-2.compute.amazonaws.com:8501/Topic_Filter" style='color:red; font-weight:bold;'>**Topic Filter**</a>: Dive deep into specific topics and compare how different outlets cover them. You can filter by topics to see the varying sentiments used.
     - <a href="http://ec2-35-179-130-166.eu-west-2.compute.amazonaws.com:8501/Word_Clouds" style='color:blue; font-weight:bold;'>**Word Clouds**</a>: Visualise the most frequently used words by different media outlets. This page provides quick insights into the language and framing used in coverage.
