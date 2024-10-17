@@ -72,10 +72,16 @@ The project is designed to be deployed on the cloud using AWS services via terra
     - Enter yes when it asks to approve changes.
     - Can be used to redeploy if resource definitions have been changed.
     - Keep note of the `EC2_public_dns` output for step 4.
-    
-4. Transfer dashboard to EC2 by reading [dashboard/README.md](../dashboard/README.md)
 
-5. To bring down the cloud infrastructure:
+4. Restrict the .pem key access:
+    ```bash
+    chmod 400 c13-boudicca-mp-key-pair.pem
+    ```
+    This is required for the pem key to actually work when connecting to EC2 via ssh.
+    
+5. Transfer dashboard to EC2 by reading [dashboard/README.md](../dashboard/README.md)
+
+6. To bring down the cloud infrastructure:
     ```bash
     terraform destroy
     ```
@@ -83,6 +89,6 @@ The project is designed to be deployed on the cloud using AWS services via terra
 
 ## 📝 Notes
 
-- Remember to add any `*.env` or `*.tfvars` files to gitignore if note already listed.
+- Remember to add any `*.env`, `*.tfvars`, `*.pem`, `*.pemkey` files to gitignore if note already listed.
 - Each time the `terraform apply` is run, the EC2 will be recreated with a new dns address meaning the [dashboard setup](../dashboard/README.md) will need top be redone each time.
 
