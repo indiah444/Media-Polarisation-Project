@@ -109,7 +109,7 @@ def display_sidebar_options():
         value="Last 7 days"
     )
 
-    unique_topics = get_unique_topics()
+    unique_topics = get_topic_names()
     selected_topics = st.sidebar.multiselect(
         "Select topics", options=unique_topics, key="topic_selection"
     )
