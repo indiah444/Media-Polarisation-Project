@@ -96,10 +96,10 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
+        # pylint: disable=C0301
         st.html("""
                 This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
                 The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
-
                 at the lower end, sentiment scores are averaged over time buckets of an hour, and this can 
                 be increased up to a day.
                 """)
