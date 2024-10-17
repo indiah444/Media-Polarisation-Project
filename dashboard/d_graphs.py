@@ -264,7 +264,7 @@ def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str =
             field='week_num', order='ascending')),
         y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
         color=alt.Color(f'{vals}:Q', title='Polarity Score',
-                        scale=alt.Scale(scheme=colourscheme)),
+                        scale=alt.Scale(scheme=colourscheme, domain=[-1, 1])),
         tooltip=[vals, 'date_name', 'weekday']
     ).properties(
         width=600,
