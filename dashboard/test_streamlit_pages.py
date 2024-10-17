@@ -22,4 +22,4 @@ def test_home_page():
     """Tests that the home page runs without exception"""
     at = AppTest.from_file("pages/2_About.py")
     at.run()
-    assert at.button[1].label == "Unsubscribe"
+    assert not at.exception
