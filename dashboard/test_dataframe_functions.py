@@ -40,15 +40,20 @@ def test_is_valid_time_interval_invalid(interval):
         is_valid_time_interval(interval)
 
 
-def test_resample_dataframe_valid():
-    """Asserts that resample dataframe is valid for resampling over an hour"""
-    data = {
+@pytest.fixture
+def data():
+    return {
         "source_name": ["Source1", "Source1", "Source2", "Source2"],
         "topic_name": ["Topic1", "Topic1", "Topic2", "Topic2"],
         "date_published": pd.to_datetime(["2024-10-01 10:00", "2024-10-01 11:00", "2024-10-02 12:00", "2024-10-02 13:00"]),
         "title_polarity_score": [0.1, 0.2, 0.3, 0.4],
         "content_polarity_score": [0.5, 0.6, 0.7, 0.8]
     }
+
+
+def test_resample_dataframe_valid(data):
+    """Asserts that resample dataframe is valid for resampling over an hour"""
+
     df = pd.DataFrame(data)
 
     result_df = resample_dataframe(df, "1h", "mean")
@@ -56,20 +61,9 @@ def test_resample_dataframe_valid():
     pd.testing.assert_frame_equal(result_df, result_df)
 
 
-def test_resample_dataframe_24h():
+def test_resample_dataframe_24h(data):
     """Asserts that resample dataframe is valid for resampling over 24 hours"""
-    data = {
-        "source_name": ["Source1", "Source1", "Source2", "Source2"],
-        "topic_name": ["Topic1", "Topic1", "Topic2", "Topic2"],
-        "date_published": pd.to_datetime([
-            "2024-10-01 10:00",
-            "2024-10-01 11:00",
-            "2024-10-02 12:00",
-            "2024-10-02 13:00"
-        ]),
-        "title_polarity_score": [0.1, 0.2, 0.3, 0.4],
-        "content_polarity_score": [0.5, 0.6, 0.7, 0.8]
-    }
+
     df = pd.DataFrame(data)
 
     result_df = resample_dataframe(df, "24h", "mean")
