@@ -3,7 +3,6 @@
 """A file to generate word clouds based on article word frequency by source."""
 
 import re
-from os import environ as ENV
 from datetime import datetime, timedelta
 
 import streamlit as st
@@ -15,7 +14,7 @@ from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
 
-from db_functions import create_connection, get_all_article_content, get_topic_names
+from db_functions import get_all_article_content, get_topic_names
 
 
 @st.cache_data
