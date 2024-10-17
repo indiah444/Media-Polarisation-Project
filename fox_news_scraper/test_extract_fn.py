@@ -1,8 +1,11 @@
-"""Test file for functions in extract_fn.py"""
-import pytest
-from unittest.mock import patch, MagicMock
+# pylint: skip-file
 
+"""Test file for functions in extract_fn.py"""
+
+from unittest.mock import patch, MagicMock
 from unittest import TestCase
+
+import pytest
 from bs4 import BeautifulSoup
 from extract_fn import fetch_rss_feed, get_article_content, remove_hyperlink_ads, parse_article_content, parse_feed_entries, fetch_from_multiple_feeds
 

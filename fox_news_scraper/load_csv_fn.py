@@ -1,5 +1,7 @@
-"""A file to convert the data extracted from the RSS feed into a CSV
-and load it into the S3 bucket."""
+"""
+A file to convert the data extracted from the RSS feed 
+into a CSV and load it into the S3 bucket.
+"""
 
 from os import environ as ENV
 from datetime import datetime
@@ -36,7 +38,7 @@ def upload_dataframe_to_s3(df: pd.DataFrame, bucket_name: str, s3_filename: str)
         )
         print(f"File uploaded to S3 bucket '{bucket_name}' as '{s3_filename}'")
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=W0718
         print(f"Failed to upload file to S3: {e}")
 
 

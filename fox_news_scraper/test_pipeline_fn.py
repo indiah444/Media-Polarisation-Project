@@ -1,6 +1,9 @@
 # pylint: skip-file
+
 """Tests for pipeline_fn.py"""
+
 from unittest.mock import patch
+
 from pipeline_fn import lambda_handler
 
 with patch('pipeline_fn.load_dotenv') as mock_load_dotenv:

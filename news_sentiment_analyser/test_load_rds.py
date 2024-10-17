@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for load_rds.py file."""
+
 import unittest
 from unittest.mock import patch, MagicMock
 

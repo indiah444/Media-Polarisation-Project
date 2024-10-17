@@ -1,3 +1,5 @@
+# pylint: disable=C0103, C0301
+
 """Our main home page - that would appear when you click on the link!"""
 
 import streamlit as st
