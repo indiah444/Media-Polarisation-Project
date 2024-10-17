@@ -90,7 +90,7 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
                                 colour: str = 'yellowgreen'):
     """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
     header_text = "By Article Title" if sent_by_title else "By Article Content"
-    heatmaps_container.header(header_text)
+    heatmaps_container.subheader(header_text)
     heatmap = visualise_heatmap(weekly_data, sent_by_title, colour)
     heatmaps_container.altair_chart(heatmap)
 
@@ -100,7 +100,8 @@ def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
     Returns (topic, granularity)"""
     st.sidebar.header("Settings")
     topic = st.sidebar.selectbox("Topic", topics_list)
-    granularity_to_hours = {"1 hour": "1", "1 day": "24", "1 week": str(24*7)}
+    granularity_to_hours = {"1 hour": "1h",
+                            "1 day": "24h", "1 week": str(24*7)+'h'}
     granularity = st.sidebar.selectbox(
         "Granularity", granularity_to_hours.keys())
     return topic, granularity_to_hours[granularity]
@@ -108,7 +109,7 @@ def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
 
 if __name__ == "__main__":
     topic_names = get_topic_names()
-    selected_topic, selected_frequency = construct_sidebar(topic_names)
+    selected_topic, sampling_rate = construct_sidebar(topic_names)
     data = pd.DataFrame(get_scores_topic(selected_topic))
 
     if data.empty:
@@ -118,13 +119,13 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
-        # pylint: disable=C0301
-        st.markdown("""This page shows trends in <span style='color:blue; font-weight:bold;'>**compound**</span> sentiment scores over time.
-                The <span style='color:red;'>'granularity'</span> may be altered to smooth out the data: 
-                at the lower end, sentiment scores are averaged over time periods of an hour, 
-                and this can be increased up to 100 hours.""")
+        st.html("""
+                This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
+                The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
 
-        sampling_rate = str(selected_frequency) + 'h'
+                at the lower end, sentiment scores are averaged over time buckets of an hour, and this can 
+                be increased up to a day.
+                """)
 
         line_graphs = st.container()
         line_graphs.header("Polarity by Article Titles")
@@ -143,7 +144,7 @@ if __name__ == "__main__":
                                        sampling=sampling_rate)
 
         heatmaps = st.container()
-        heatmaps.header("Heatmap of Polarity Scores")
+        heatmaps.header("Heatmap of Average Polarity Scores")
 
         data = add_year_month_day_columns(data)
 
