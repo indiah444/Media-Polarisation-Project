@@ -124,7 +124,7 @@ def filter_articles_by_date(articles: list, time_range: str):
 def get_articles_by_source(filtered_articles: list, source_name: str) -> list:
     """Returns article contents for a given source from the filtered articles."""
 
-    return [article["article_content"] for article in filtered_articles 
+    return [article["article_content"] for article in filtered_articles
             if article["source_name"] == source_name]
 
 
@@ -156,7 +156,7 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
 
     wordcloud = WordCloud(width=1000, height=500,
                           max_words=100, background_color="white",
-                          colormap=colormap).generate_from_frequencies(word_freq)
+                          colormap=colormap, prefer_horizontal=1).generate_from_frequencies(word_freq)
 
     plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")
@@ -170,8 +170,8 @@ def run_app():
 
     download_nltk_data()
 
-    custom_stop_words = ["fox", "news", "said",
-                         "get", "also", "would", "could", "click", "u"]
+    custom_stop_words = ["fox", "news", "say",
+                         "get", "also", "would", "could", "click", "going"]
 
     st.title("Article Content Word Cloud by News Source")
 
@@ -179,7 +179,7 @@ def run_app():
     selected_time_range = st.sidebar.select_slider(
         "Select time range",
         options=time_range_options,
-        value="Last 24 hours"
+        value="Last 7 days"
     )
 
     time_range_mapping = {
