@@ -71,8 +71,8 @@ def test_resample_dataframe_24h(data):
         "source_name": ["Source1", "Source2"],
         "topic_name": ["Topic1", "Topic2"],
         "date_published": pd.to_datetime([
-            "2024-10-01",  # Aggregated over the first day for Source1
-            "2024-10-02"   # Aggregated over the second day for Source2
+            "2024-10-01",
+            "2024-10-02"
         ]),
         # Averaged for each day and source/topic
         "title_polarity_score": [0.15, 0.35],
