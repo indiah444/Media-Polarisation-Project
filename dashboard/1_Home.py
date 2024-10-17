@@ -9,7 +9,7 @@ from d_graphs import create_sentiment_distribution_chart, generate_html
 
 if __name__ == "__main__":
 
-    st.title("Welcome to the Media Polarisation dashboard")
+    st.title("Welcome to the Media Polarisation Dashboard")
 
     st.markdown("""
     ## 📊 Overview of Media Polarisation

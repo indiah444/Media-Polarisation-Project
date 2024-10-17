@@ -13,7 +13,7 @@ if __name__ == "__main__":
         initial_sidebar_state="expanded"
     )
 
-    st.title("Welcome to the Media Polarisation Dashboard")
+    st.title("Media Polarisation Dashboard")
     st.markdown("""
     ## 📊 Understanding Polarised Media Coverage and Sentiment
 
