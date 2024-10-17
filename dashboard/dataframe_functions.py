@@ -6,6 +6,17 @@ import pandas as pd
 AGGREGATES = ["mean", "count"]
 
 
+def is_valid_time_interval(interval: str) -> None:
+    """Raises an error if a time interval is invalid"""
+    if not interval or not interval[-1] == "h":
+        raise ValueError(
+            "The time interval should represent a string in hours.")
+    elif not interval[:-1].isnumeric():
+        raise ValueError(
+            "The time interval should start with a number"
+        )
+
+
 @st.cache_data
 def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     """Resamples the dataframe to return the aggregate sentiment scores by 
@@ -13,6 +24,8 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     if not aggregate in AGGREGATES:
         raise ValueError(
             f"The aggregate parameter must be one of {AGGREGATES}.")
+
+    is_valid_time_interval(time_interval)
 
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
         time_interval, on='date_published').agg({"title_polarity_score": aggregate,
