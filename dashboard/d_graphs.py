@@ -253,6 +253,7 @@ def generate_html(df) -> str:
 
 def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
     """Returns an altair heatmap"""
+
     vals = "title_polarity_score" if by_title else "content_polarity_score"
     data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
 
