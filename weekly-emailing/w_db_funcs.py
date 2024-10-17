@@ -40,7 +40,8 @@ def get_avg_polarity_last_week():
 
     query = """
         SELECT t.topic_name, s.source_name,
-        AVG(a.content_polarity_score) AS avg_polarity_score
+        AVG(a.content_polarity_score) AS avg_polarity_score,
+        COUNT(a.article_id) AS article_count
         FROM article_topic_assignment ata
         JOIN article a ON ata.article_id = a.article_id
         JOIN topic t ON ata.topic_id = t.topic_id
