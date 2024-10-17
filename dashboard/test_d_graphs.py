@@ -85,11 +85,13 @@ class TestVisualiseChangeOverTime:
         df = pd.DataFrame(fake_data)
         graph = visualise_change_over_time(df, True)
         assert isinstance(graph, alt.LayerChart)
+        assert graph.layer[0].encoding.y['title'] == "Title Polarity Score"
 
     def test_create_graph_by_title_false(self, fake_data):
         df = pd.DataFrame(fake_data)
         graph = visualise_change_over_time(df, False)
         assert isinstance(graph, alt.LayerChart)
+        assert graph.layer[0].encoding.y['title'] == "Content Polarity Score"
 
 
 def test_get_last_point():
