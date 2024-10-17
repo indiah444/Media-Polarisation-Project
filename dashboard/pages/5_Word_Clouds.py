@@ -14,21 +14,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
-from psycopg2.extras import RealDictCursor
-from psycopg2 import connect
-from psycopg2.extensions import connection
 
-
-def create_connection() -> connection:
-    """Creates a connection to the RDS with postgres."""
-
-    load_dotenv()
-    conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
-                   host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
-                   port=ENV["DB_PORT"],
-                   cursor_factory=RealDictCursor)
-
-    return conn
+from db_functions import create_connection
 
 
 @st.cache_data
