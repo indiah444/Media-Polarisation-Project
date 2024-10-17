@@ -3,32 +3,21 @@
 """A file to generate word clouds based on article word frequency by source."""
 
 import re
-from os import environ as ENV
 from datetime import datetime, timedelta
 
 import streamlit as st
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from dotenv import load_dotenv
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
-from psycopg2.extras import RealDictCursor
-from psycopg2 import connect
-from psycopg2.extensions import connection
 
+from db_functions import get_all_article_content, get_topic_names
 
-def create_connection() -> connection:
-    """Creates a connection to the RDS with postgres."""
-
-    load_dotenv()
-    conn = connect(dbname=ENV["DB_NAME"], user=ENV["DB_USER"],
-                   host=ENV["DB_HOST"], password=ENV["DB_PASSWORD"],
-                   port=ENV["DB_PORT"],
-                   cursor_factory=RealDictCursor)
-
-    return conn
+W_TOKENIZER = WhitespaceTokenizer()
+LEMMATIZER = WordNetLemmatizer()
 
 
 @st.cache_data
@@ -39,43 +28,6 @@ def download_nltk_data():
     nltk_download("stopwords")
     nltk_download('punkt_tab')
     nltk_download("wordnet")
-
-
-@st.cache_data
-def get_all_article_content():
-    """Returns all article content from the database, along with their
-    topics."""
-
-    with create_connection() as conn:
-        query = """
-        SELECT article.article_id, article.article_content, source.source_name, article.date_published, 
-               topic.topic_name
-        FROM article
-        JOIN source ON article.source_id = source.source_id
-        LEFT JOIN article_topic_assignment ON article.article_id = article_topic_assignment.article_id
-        LEFT JOIN topic ON article_topic_assignment.topic_id = topic.topic_id;
-        """
-        with conn.cursor() as cur:
-            cur.execute(query)
-            articles = cur.fetchall()
-
-    return articles
-
-
-def get_unique_topics():
-    """Fetches unique topics from the database."""
-
-    with create_connection() as conn:
-        query = "SELECT topic_name FROM topic;"
-        with conn.cursor() as cur:
-            cur.execute(query)
-            topics = cur.fetchall()
-
-    return [topic["topic_name"] for topic in topics]
-
-
-W_TOKENIZER = WhitespaceTokenizer()
-LEMMATIZER = WordNetLemmatizer()
 
 
 def lemmatize_text(text: str) -> str:
@@ -235,6 +187,10 @@ def run_app():
     selected_time_range, selected_topics = display_sidebar_options()
 
     st.write(f"Time Range Selected: {selected_time_range}")
+
+    unique_topics = get_topic_names()
+    selected_topics = st.sidebar.multiselect(
+        "Select topics", options=unique_topics)
 
     articles = get_all_article_content()
     filtered_articles = filter_articles_by_date_and_topics(
