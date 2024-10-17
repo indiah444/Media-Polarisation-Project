@@ -1,11 +1,13 @@
 # pylint skip-file
 """Testing the d_graphs file"""
 import re
-import altair as alt
-import pytest
-from unittest.mock import patch
-import pandas as pd
 import datetime
+from unittest.mock import patch
+
+import pytest
+import pandas as pd
+import altair as alt
+
 from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns, create_bubble_chart
 
 
