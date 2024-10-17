@@ -42,6 +42,7 @@ def test_is_valid_time_interval_invalid(interval):
 
 @pytest.fixture
 def data():
+    """Returns sample data"""
     return {
         "source_name": ["Source1", "Source1", "Source2", "Source2"],
         "topic_name": ["Topic1", "Topic1", "Topic2", "Topic2"],
@@ -53,7 +54,6 @@ def data():
 
 def test_resample_dataframe_valid(data):
     """Asserts that resample dataframe is valid for resampling over an hour"""
-
     df = pd.DataFrame(data)
 
     result_df = resample_dataframe(df, "1h", "mean")
@@ -63,7 +63,6 @@ def test_resample_dataframe_valid(data):
 
 def test_resample_dataframe_24h(data):
     """Asserts that resample dataframe is valid for resampling over 24 hours"""
-
     df = pd.DataFrame(data)
 
     result_df = resample_dataframe(df, "24h", "mean")
