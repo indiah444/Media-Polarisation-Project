@@ -22,3 +22,22 @@ def fake_data():
         'topic_name': ['Trump', 'Kamala', 'Climate Change', 'Economy', 'Palestine'],
         'date_published': pd.date_range(start='2023-01-01', periods=5, freq='D')
     }
+
+
+@pytest.fixture
+def example_df():
+    """Returns an example dataframe"""
+    return pd.DataFrame(
+        [
+            {'topic_name': 'Donald Trump',
+             'source_name': 'Fox News',
+             'content_polarity_score': 0.0,
+             'title_polarity_score': -0.3712,
+             'date_published': datetime.date(2024, 10, 10)},
+            {'topic_name': 'Donald Trump',
+             'source_name': 'Fox News',
+             'content_polarity_score': -0.9781,
+             'title_polarity_score': -0.3612,
+             'date_published': datetime.date(2024, 10, 9)}
+
+        ])

@@ -12,7 +12,7 @@ import altair as alt
 
 from d_graphs import (pivot_df, get_last_point, generate_html, add_source_columns,
                       create_bubble_chart, create_scatter_graph, create_horizontal_line,
-                      create_vertical_line, visualise_change_over_time)
+                      create_vertical_line, visualise_change_over_time, create_sentiment_distribution_chart)
 
 
 class TestCreateBubbleChart:
@@ -20,11 +20,13 @@ class TestCreateBubbleChart:
     def test_creates_chart(self, fake_aggregated_data):
         df = pd.DataFrame(fake_aggregated_data)
         chart = create_bubble_chart(df)
+
         assert isinstance(chart, alt.Chart)
 
     def test_size(self, fake_aggregated_data):
         df = pd.DataFrame(fake_aggregated_data)
         chart = create_bubble_chart(df)
+
         assert chart.width == 800
         assert chart.height == 400
 
@@ -33,11 +35,13 @@ class TestCreateLines():
 
     def test_horizontal_line(self):
         line = create_horizontal_line()
+
         assert isinstance(line, alt.Chart)
         assert line.encoding['y'].shorthand == 'y:Q'
 
     def test_vertical_line(self):
         line = create_vertical_line()
+
         assert isinstance(line, alt.Chart)
         assert line.encoding['x'].shorthand == 'x:Q'
 
@@ -47,7 +51,6 @@ class TestCreateScatterGraph:
     @patch('d_graphs.create_vertical_line')
     @patch('d_graphs.create_horizontal_line')
     def test_creates_chart(self, mock_create_horizontal_line, mock_create_vertical_line, fake_aggregated_data):
-
         mock_create_horizontal_line.return_value = alt.Chart()
         mock_create_vertical_line.return_value = alt.Chart()
 
@@ -65,6 +68,7 @@ class TestCreateScatterGraph:
     def test_size(self, mock_create_horizontal_line, mock_create_vertical_line, fake_aggregated_data):
         df = pd.DataFrame(fake_aggregated_data)
         chart = create_scatter_graph(df)
+
         assert chart.width == 800
         assert chart.height == 400
 
@@ -73,8 +77,8 @@ class TestVisualiseChangeOverTime:
 
     def test_create_graph(self, fake_data):
         df = pd.DataFrame(fake_data)
-        print(df)
         graph = visualise_change_over_time(df, True)
+
         assert isinstance(graph, alt.LayerChart)
         assert len(graph.layer) == 3
         assert isinstance(graph.layer[0], alt.Chart)
@@ -84,14 +88,31 @@ class TestVisualiseChangeOverTime:
     def test_create_graph_by_title_true(self, fake_data):
         df = pd.DataFrame(fake_data)
         graph = visualise_change_over_time(df, True)
+
         assert isinstance(graph, alt.LayerChart)
         assert graph.layer[0].encoding.y['title'] == "Title Polarity Score"
 
     def test_create_graph_by_title_false(self, fake_data):
         df = pd.DataFrame(fake_data)
         graph = visualise_change_over_time(df, False)
+
         assert isinstance(graph, alt.LayerChart)
         assert graph.layer[0].encoding.y['title'] == "Content Polarity Score"
+
+
+class TestCreateSentimentDistributionChart:
+
+    @patch('d_graphs.create_vertical_line')
+    def test_create_graph(self, mock_create_vertical_line, fake_data):
+        mock_create_vertical_line.return_value = alt.Chart()
+
+        df = pd.DataFrame(fake_data)
+        graph = create_sentiment_distribution_chart(df)
+
+        assert isinstance(graph, alt.LayerChart)
+        assert len(graph.layer) == 2
+        assert isinstance(graph.layer[0], alt.Chart)
+        assert isinstance(graph.layer[1], alt.Chart)
 
 
 def test_get_last_point():
@@ -116,47 +137,78 @@ def test_get_last_point():
     }
 
     expected_df = pd.DataFrame(expected_data)
-
     result_df = get_last_point(df)
 
     pd.testing.assert_frame_equal(result_df, expected_df)
 
 
-def test_add_source_cols():
-    df = pd.DataFrame(columns={'Fox News': [], 'Democracy Now!': []})
-    assert add_source_columns(
-        df) == "<th style='background-color: white; color:red;'>Fox News</th>" + "<th style='background-color: white; color:blue;'>Democracy Now!</th>"
+class TestPivotDf:
+
+    def test_pivot(self):
+        data = {
+            'topic_name': ['topic1', 'topic1', 'topic2', 'topic2'],
+            'source_name': ['sourceA', 'sourceB', 'sourceA', 'sourceB'],
+            'avg_polarity_score': [0.5, 0.6, 0.1, 0.3]
+        }
+        df = pd.DataFrame(data)
+        expected_output = pd.DataFrame({
+            'sourceA': [0.5, 0.1],
+            'sourceB': [0.6, 0.3]
+        }, index=['topic1', 'topic2']).fillna('N/A')
+        expected_output.index.name = "topic_name"
+        expected_output.columns.name = "source_name"
+        result = pivot_df(df)
+
+        pd.testing.assert_frame_equal(result, expected_output)
+
+    def test_pivot_with_none_values(self):
+        data = {
+            'topic_name': ['topic1', 'topic2', 'topic2'],
+            'source_name': ['sourceA', 'sourceA', 'sourceB'],
+            'avg_polarity_score': [0.5, None, 0.3]
+        }
+        df = pd.DataFrame(data)
+        expected_output = pd.DataFrame({
+            'sourceA': [0.5, 'N/A'],
+            'sourceB': ['N/A', 0.3]
+        }, index=['topic1', 'topic2']).fillna('N/A')
+        expected_output.index.name = "topic_name"
+        expected_output.columns.name = "source_name"
+        result = pivot_df(df)
+
+        pd.testing.assert_frame_equal(result, expected_output)
+
+    def test_pivot_with_empty_df(self):
+        data = {
+            'topic_name': [],
+            'source_name': [],
+            'avg_polarity_score': []
+        }
+        df = pd.DataFrame(data)
+        result = pivot_df(df)
+
+        assert result.empty
 
 
-def test_add_source_cols_one_col():
-    df = pd.DataFrame(columns={'Fox News': []})
-    assert add_source_columns(
-        df) == "<th style='background-color: white; color:red;'>Fox News</th>"
+class TestAddSourceCols:
+    def test_add_source_cols(self):
+        df = pd.DataFrame(columns={'Fox News': [], 'Democracy Now!': []})
 
+        assert add_source_columns(df) == \
+            "<th style='background-color: white; color:red;'>Fox News</th>" + \
+            "<th style='background-color: white; color:blue;'>Democracy Now!</th>"
 
-def test_add_source_cols_not_recognised():
-    df = pd.DataFrame(columns={'Fox': []})
-    with pytest.raises(KeyError):
-        add_source_columns(df)
+    def test_add_one_col(self):
+        df = pd.DataFrame(columns={'Fox News': []})
 
+        assert add_source_columns(df) == \
+            "<th style='background-color: white; color:red;'>Fox News</th>"
 
-@pytest.fixture
-def example_df():
-    """Returns an example dataframe"""
-    return pd.DataFrame(
-        [
-            {'topic_name': 'Donald Trump',
-             'source_name': 'Fox News',
-             'content_polarity_score': 0.0,
-             'title_polarity_score': -0.3712,
-             'date_published': datetime.date(2024, 10, 10)},
-            {'topic_name': 'Donald Trump',
-             'source_name': 'Fox News',
-             'content_polarity_score': -0.9781,
-             'title_polarity_score': -0.3612,
-             'date_published': datetime.date(2024, 10, 9)}
+    def test_add_cols_not_recognised(self):
+        df = pd.DataFrame(columns={'Fox': []})
 
-        ])
+        with pytest.raises(KeyError):
+            add_source_columns(df)
 
 
 @patch('d_graphs.add_topic_rows')
@@ -212,39 +264,6 @@ def test_generate_html(mock_pivot_df, mock_add_source_columns, mock_add_topic_ro
     </html>
     """
     result = generate_html(df)
-    assert re.sub(r'\s+', ' ', result).strip() == re.sub(r'\s+',
-                                                         ' ', expected_html).strip()
 
-
-def test_pivot_df():
-    data = {
-        'topic_name': ['topic1', 'topic1', 'topic2', 'topic2'],
-        'source_name': ['sourceA', 'sourceB', 'sourceA', 'sourceB'],
-        'avg_polarity_score': [0.5, 0.6, 0.1, 0.3]
-    }
-    df = pd.DataFrame(data)
-    expected_output = pd.DataFrame({
-        'sourceA': [0.5, 0.1],
-        'sourceB': [0.6, 0.3]
-    }, index=['topic1', 'topic2']).fillna('N/A')
-    expected_output.index.name = "topic_name"
-    expected_output.columns.name = "source_name"
-    result = pivot_df(df)
-    pd.testing.assert_frame_equal(result, expected_output)
-
-
-def test_pivot_df_with_empty_values():
-    data = {
-        'topic_name': ['topic1', 'topic2', 'topic2'],
-        'source_name': ['sourceA', 'sourceA', 'sourceB'],
-        'avg_polarity_score': [0.5, None, 0.3]
-    }
-    df = pd.DataFrame(data)
-    expected_output = pd.DataFrame({
-        'sourceA': [0.5, 'N/A'],
-        'sourceB': ['N/A', 0.3]
-    }, index=['topic1', 'topic2']).fillna('N/A')
-    expected_output.index.name = "topic_name"
-    expected_output.columns.name = "source_name"
-    result = pivot_df(df)
-    pd.testing.assert_frame_equal(result, expected_output)
+    assert re.sub(r'\s+', ' ', result).strip() == \
+        re.sub(r'\s+', ' ', expected_html).strip()
