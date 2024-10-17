@@ -4,7 +4,6 @@
 
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
-import altair as alt
 import pandas as pd
 
 from db_functions import get_scores_topic, get_topic_names
@@ -68,7 +67,7 @@ def construct_linegraphs_container() -> list[list]:
     avg_by_title, count_by_title = line_graphs.columns(2)
     line_graphs.header("Polarity by Article Content")
     avg_by_content, count_by_content = line_graphs.columns(2)
-    line_graphs.header("Polarity by Article Content")
+
     return [[avg_by_title, count_by_title], [avg_by_content, count_by_content]]
 
 
@@ -121,7 +120,7 @@ if __name__ == "__main__":
                                        sent_by_title=True,
                                        sampling=sampling_rate)
 
-        content_avg, content_count = line_graph_cols[0]
+        content_avg, content_count = line_graph_cols[1]
         construct_streamlit_time_graph(data,
                                        content_avg,
                                        content_count,
