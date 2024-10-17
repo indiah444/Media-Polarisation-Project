@@ -15,7 +15,7 @@ from nltk.tokenize import word_tokenize, WhitespaceTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
 
-from db_functions import create_connection, get_all_article_content
+from db_functions import create_connection, get_all_article_content, get_topic_names
 
 
 @st.cache_data
@@ -26,18 +26,6 @@ def download_nltk_data():
     nltk_download("stopwords")
     nltk_download('punkt_tab')
     nltk_download("wordnet")
-
-
-def get_unique_topics():
-    """Fetches unique topics from the database."""
-
-    with create_connection() as conn:
-        query = "SELECT topic_name FROM topic;"
-        with conn.cursor() as cur:
-            cur.execute(query)
-            topics = cur.fetchall()
-
-    return [topic["topic_name"] for topic in topics]
 
 
 W_TOKENIZER = WhitespaceTokenizer()
