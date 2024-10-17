@@ -8,11 +8,9 @@ import altair as alt
 import pandas as pd
 
 from db_functions import get_scores_topic, get_topic_names
-from d_graphs import visualise_change_over_time
+from d_graphs import visualise_change_over_time, visualise_heatmap
 
 AGGREGATES = ["mean", "count"]
-WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
-                 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
 @st.cache_data
@@ -62,27 +60,6 @@ def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     data_df["weekday"] = data_df["date_published"].dt.day_name()
     data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
     return data_df
-
-
-def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
-    """Returns an altair heatmap"""
-    vals = "title_polarity_score" if by_title else "content_polarity_score"
-    data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
-
-    data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
-                              as_index=False)[vals].mean()
-
-    return alt.Chart(data_df).mark_rect().encode(
-        x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
-            field='week_num', order='ascending')),
-        y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
-        color=alt.Color(f'{vals}:Q', title='Polarity Score',
-                        scale=alt.Scale(scheme=colourscheme)),
-        tooltip=[vals, 'date_name', 'weekday']
-    ).properties(
-        width=600,
-        height=300
-    )
 
 
 def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
