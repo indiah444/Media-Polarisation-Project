@@ -263,6 +263,7 @@ def generate_html(df) -> str:
 
 def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
     """Returns an altair heatmap"""
+
     vals = "title_polarity_score" if by_title else "content_polarity_score"
     data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
 
@@ -274,7 +275,7 @@ def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str =
             field='week_num', order='ascending')),
         y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
         color=alt.Color(f'{vals}:Q', title='Polarity Score',
-                        scale=alt.Scale(scheme=colourscheme)),
+                        scale=alt.Scale(scheme=colourscheme, domain=[-1, 1])),
         tooltip=[vals, 'date_name', 'weekday']
     ).properties(
         width=600,

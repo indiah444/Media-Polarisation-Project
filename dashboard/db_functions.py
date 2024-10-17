@@ -54,7 +54,8 @@ def get_scores_topic(topic_name: str) -> dict:
     topic_name = topic_name.strip().title()
     with create_connection() as conn:
         select_data = """
-        SELECT t.topic_name, s.source_name, a.content_polarity_score, a.title_polarity_score, a.date_published FROM article a
+        SELECT t.topic_name, s.source_name, a.content_polarity_score, a.title_polarity_score, a.date_published 
+        FROM article a
         INNER JOIN article_topic_assignment ata ON a.article_id = ata.article_id 
         INNER JOIN topic t ON ata.topic_id = t.topic_id 
         INNER JOIN source s ON a.source_id = s.source_id

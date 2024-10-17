@@ -84,10 +84,49 @@ def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
     return topic, granularity_to_hours[granularity]
 
 
+def select_data_by_topic(topic_name: str) -> pd.DataFrame:
+    """Selects the data for a topic by name"""
+    data = get_scores_topic(topic_name)
+    return pd.DataFrame(data)
+
+
+def construct_linegraphs_container() -> list[list]:
+    """Constructs a container for the linegraphs on the streamlit page. 
+    Returns the columns in the array arrangement they appear."""
+    line_graphs = st.container()
+    line_graphs.header("Polarity by Article Titles")
+    avg_by_title, count_by_title = line_graphs.columns(2)
+    line_graphs.header("Polarity by Article Content")
+    avg_by_content, count_by_content = line_graphs.columns(2)
+    line_graphs.header("Polarity by Article Content")
+    return [[avg_by_title, count_by_title], [avg_by_content, count_by_content]]
+
+
+def construct_heatmaps_container() -> DeltaGenerator:
+    """Constructs a container for the heatmaps on the streamlit page.
+    Returns the container."""
+    heatmaps = st.container()
+    heatmaps.header("Heatmap of Average Polarity Scores")
+    return heatmaps
+
+
+def add_settings_to_heatmaps_container(heatmaps_container: DeltaGenerator,
+                                       years_available: list[str],
+                                       sources_available: list[str]):
+    """Adds select boxes to heatmaps container.
+    Returns the resulting (year,source)"""
+    if not "All" in sources_available:
+        sources_available += ["All"]
+    year = heatmaps_container.selectbox("Year:", years_available)
+    source = heatmaps_container.selectbox("Source:", sources_available)
+    return year, source
+
+
 if __name__ == "__main__":
     topic_names = get_topic_names()
     selected_topic, sampling_rate = construct_sidebar(topic_names)
-    data = pd.DataFrame(get_scores_topic(selected_topic))
+
+    data = select_data_by_topic(selected_topic)
 
     if data.empty:
         st.warning(f"No data available for {selected_topic}")
@@ -96,40 +135,38 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
-        # pylint: disable=C0301
         st.html("""
-                This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
+                This page shows trends in 
+                <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
                 The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
                 at the lower end, sentiment scores are averaged over time buckets of an hour, and this can 
                 be increased up to a day.
                 """)
 
-        line_graphs = st.container()
-        line_graphs.header("Polarity by Article Titles")
-        col1, col2 = line_graphs.columns(2)
-
+        line_graph_cols = construct_linegraphs_container()
+        title_avg, title_count = line_graph_cols[0]
         construct_streamlit_time_graph(data,
-                                       col1, col2,
+                                       title_avg,
+                                       title_count,
                                        sent_by_title=True,
                                        sampling=sampling_rate)
 
-        line_graphs.header("Polarity by Article Content")
-        col3, col4 = line_graphs.columns(2)
+        content_avg, content_count = line_graph_cols[0]
         construct_streamlit_time_graph(data,
-                                       col3, col4,
+                                       content_avg,
+                                       content_count,
                                        sent_by_title=False,
                                        sampling=sampling_rate)
 
-        heatmaps = st.container()
-        heatmaps.header("Heatmap of Average Polarity Scores")
-
         data = add_year_month_day_columns(data)
 
-        years = data["year"].unique().tolist()
-        sources = data["source_name"].unique().tolist() + ["All"]
+        heatmaps = construct_heatmaps_container()
 
-        year = heatmaps.selectbox("Year:", years)
-        source = heatmaps.selectbox("Source:", sources)
+        years = data["year"].unique().tolist()
+        sources = data["source_name"].unique().tolist()
+
+        year, source = add_settings_to_heatmaps_container(
+            heatmaps, years, sources)
 
         data = data[data["year"] == year]
 
