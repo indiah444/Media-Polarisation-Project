@@ -17,7 +17,6 @@ from nltk import download as nltk_download
 from psycopg2.extras import RealDictCursor
 from psycopg2 import connect
 from psycopg2.extensions import connection
-import pandas as pd
 
 
 def create_connection() -> connection:
@@ -125,9 +124,8 @@ def filter_articles_by_date(articles: list, time_range: str):
 def get_articles_by_source(filtered_articles: list, source_name: str) -> list:
     """Returns article contents for a given source from the filtered articles."""
 
-    return [
-        article for article in filtered_articles if article["source_name"] == source_name
-    ]
+    return [article["article_content"] for article in filtered_articles
+            if article["source_name"] == source_name]
 
 
 @st.cache_data
@@ -137,7 +135,7 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     word_freq = {}
 
     for article in articles:
-        cleaned_text = clean_text(article["article_content"], custom_stopwords)
+        cleaned_text = clean_text(article, custom_stopwords)
         words = cleaned_text.split()
 
         for word in words:
@@ -149,84 +147,6 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     return word_freq
 
 
-def get_word_frequency_by_date(articles: list[dict], custom_stopwords: list) -> dict:
-    """Counts word frequencies in a given list of articles, grouped by date."""
-
-    word_freq_by_date = {}
-
-    for article in articles:
-        cleaned_text = clean_text(article["article_content"], custom_stopwords)
-        words = cleaned_text.split()
-
-        article_date = article["date_published"]
-        if article_date not in word_freq_by_date:
-            word_freq_by_date[article_date] = {}
-
-        for word in words:
-            if len(word) > 2:
-                if word not in word_freq_by_date[article_date]:
-                    word_freq_by_date[article_date][word] = 0
-
-                word_freq_by_date[article_date][word] += 1
-
-    return word_freq_by_date
-
-
-def get_top_n_words_over_time(word_freq_by_date: dict, top_n: int) -> dict:
-    """Gets the top N words over time period and their frequency by date."""
-
-    cumulative_word_freq = {}
-
-    for date, word_freq in word_freq_by_date.items():
-        for word, freq in word_freq.items():
-            if word not in cumulative_word_freq:
-                cumulative_word_freq[word] = 0
-            cumulative_word_freq[word] += freq
-
-    top_n_words = sorted(cumulative_word_freq,
-                         key=cumulative_word_freq.get, reverse=True)[:top_n]
-
-    top_n_word_freq_over_time = {word: [] for word in top_n_words}
-
-    for date in sorted(word_freq_by_date.keys()):
-        word_freq_for_date = word_freq_by_date[date]
-        for word in top_n_words:
-            if word in word_freq_for_date:
-                top_n_word_freq_over_time[word].append(
-                    (date, word_freq_for_date[word]))
-            else:
-                top_n_word_freq_over_time[word].append((date, 0))
-
-    return top_n_word_freq_over_time
-
-
-def plot_bar_chart(word_freq_df: pd.DataFrame, title: str):
-    """Plots a bar chart of word frequencies over time using Matplotlib."""
-
-    # Set the DataFrame index to date for easier plotting
-    word_freq_df = word_freq_df.sort_values('date')
-    word_freq_df['date'] = pd.to_datetime(word_freq_df['date'])
-
-    # Get the top 10 words
-    # Unique words in the DataFrame
-    top_words = word_freq_df['word'].unique()[:10]
-
-    # Set up the bar chart
-    plt.figure(figsize=(12, 6))
-
-    for word in top_words:
-        word_data = word_freq_df[word_freq_df['word'] == word]
-        plt.bar(word_data['date'], word_data['frequency'], label=word)
-
-    plt.title(f"Top Word Frequencies Over Time - {title}", fontsize=16)
-    plt.xlabel("Date", fontsize=12)
-    plt.ylabel("Frequency", fontsize=12)
-    plt.xticks(rotation=45)
-    plt.legend(title="Words", loc="upper left", bbox_to_anchor=(1, 1))
-
-    st.pyplot(plt.gcf())
-
-
 def generate_wordcloud(word_freq: dict, title: str, colormap: str):
     """Generates and returns a word cloud from word frequencies."""
 
@@ -236,7 +156,7 @@ def generate_wordcloud(word_freq: dict, title: str, colormap: str):
 
     wordcloud = WordCloud(width=1000, height=500,
                           max_words=100, background_color="white",
-                          colormap=colormap).generate_from_frequencies(word_freq)
+                          colormap=colormap, prefer_horizontal=1).generate_from_frequencies(word_freq)
 
     plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")
@@ -250,8 +170,8 @@ def run_app():
 
     download_nltk_data()
 
-    custom_stop_words = ["fox", "news", "said",
-                         "get", "also", "would", "could", "click", "u"]
+    custom_stop_words = ["fox", "news", "say",
+                         "get", "also", "would", "could", "click", "going"]
 
     st.title("Article Content Word Cloud by News Source")
 
@@ -259,7 +179,7 @@ def run_app():
     selected_time_range = st.sidebar.select_slider(
         "Select time range",
         options=time_range_options,
-        value="Last 24 hours"
+        value="Last 7 days"
     )
 
     time_range_mapping = {
@@ -284,30 +204,7 @@ def run_app():
         ]
 
     fn_articles = get_articles_by_source(filtered_articles, "Fox News")
-    fn_word_freq_by_date = get_word_frequency_by_date(
-        fn_articles, custom_stop_words)
-    top_n_fn_words = get_top_n_words_over_time(fn_word_freq_by_date, top_n=10)
-
-    fn_word_freq_data = []
-    for word, freq_data in top_n_fn_words.items():
-        for date, freq in freq_data:
-            fn_word_freq_data.append(
-                {'word': word, 'date': date, 'frequency': freq})
-
-    fn_word_freq_df = pd.DataFrame(fn_word_freq_data)
-
     dn_articles = get_articles_by_source(filtered_articles, "Democracy Now!")
-    dn_word_freq_by_date = get_word_frequency_by_date(
-        dn_articles, custom_stop_words)
-    top_n_dn_words = get_top_n_words_over_time(dn_word_freq_by_date, top_n=10)
-
-    dn_word_freq_data = []
-    for word, freq_data in top_n_dn_words.items():
-        for date, freq in freq_data:
-            dn_word_freq_data.append(
-                {'word': word, 'date': date, 'frequency': freq})
-
-    dn_word_freq_df = pd.DataFrame(dn_word_freq_data)
 
     fox_news_word_freq = get_word_frequency(fn_articles, custom_stop_words)
     democracy_now_word_freq = get_word_frequency(
@@ -315,14 +212,10 @@ def run_app():
 
     st.header("Fox News Word Cloud")
     generate_wordcloud(fox_news_word_freq, "Fox News", colormap="Reds_r")
-    st.subheader("Fox News Top Word Trends")
-    plot_bar_chart(fn_word_freq_df, "Fox News")
 
     st.header("Democracy Now! Word Cloud")
     generate_wordcloud(democracy_now_word_freq,
                        "Democracy Now!", colormap="PuBu")
-    st.subheader("Democracy Now! Top Word Trends")
-    plot_bar_chart(dn_word_freq_df, "Democracy Now!")
 
 
 if __name__ == "__main__":
