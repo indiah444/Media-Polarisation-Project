@@ -3,7 +3,6 @@
 """Testing the d_graphs file"""
 
 import re
-import datetime
 from unittest.mock import patch
 
 import pytest
@@ -12,7 +11,8 @@ import altair as alt
 
 from d_graphs import (pivot_df, get_last_point, generate_html, add_source_columns,
                       create_bubble_chart, create_scatter_graph, create_horizontal_line,
-                      create_vertical_line, visualise_change_over_time, create_sentiment_distribution_chart)
+                      create_vertical_line, visualise_change_over_time,
+                      create_sentiment_distribution_chart, visualise_heatmap)
 
 
 class TestCreateBubbleChart:
@@ -114,6 +114,16 @@ class TestCreateSentimentDistributionChart:
         assert isinstance(graph.layer[0], alt.Chart)
         assert isinstance(graph.layer[1], alt.Chart)
 
+    @patch('d_graphs.create_vertical_line')
+    def test_size(self, mock_create_vertical_line, fake_data):
+        mock_create_vertical_line.return_value = alt.Chart()
+
+        df = pd.DataFrame(fake_data)
+        graph = create_sentiment_distribution_chart(df)
+
+        assert graph.width == 400
+        assert graph.height == 300
+
 
 def test_get_last_point():
     data = {
@@ -211,59 +221,116 @@ class TestAddSourceCols:
             add_source_columns(df)
 
 
-@patch('d_graphs.add_topic_rows')
-@patch('d_graphs.add_source_columns')
-@patch('d_graphs.pivot_df')
-def test_generate_html(mock_pivot_df, mock_add_source_columns, mock_add_topic_rows):
-    mock_pivot_df.return_value = pd.DataFrame({
-        'sourceA': [0.5],
-        'sourceB': [0.6]
-    }, index=['topic1'])
+class TestGenerateHtml:
 
-    mock_add_source_columns.return_value = "<th>Source A</th><th>Source B</th>"
-    mock_add_topic_rows.return_value = "<tr><td>topic1</td><td>0.5</td><td>0.6</td></tr>"
+    def reformat_whitespace(self, string):
+        return re.sub(r'\s+', ' ', string).strip()
 
-    df = pd.DataFrame({
-        'topic_name': ['topic1', "topic1"],
-        'source_name': ['sourceA', 'sourceB'],
-        'avg_polarity_score': [0.5, 0.6]
-    })
+    @patch('d_graphs.add_topic_rows')
+    @patch('d_graphs.add_source_columns')
+    @patch('d_graphs.pivot_df')
+    def test_html_string(self, mock_pivot_df, mock_add_source_columns, mock_add_topic_rows):
 
-    expected_html = """
-    <html>
-    <head>
-        <style>
-            table {
-                font-family: Arial, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-            }
-            th, td {
-                border: 1px solid #dddddd;
-                text-align: left;
-                padding: 8px;
-            }
-            tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
-    <body>
-        <table>
-            <thead>
-                <tr>
-                    <th style='background-color: white; color: black'>Topic</th>
-                    <th>Source A</th><th>Source B</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>topic1</td><td>0.5</td><td>0.6</td></tr>
-            </tbody>
-        </table>
-    </body>
-    </html>
-    """
-    result = generate_html(df)
+        mock_pivot_df.return_value = {}
+        mock_add_source_columns.return_value = "<th></th>"
+        mock_add_topic_rows.return_value = "<tr></tr>"
 
-    assert re.sub(r'\s+', ' ', result).strip() == \
-        re.sub(r'\s+', ' ', expected_html).strip()
+        expected_html = """
+        <html>
+        <head>
+            <style>
+                table {
+                    font-family: Arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                th, td {
+                    border: 1px solid #dddddd;
+                    text-align: left;
+                    padding: 8px;
+                }
+                tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+            </style>
+        </head>
+        <body>
+            <table>
+                <thead>
+                    <tr>
+                        <th style='background-color: white; color: black'>Topic</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </body>
+        </html>
+        """
+        result = generate_html({})
+
+        assert self.reformat_whitespace(
+            result) == self.reformat_whitespace(expected_html)
+
+    @pytest.mark.parametrize('input_td, input_th, func_input', [("<th>Source A</th><th>Source B</th>",
+                                                                 "<tr><td>topic1</td><td>0.5</td><td>0.6</td></tr>", 1),
+                                                                ("", "", 2),
+                                                                ("Test", "Test", 3)])
+    @patch('d_graphs.add_topic_rows')
+    @patch('d_graphs.add_source_columns')
+    @patch('d_graphs.pivot_df')
+    def test_inputs(self, mock_pivot_df, mock_add_source_columns, mock_add_topic_rows, input_td, input_th, func_input):
+
+        mock_pivot_df.return_value = {}
+        mock_add_source_columns.return_value = input_td
+        mock_add_topic_rows.return_value = input_th
+
+        result = generate_html(func_input)
+
+        expected_tr = f"""<tr>
+                              <th style='background-color: white; color: black'>Topic</th>
+                              {input_td}
+                          </tr>"""
+
+        expected_tbody = f"""<tbody>
+                                {input_th}
+                             </tbody>"""
+
+        expected_tr = self.reformat_whitespace(expected_tr)
+        expected_tbody = self.reformat_whitespace(expected_tbody)
+        result = self.reformat_whitespace(result)
+
+        assert expected_tr in result
+        assert expected_tbody in result
+
+
+class TestVisualiseHeatmap:
+
+    def test_creation(self, fake_heatmap_data):
+        df = pd.DataFrame(fake_heatmap_data)
+        chart = visualise_heatmap(df, True)
+
+        assert isinstance(chart, alt.Chart)
+
+    def test_by_title_true(self, fake_heatmap_data):
+        df = pd.DataFrame(fake_heatmap_data)
+        chart = visualise_heatmap(df, True)
+
+        assert chart.encoding.color['shorthand'].startswith(
+            'title_polarity_score')
+
+    def test_by_title_false(self, fake_heatmap_data):
+        df = pd.DataFrame(fake_heatmap_data)
+        chart = visualise_heatmap(df, False)
+
+        assert chart.encoding.color['shorthand'].startswith(
+            'content_polarity_score')
+
+    def test_size(self, fake_heatmap_data):
+        df = pd.DataFrame(fake_heatmap_data)
+        chart = visualise_heatmap(df, True)
+
+        assert chart.width == 600
+        assert chart.height == 300
