@@ -27,6 +27,7 @@ def send_email() -> None:
     emails = get_weekly_subscribers()
     df = get_avg_polarity_last_week()
     pdf_content = generate_pdf(df)
+
     client = get_ses_client()
 
     message = MIMEMultipart()

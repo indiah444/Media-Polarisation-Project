@@ -8,11 +8,9 @@ import altair as alt
 import pandas as pd
 
 from db_functions import get_scores_topic, get_topic_names
-from d_graphs import visualise_change_over_time
+from d_graphs import visualise_change_over_time, visualise_heatmap
 
 AGGREGATES = ["mean", "count"]
-WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
-                 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
 @st.cache_data
@@ -22,8 +20,6 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
     if not aggregate in AGGREGATES:
         raise ValueError(
             f"The aggregate parameter must be one of {AGGREGATES}.")
-
-    df['date_published'] = pd.to_datetime(df['date_published'])
 
     df_avg = df.groupby(['source_name', 'topic_name']).resample(
         time_interval, on='date_published').agg({"title_polarity_score": aggregate,
@@ -55,57 +51,43 @@ def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerato
 def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
     """Adds year, week, and weekday columns to a dataframe"""
     data_df["year"] = data_df["date_published"].dt.year
-
     data_df["week_num"] = data_df["date_published"].dt.isocalendar().week
-
     data_df["month_name"] = data_df["date_published"].dt.strftime('%b')
-
     data_df["week_of_month"] = data_df["date_published"].apply(
         lambda d: (d.day - 1) // 7 + 1)
-
     data_df["week_text"] = data_df["month_name"] + \
         " Week " + data_df["week_of_month"].astype(str)
-
     data_df["weekday"] = data_df["date_published"].dt.day_name()
     data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
     return data_df
 
 
 def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
-                                data_df: pd.DataFrame, by_title: bool,
-                                colourscheme: str = 'yellowgreen'):
+                                weekly_data: pd.DataFrame, sent_by_title: bool,
+                                colour: str = 'yellowgreen'):
     """Constructs a Streamlit heatmap with week_text on the x-axis but sorted by week_num"""
-    vals = "title_polarity_score" if by_title else "content_polarity_score"
-    data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
-
-    data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
-                              as_index=False)[vals].mean()
-
-    heatmap = alt.Chart(data_df).mark_rect().encode(
-        x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
-            field='week_num', order='ascending')),
-        y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
-        color=alt.Color(f'{vals}:Q', title='Polarity Score',
-                        scale=alt.Scale(scheme=colourscheme)),
-        tooltip=[vals, 'date_name', 'weekday']
-    ).properties(
-        width=600,
-        height=300
-    )
-
+    header_text = "By Article Title" if sent_by_title else "By Article Content"
+    heatmaps_container.subheader(header_text)
+    heatmap = visualise_heatmap(weekly_data, sent_by_title, colour)
     heatmaps_container.altair_chart(heatmap)
+
+
+def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
+    """Constructs the Sidebar for the streamlit page.
+    Returns (topic, granularity)"""
+    st.sidebar.header("Settings")
+    topic = st.sidebar.selectbox("Topic", topics_list)
+    granularity_to_hours = {"1 hour": "1h",
+                            "1 day": "24h", "1 week": str(24*7)+'h'}
+    granularity = st.sidebar.selectbox(
+        "Granularity", granularity_to_hours.keys())
+    return topic, granularity_to_hours[granularity]
 
 
 if __name__ == "__main__":
     topic_names = get_topic_names()
-
-    st.sidebar.header("Settings")
-
-    selected_topic = st.sidebar.selectbox("Choose a topic:", topic_names)
+    selected_topic, sampling_rate = construct_sidebar(topic_names)
     data = pd.DataFrame(get_scores_topic(selected_topic))
-
-    selected_frequency = st.sidebar.slider(
-        label="Granularity (hours)", min_value=1, max_value=100, step=1)
 
     if data.empty:
         st.warning(f"No data available for {selected_topic}")
@@ -115,12 +97,12 @@ if __name__ == "__main__":
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
         # pylint: disable=C0301
-        st.markdown("""This page shows trends in <span style='color:blue; font-weight:bold;'>**compound**</span> sentiment scores over time.
-                The <span style='color:red;'>'granularity'</span> may be altered to smooth out the data: 
-                at the lower end, sentiment scores are averaged over time periods of an hour, 
-                and this can be increased up to 100 hours.""")
-
-        sampling_rate = str(selected_frequency) + 'h'
+        st.html("""
+                This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
+                The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
+                at the lower end, sentiment scores are averaged over time buckets of an hour, and this can 
+                be increased up to a day.
+                """)
 
         line_graphs = st.container()
         line_graphs.header("Polarity by Article Titles")
@@ -139,7 +121,7 @@ if __name__ == "__main__":
                                        sampling=sampling_rate)
 
         heatmaps = st.container()
-        heatmaps.header("Heatmap of Polarity Scores")
+        heatmaps.header("Heatmap of Average Polarity Scores")
 
         data = add_year_month_day_columns(data)
 
@@ -154,7 +136,5 @@ if __name__ == "__main__":
         if source != "All":
             data = data[data["source_name"] == source]
 
-        heatmaps.subheader("By Title")
         construct_streamlit_heatmap(heatmaps, data, True)
-        heatmaps.subheader("By Content")
         construct_streamlit_heatmap(heatmaps, data, False)

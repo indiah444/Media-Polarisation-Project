@@ -4,6 +4,9 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 
+WEEKDAY_ORDER = ['Monday', 'Tuesday', 'Wednesday',
+                 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 
 @st.cache_data
 def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
@@ -184,17 +187,17 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
     html = ""
     for topic, row in df.iterrows():
-        html += f"<tr><td style='background-color: white; color: black;'>{
-            topic}</td>"
+        html += ("<tr><td style='background-color: white; color: "
+                 f"black;'>{topic}</td>")
         for score in row:
             if isinstance(score, float):
                 color = "#fabbb7" if score < -0.5 else "#b6f7ae" if score > 0.5 else "#fafafa"
 
-                html += f"<td style='background-color: {
-                    color}; color: black;'>{score:.2f}</td>"
+                html += (f"<td style='background-color: {color}; "
+                         f"color: black;'>{score:.2f}</td>")
             else:
-                html += f"<td style='background-color: white; color: black;'>{
-                    score}</td>"
+                html += ("<td style='background-color: white; "
+                         f"color: black;'>{score}</td>")
         html += "</tr>"
     return html
 
@@ -246,3 +249,24 @@ def generate_html(df) -> str:
     """
 
     return html
+
+
+def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
+    """Returns an altair heatmap"""
+    vals = "title_polarity_score" if by_title else "content_polarity_score"
+    data_df = data_df[["week_num", "weekday", vals, "week_text", "date_name"]]
+
+    data_df = data_df.groupby(["week_num", "week_text", "weekday", "date_name"],
+                              as_index=False)[vals].mean()
+
+    return alt.Chart(data_df).mark_rect().encode(
+        x=alt.X('week_text:O', title='Week', sort=alt.EncodingSortField(
+            field='week_num', order='ascending')),
+        y=alt.Y('weekday:O', title='Day of the Week',  sort=WEEKDAY_ORDER),
+        color=alt.Color(f'{vals}:Q', title='Polarity Score',
+                        scale=alt.Scale(scheme=colourscheme)),
+        tooltip=[vals, 'date_name', 'weekday']
+    ).properties(
+        width=600,
+        height=300
+    )
