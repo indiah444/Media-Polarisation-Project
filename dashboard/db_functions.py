@@ -71,7 +71,6 @@ def get_scores_topic(topic_name: str) -> dict:
 def get_scores_all_topics() -> dict:
     """Returns a dictionary containing the polarity scores for all topics"""
 
-    topic_name = topic_name.strip().title()
     with create_connection() as conn:
         select_data = """
         SELECT s.source_name, a.content_polarity_score, a.title_polarity_score, a.date_published 
@@ -80,7 +79,7 @@ def get_scores_all_topics() -> dict:
         WHERE t.topic_name = %s 
         """
         with conn.cursor() as curr:
-            curr.execute(select_data, (topic_name, ))
+            curr.execute(select_data)
             res = curr.fetchall()
 
     return res

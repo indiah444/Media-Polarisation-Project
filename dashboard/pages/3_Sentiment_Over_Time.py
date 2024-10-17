@@ -7,7 +7,7 @@ from streamlit.delta_generator import DeltaGenerator
 import altair as alt
 import pandas as pd
 
-from db_functions import get_scores_topic, get_topic_names
+from db_functions import get_scores_topic, get_topic_names, get_scores_all_topics
 from d_graphs import visualise_change_over_time, visualise_heatmap
 
 AGGREGATES = ["mean", "count"]
@@ -96,7 +96,6 @@ if __name__ == "__main__":
         data['date_published'] = pd.to_datetime(data['date_published'])
         st.title(f"Change in Sentiment of {selected_topic} Over Time")
 
-        # pylint: disable=C0301
         st.html("""
                 This page shows trends in <span style='color:blue; font-weight:bold;'>compound</span> sentiment scores over time.
                 The <span style='color:red;'>granularity</span> may be altered to smooth out the data: 
