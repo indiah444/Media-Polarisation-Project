@@ -10,50 +10,86 @@ import pytest
 import pandas as pd
 import altair as alt
 
-from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns, create_bubble_chart, create_scatter_graph, create_zero_lines
+from d_graphs import (pivot_df, get_last_point, generate_html, add_source_columns,
+                      create_bubble_chart, create_scatter_graph, create_horizontal_line,
+                      create_vertical_line, visualise_change_over_time)
 
 
 class TestCreateBubbleChart:
-    def test_creates_chart(self, fake_data):
-        df = pd.DataFrame(fake_data)
+
+    def test_creates_chart(self, fake_aggregated_data):
+        df = pd.DataFrame(fake_aggregated_data)
         chart = create_bubble_chart(df)
         assert isinstance(chart, alt.Chart)
 
-    def test_size(self, fake_data):
-        df = pd.DataFrame(fake_data)
+    def test_size(self, fake_aggregated_data):
+        df = pd.DataFrame(fake_aggregated_data)
         chart = create_bubble_chart(df)
         assert chart.width == 800
         assert chart.height == 400
 
 
-def test_create_zero_lines():
-    lines = create_zero_lines()
-    assert isinstance(lines, alt.LayerChart)
-    assert len(lines.layer) == 2
-    assert isinstance(lines.layer[0], alt.Chart)
-    assert isinstance(lines.layer[1], alt.Chart)
+class TestCreateLines():
+
+    def test_horizontal_line(self):
+        line = create_horizontal_line()
+        assert isinstance(line, alt.Chart)
+        assert line.encoding['y'].shorthand == 'y:Q'
+
+    def test_vertical_line(self):
+        line = create_vertical_line()
+        assert isinstance(line, alt.Chart)
+        assert line.encoding['x'].shorthand == 'x:Q'
 
 
 class TestCreateScatterGraph:
-    @patch('d_graphs.create_zero_lines')
-    def test_creates_chart(self, mock_create_zero_lines, fake_data):
 
-        mock_create_zero_lines.return_value = alt.Chart()
+    @patch('d_graphs.create_vertical_line')
+    @patch('d_graphs.create_horizontal_line')
+    def test_creates_chart(self, mock_create_horizontal_line, mock_create_vertical_line, fake_aggregated_data):
 
-        df = pd.DataFrame(fake_data)
+        mock_create_horizontal_line.return_value = alt.Chart()
+        mock_create_vertical_line.return_value = alt.Chart()
+
+        df = pd.DataFrame(fake_aggregated_data)
         chart = create_scatter_graph(df)
 
         assert isinstance(chart, alt.LayerChart)
-        assert len(chart.layer) == 2
+        assert len(chart.layer) == 3
         assert isinstance(chart.layer[0], alt.Chart)
         assert isinstance(chart.layer[1], alt.Chart)
+        assert isinstance(chart.layer[2], alt.Chart)
 
-    @patch('d_graphs.create_zero_lines')
-    def test_size(self, mock_create_zero_lines, fake_data):
-        df = pd.DataFrame(fake_data)
+    @patch('d_graphs.create_vertical_line')
+    @patch('d_graphs.create_horizontal_line')
+    def test_size(self, mock_create_horizontal_line, mock_create_vertical_line, fake_aggregated_data):
+        df = pd.DataFrame(fake_aggregated_data)
         chart = create_scatter_graph(df)
         assert chart.width == 800
         assert chart.height == 400
+
+
+class TestVisualiseChangeOverTime:
+
+    def test_create_graph(self, fake_data):
+        df = pd.DataFrame(fake_data)
+        print(df)
+        graph = visualise_change_over_time(df, True)
+        assert isinstance(graph, alt.LayerChart)
+        assert len(graph.layer) == 3
+        assert isinstance(graph.layer[0], alt.Chart)
+        assert isinstance(graph.layer[1], alt.Chart)
+        assert isinstance(graph.layer[2], alt.Chart)
+
+    def test_create_graph_by_title_true(self, fake_data):
+        df = pd.DataFrame(fake_data)
+        graph = visualise_change_over_time(df, True)
+        assert isinstance(graph, alt.LayerChart)
+
+    def test_create_graph_by_title_false(self, fake_data):
+        df = pd.DataFrame(fake_data)
+        graph = visualise_change_over_time(df, False)
+        assert isinstance(graph, alt.LayerChart)
 
 
 def test_get_last_point():

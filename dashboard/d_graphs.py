@@ -32,16 +32,21 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
-def create_zero_lines():
-    """Returns horizontal and vertical lines that intersect at (0, 0) 
-    to clearly show where the x and y axis are"""
+def create_horizontal_line():
+    """Returns horizontal line at y=0
+    to clearly show where the x axis is"""
 
-    horizontal_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(
+    return alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(
         color='black').encode(y='y:Q')
-    vertical_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
-        x='x:Q')
 
-    return horizontal_line + vertical_line
+
+@st.cache_data
+def create_vertical_line():
+    """Returns vertical line at x=0
+    to clearly show where y axis is"""
+
+    return alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(
+        color='black').encode(x='x:Q')
 
 
 @st.cache_data
@@ -69,7 +74,7 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
         height=400
     ).interactive()
 
-    zero_line = create_zero_lines()
+    zero_line = create_horizontal_line() + create_vertical_line()
 
     final_chart = zero_line + scatter_chart
 
@@ -159,10 +164,8 @@ def create_sentiment_distribution_chart(df):
         width=400,
         height=300
     ).interactive()
-    vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
-        x='x:Q'
-    )
-    chart = alt.layer(points, vertical_line)
+
+    chart = alt.layer(points, create_vertical_line())
 
     return chart
 
