@@ -4,8 +4,9 @@
 This folder hosts the Media Polarisation project dashboard. This dashboard showcases several different graphics and data representations of sentiment on different media topics.
 
 ## 🛠️ Prerequisites
-- **EC2** deployed using [Terraform](../terraform/README.md)
-- **PEM Key** generated using [Terraform](../terraform/README.md)  
+- **EC2** deployed from running [Terraform](../terraform/README.md)
+- **PEM Key** generated from running [Terraform](../terraform/README.md)  
+- **ec2.env** file generated from running [Terraform](../terraform/README.md)  
 
 Optional:
 - **Python** installed (For running dashboard locally)
@@ -27,7 +28,6 @@ DB_USER=<the-RDS-username>
 DB_PASSWORD=<the-RDS-password>
 
 # EC2 Configuration
-EC2_HOST=<the-ec2-dns-or-ip-address>
 KEY_PATH=../terraform/c13-boudicca-mp-key-pair.pem
 ```
 
@@ -39,9 +39,16 @@ As part of deploying the overall cloud infrastructure, the dashboard files must 
     bash upload_dashboard.sh
     ```
     This will:
+    - Delete existing dashboard and nltk folders
     - Transfer the dashboarding files
+    - Create and activate python virtual environment
+    - Install requirements
     - Run the streamlit dashboard
+
 2. You can exit the EC2 terminal by pressing `CTRL + c` buttons together
+
+3. You can look at the dashboard by typing the EC2 dns address in the generated ec2.env file and adding `:8501` to the end e.g:  
+    `ec2-35-176-239-59.eu-west-2.compute.amazonaws.com:8501`
 
 ### 💻 Running Locally (MacOS, **Optional**)
 The daily email generator can also be ran locally by:
