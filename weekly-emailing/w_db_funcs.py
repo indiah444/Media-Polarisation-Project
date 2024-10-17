@@ -38,7 +38,7 @@ def get_avg_polarity_last_week():
     last_week = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
     today = datetime.now().strftime('%Y-%m-%d')
 
-    query = f"""
+    query = """
         SELECT t.topic_name, s.source_name,
         AVG(a.content_polarity_score) AS avg_polarity_score,
         COUNT(a.article_id) AS article_count

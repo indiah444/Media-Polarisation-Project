@@ -5,6 +5,5 @@ feedparser
 beautifulsoup4
 pandas
 nltk
-pylint
 pytest
 pytest-cov

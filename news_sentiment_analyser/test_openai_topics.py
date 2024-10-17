@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for the openai_topics.py file."""
+
 import unittest
 from unittest.mock import patch, MagicMock
 import json

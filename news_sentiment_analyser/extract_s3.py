@@ -8,20 +8,21 @@ import pandas as pd
 from dotenv import load_dotenv
 
 
-def get_object_names(s3_client, bucket_name: str) -> list[str]:
+def get_object_names(s3_client: client, bucket_name: str) -> list[str]:
     """Returns a list of object names for a specific bucket, at a specific time."""
     objects = s3_client.list_objects(Bucket=bucket_name)
     now = datetime.now(timezone.utc)
     one_hour_ago = now - timedelta(hours=1)
 
     object_names = [o["Key"] for o in objects.get(
-        "Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith("_article_data.csv")]
+        "Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith(
+            "_article_data.csv")]
     if len(object_names) == 0:
         raise ValueError("No csvs in S3 bucket to upload.")
     return object_names
 
 
-def create_dataframe(s3_client, bucket_name: str, file_name: str) -> pd.DataFrame:
+def create_dataframe(s3_client: client, bucket_name: str, file_name: str) -> pd.DataFrame:
     """Returns the object as a dataframe."""
     current_bytes = BytesIO()
     s3_client.download_fileobj(
@@ -32,7 +33,7 @@ def create_dataframe(s3_client, bucket_name: str, file_name: str) -> pd.DataFram
     return current_df
 
 
-def delete_object(s3_client, bucket_name: str, file_name: str) -> None:
+def delete_object(s3_client: client, bucket_name: str, file_name: str) -> None:
     """Deletes the file from the s3 bucket."""
     s3_client.delete_object(
         Bucket=bucket_name, Key=file_name

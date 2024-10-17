@@ -1,3 +1,5 @@
+# pylint: disable=C0103, E0401
+
 """A page with some graphs comparing all topics."""
 
 import streamlit as st

@@ -40,7 +40,7 @@ def get_avg_polarity_by_topic_and_source_yesterday() -> pd.DataFrame:
 
     yesterday = get_yesterday_date()
 
-    query = f"""
+    query = """
         SELECT t.topic_name, s.source_name,
         AVG(a.content_polarity_score) AS avg_polarity_score
         FROM article_topic_assignment ata
@@ -99,4 +99,6 @@ def get_yesterday_links_and_titles() -> list[str]:
     if not data:
         return []
 
-    return [{'title': article['article_title'], 'link': article['article_url'], 'topic': article['topic_name']} for article in data]
+    return [{'title': article['article_title'],
+             'link': article['article_url'],
+             'topic': article['topic_name']} for article in data]

@@ -19,10 +19,10 @@ def pivot_df(df: pd.DataFrame) -> pd.DataFrame:
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
 
-    html = ""
+    html = []
     for source in df.columns:
-        html += f"<th style='background-color: white;'>{source}</th>"
-    return html
+        html.append(f"<th style='background-color: white;'>{source}</th>")
+    return "".join(html)
 
 
 def add_topic_rows(df: pd.DataFrame) -> str:
@@ -51,7 +51,7 @@ def generate_html_with_links() -> str:
     """Creates a list of yesterdays articles urls."""
 
     urls = get_yesterday_links_and_titles()
-    topics = sorted(set([row['topic'] for row in urls]))
+    topics = sorted({row['topic'] for row in urls})
     html = "<h2>Yesterday's articles:</h2>"
     for topic in topics:
         html += f'<h4>{topic}</h4>\n<ul>\n'
@@ -67,7 +67,7 @@ def add_unsubscribe_link() -> str:
     return f'<a href="{link}" target="_blank">Unsubscribe here</a>'
 
 
-def generate_html(df) -> str:
+def generate_html(df: pd.DataFrame) -> str:
     """Return HTML string to send in email body"""
 
     score_df = pivot_df(df)
@@ -94,7 +94,8 @@ def generate_html(df) -> str:
     """
     html += f"""
     <body>
-        <h2>Average Content Polarity Score by Topic and Source (Published Yesterday - {yesterday})</h2>
+        <h2>Average Content Polarity Score by Topic and Source \
+(Published Yesterday - {yesterday})</h2>
         <table>
             <thead>
                 <tr>

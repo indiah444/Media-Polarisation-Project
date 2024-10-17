@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Tests for transform_articles.py file."""
+
 import unittest
 from unittest.mock import patch, MagicMock
 
