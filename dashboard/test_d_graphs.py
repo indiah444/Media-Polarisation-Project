@@ -1,5 +1,7 @@
 # pylint skip-file
+
 """Testing the d_graphs file"""
+
 import re
 import datetime
 from unittest.mock import patch
@@ -8,30 +10,50 @@ import pytest
 import pandas as pd
 import altair as alt
 
-from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns, create_bubble_chart
+from d_graphs import pivot_df, get_last_point, generate_html, add_source_columns, create_bubble_chart, create_scatter_graph, create_zero_lines
 
 
-@pytest.fixture
-def data():
-    return {
-        'source_name': ['Fox News', 'Democracy Now!', 'Fox News'],
-        'avg_polarity_score': [0.2, 0.5, -0.1],
-        'article_count': [100, 150, 80]
-    }
+class TestCreateBubbleChart:
+    def test_creates_chart(self, fake_data):
+        df = pd.DataFrame(fake_data)
+        chart = create_bubble_chart(df)
+        assert isinstance(chart, alt.Chart)
+
+    def test_size(self, fake_data):
+        df = pd.DataFrame(fake_data)
+        chart = create_bubble_chart(df)
+        assert chart.width == 800
+        assert chart.height == 400
 
 
-def test_create_bubble_chart_creates_chart(data):
-    df = pd.DataFrame(data)
-    chart = create_bubble_chart(df)
-    assert isinstance(
-        chart, alt.Chart)
+def test_create_zero_lines():
+    lines = create_zero_lines()
+    assert isinstance(lines, alt.LayerChart)
+    assert len(lines.layer) == 2
+    assert isinstance(lines.layer[0], alt.Chart)
+    assert isinstance(lines.layer[1], alt.Chart)
 
 
-def test_bubble_chart_size(data):
-    df = pd.DataFrame(data)
-    chart = create_bubble_chart(df)
-    assert chart.width == 800
-    assert chart.height == 400
+class TestCreateScatterGraph:
+    @patch('d_graphs.create_zero_lines')
+    def test_creates_chart(self, mock_create_zero_lines, fake_data):
+
+        mock_create_zero_lines.return_value = alt.Chart()
+
+        df = pd.DataFrame(fake_data)
+        chart = create_scatter_graph(df)
+
+        assert isinstance(chart, alt.LayerChart)
+        assert len(chart.layer) == 2
+        assert isinstance(chart.layer[0], alt.Chart)
+        assert isinstance(chart.layer[1], alt.Chart)
+
+    @patch('d_graphs.create_zero_lines')
+    def test_size(self, mock_create_zero_lines, fake_data):
+        df = pd.DataFrame(fake_data)
+        chart = create_scatter_graph(df)
+        assert chart.width == 800
+        assert chart.height == 400
 
 
 def test_get_last_point():

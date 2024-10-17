@@ -32,6 +32,19 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
+def create_zero_lines():
+    """Returns horizontal and vertical lines that intersect at (0, 0) 
+    to clearly show where the x and y axis are"""
+
+    horizontal_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(
+        color='black').encode(y='y:Q')
+    vertical_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
+        x='x:Q')
+
+    return horizontal_line + vertical_line
+
+
+@st.cache_data
 def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     """Returns a scatter graph for title vs content score."""
 
@@ -56,19 +69,13 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
         height=400
     ).interactive()
 
-    zero_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
-        x='x:Q'
-    ) + alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
-        y='y:Q'
-    )
+    zero_line = create_zero_lines()
 
     final_chart = zero_line + scatter_chart
 
     final_chart = final_chart.configure_axis(
-        grid=True
-    ).configure_view(
-        stroke=None
-    )
+        grid=True).configure_view(stroke=None)
+
     return final_chart
 
 
