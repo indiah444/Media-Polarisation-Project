@@ -32,7 +32,7 @@ def resample_dataframe(df: pd.DataFrame, time_interval: str, aggregate: str):
         time_interval, on='date_published').agg({"title_polarity_score": aggregate,
                                                  "content_polarity_score": aggregate}).reset_index()
 
-    return df_avg
+    return pd.DataFrame(df_avg)
 
 
 def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
