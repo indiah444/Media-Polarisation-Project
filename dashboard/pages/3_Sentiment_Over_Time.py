@@ -110,16 +110,17 @@ def construct_heatmaps_container() -> DeltaGenerator:
     return heatmaps
 
 
-def add_settings_to_heatmaps_container(heatmaps_container: DeltaGenerator, 
+def add_settings_to_heatmaps_container(heatmaps_container: DeltaGenerator,
                                        years_available: list[str],
                                        sources_available: list[str]):
     """Adds select boxes to heatmaps container.
     Returns the resulting (year,source)"""
     if not "All" in sources_available:
         sources_available += ["All"]
-    year = heatmaps.selectbox("Year:", years_available)
-    source = heatmaps.selectbox("Source:", sources_available)
+    year = heatmaps_container.selectbox("Year:", years_available)
+    source = heatmaps_container.selectbox("Source:", sources_available)
     return year, source
+
 
 if __name__ == "__main__":
     topic_names = get_topic_names()
@@ -140,32 +141,31 @@ if __name__ == "__main__":
                 at the lower end, sentiment scores are averaged over time buckets of an hour, and this can 
                 be increased up to a day.
                 """)
-        
+
         line_graph_cols = construct_linegraphs_container()
         title_avg, title_count = line_graph_cols[0]
         construct_streamlit_time_graph(data,
-                                       title_avg, 
+                                       title_avg,
                                        title_count,
                                        sent_by_title=True,
                                        sampling=sampling_rate)
 
         content_avg, content_count = line_graph_cols[0]
         construct_streamlit_time_graph(data,
-                                       content_avg, 
+                                       content_avg,
                                        content_count,
                                        sent_by_title=False,
                                        sampling=sampling_rate)
-
-    
 
         data = add_year_month_day_columns(data)
 
         heatmaps = construct_heatmaps_container()
 
         years = data["year"].unique().tolist()
-        sources = data["source_name"].unique().tolist() + ["All"]
+        sources = data["source_name"].unique().tolist()
 
-        year, source = add_settings_to_heatmaps_container(heatmaps, years, sources)
+        year, source = add_settings_to_heatmaps_container(
+            heatmaps, years, sources)
 
         data = data[data["year"] == year]
 
