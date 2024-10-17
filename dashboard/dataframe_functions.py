@@ -32,4 +32,5 @@ def add_year_month_day_columns(data_df: pd.DataFrame) -> pd.DataFrame:
         " Week " + data_df["week_of_month"].astype(str)
     data_df["weekday"] = data_df["date_published"].dt.day_name()
     data_df["date_name"] = data_df["date_published"].dt.strftime('%d-%m-%Y')
+
     return data_df
