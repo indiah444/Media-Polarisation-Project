@@ -32,6 +32,24 @@ def create_bubble_chart(df: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
+def create_horizontal_line():
+    """Returns horizontal line at y=0
+    to clearly show where the x axis is"""
+
+    return alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(
+        color='black').encode(y='y:Q')
+
+
+@st.cache_data
+def create_vertical_line():
+    """Returns vertical line at x=0
+    to clearly show where y axis is"""
+
+    return alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(
+        color='black').encode(x='x:Q')
+
+
+@st.cache_data
 def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
     """Returns a scatter graph for title vs content score."""
 
@@ -56,19 +74,13 @@ def create_scatter_graph(df: pd.DataFrame) -> alt.Chart:
         height=400
     ).interactive()
 
-    zero_line = alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
-        x='x:Q'
-    ) + alt.Chart(pd.DataFrame({'x': [0], 'y': [0]})).mark_rule(color='black').encode(
-        y='y:Q'
-    )
+    zero_line = create_horizontal_line() + create_vertical_line()
 
     final_chart = zero_line + scatter_chart
 
     final_chart = final_chart.configure_axis(
-        grid=True
-    ).configure_view(
-        stroke=None
-    )
+        grid=True).configure_view(stroke=None)
+
     return final_chart
 
 
@@ -152,10 +164,8 @@ def create_sentiment_distribution_chart(df):
         width=400,
         height=300
     ).interactive()
-    vertical_line = alt.Chart(pd.DataFrame({'x': [0]})).mark_rule(color='black').encode(
-        x='x:Q'
-    )
-    chart = alt.layer(points, vertical_line)
+
+    chart = alt.layer(points, create_vertical_line())
 
     return chart
 
@@ -203,7 +213,7 @@ def add_topic_rows(df: pd.DataFrame) -> str:
 
 
 @st.cache_data
-def generate_html(df) -> str:
+def generate_html(df: pd.DataFrame) -> str:
     """Generate html body"""
 
     score_df = pivot_df(df)
