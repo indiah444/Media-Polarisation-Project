@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Testing streamlit pages."""
+
 from unittest.mock import patch, MagicMock
 import pytest
 from streamlit.testing.v1.app_test import AppTest

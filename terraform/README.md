@@ -4,6 +4,7 @@ The project is designed to be deployed on the cloud using AWS services via terra
 
 ## 🛠️ Prerequisites
 - **Terraform** installed
+- **AWS CLI** downloaded
 - **AWS ECR** repositories for the following:
     - Fox news scraper image
     - Democracy now scraper image
@@ -21,15 +22,20 @@ The project is designed to be deployed on the cloud using AWS services via terra
 - Read [database/README.md](../database/README.md) to initalise the database
 
 ## ⚙️ Setup
+1. Install AWS CLI for your machine by following the link: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html and run the command:
+    ```bash
+    aws configure
+    ```
+    Follow the prompts to enter your AWS credentials.
 
-1. Create `terraform.tfvars` file and fill with the following variables
+2. Create `terraform.tfvars` file and fill with the following variables
     ```bash
     # AWS Credentials
     AWS_ACCESS_KEY        = "your-aws-access-key"
     AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
     # AWS Region and Network Config
-    REGION                = "the-AWS-region"
+    REGION                = "the-aws-region"
     VPC_ID                = "the-vpc-id"
     SUBNET_ID1            = "the-first-subnet-id"
     SUBNET_ID2            = "the-second-subnet-id"
@@ -60,27 +66,27 @@ The project is designed to be deployed on the cloud using AWS services via terra
     FROM_EMAIL            = "address-to-send-emails-from"
     ```
 
-2. Initialise terraform:
+3. Initialise terraform:
     ```bash
     terraform init
     ```
 
-3. Deploy cloud services:
+4. Deploy cloud services:
     ```bash
     terraform apply
     ```
     - Enter yes when it asks to approve changes.
     - Can be used to redeploy if resource definitions have been changed.
 
-4. Restrict the .pem key access:
+5. Restrict the .pem key access:
     ```bash
     chmod 400 c13-boudicca-mp-key-pair.pem
     ```
     This is required for the pem key to actually work when connecting to EC2 via ssh.
     
-5. Transfer dashboard to EC2 by reading [dashboard/README.md](../dashboard/README.md)
+6. Transfer dashboard to EC2 by reading [dashboard/README.md](../dashboard/README.md)
 
-6. To bring down the cloud infrastructure:
+7. To bring down the cloud infrastructure:
     ```bash
     terraform destroy
     ```

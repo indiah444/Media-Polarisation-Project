@@ -118,7 +118,8 @@ def display_sidebar_options() -> tuple[str, str]:
     return selected_time_range, selected_topics
 
 
-def filter_articles_by_date_and_topics(articles: list, time_range: str, selected_topics: list) -> list:
+def filter_articles_by_date_and_topics(articles: list, time_range: str,
+                                       selected_topics: list) -> list:
     """Filter articles by date and topics."""
 
     time_range_mapping = {
@@ -147,7 +148,8 @@ def generate_single_wordcloud(word_freq: dict, title: str, colormap: str):
 
     wordcloud = WordCloud(width=1000, height=500,
                           max_words=100, background_color="white",
-                          colormap=colormap, prefer_horizontal=1).generate_from_frequencies(word_freq)
+                          colormap=colormap, prefer_horizontal=1).generate_from_frequencies(
+                              word_freq)
 
     plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")

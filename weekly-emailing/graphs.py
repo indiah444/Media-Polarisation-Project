@@ -18,7 +18,8 @@ def chart_to_base64(chart) -> str:
 
 
 def create_whisker_plot(df) -> str:
-    """Creates a whisker plot-style chart of sentiment scores with horizontal lines and end ticks for sources."""
+    """Creates a whisker plot-style chart of sentiment scores with 
+    horizontal lines and end ticks for sources."""
 
     color_scale = alt.Scale(domain=['Fox News', 'Democracy Now!'],
                             range=['red', 'blue'])

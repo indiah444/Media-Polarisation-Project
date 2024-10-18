@@ -9,13 +9,14 @@ import pandas as pd
 from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time, visualise_heatmap
 from dataframe_functions import resample_dataframe, add_year_month_day_columns
-from streamlit_components import construct_heatmaps_container, construct_linegraphs_container, add_settings_to_heatmaps_container, construct_sidebar
+from streamlit_components import (construct_heatmaps_container, construct_linegraphs_container,
+                                  add_settings_to_heatmaps_container, construct_sidebar)
 
 
 def select_data_by_topic(topic_name: str) -> pd.DataFrame:
     """Selects the data for a topic by name"""
-    data = get_scores_topic(topic_name)
-    return pd.DataFrame(data)
+    score_data = get_scores_topic(topic_name)
+    return pd.DataFrame(score_data)
 
 
 def construct_streamlit_time_graph(data_df: pd.DataFrame, avg_col: DeltaGenerator,

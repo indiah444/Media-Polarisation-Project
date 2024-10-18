@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """Script to create altair graphs for dashboard."""
 
 import pandas as pd
@@ -261,7 +263,8 @@ def generate_html(df: pd.DataFrame) -> str:
     return html
 
 
-def visualise_heatmap(data_df: pd.DataFrame, by_title: bool, colourscheme: str = 'yellowgreen') -> alt.Chart:
+def visualise_heatmap(data_df: pd.DataFrame, by_title: bool,
+                      colourscheme: str = 'yellowgreen') -> alt.Chart:
     """Returns an altair heatmap"""
 
     vals = "title_polarity_score" if by_title else "content_polarity_score"

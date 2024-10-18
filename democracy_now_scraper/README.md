@@ -23,13 +23,13 @@ Create a `.env` file and fill with the following variables
 AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
 AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
 
-# S3 Bucket Configuration
-S3_BUCKET_NAME=<s3_bucket_name>
-
 # ECR Configuration
 ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
 ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
 IMAGE_NAME=article-analyser-image  # or any other appropriate name
+
+# S3 Bucket Configuration
+S3_BUCKET_NAME=<s3_bucket_name>
 ```
 
 ### ☁️ Pushing to the Cloud
