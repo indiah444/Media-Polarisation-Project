@@ -22,6 +22,15 @@ def test_add_year_month_day_columns(fake_date_published):
         assert col in result_df.columns
 
 
+def test_add_year_month_day_has_correct_year(fake_date_published):
+    data_df = pd.DataFrame(fake_date_published)
+
+    result_df = add_year_month_day_columns(data_df.copy())
+
+    assert result_df["year"].iloc[0] == 2024
+    assert result_df["year"].iloc[1] == 2020
+
+
 @patch("dataframe_functions.AGGREGATES", return_value=["mean", "count"])
 def test_resample_dataframes_fails_with_invalid_aggregate(mock_aggregates):
     """Tests that resample dataframe fails with an invalid aggregate argument"""
