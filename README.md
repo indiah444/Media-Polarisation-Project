@@ -28,7 +28,8 @@ This project was made with major contributions from:
 - Megan Lester ([@megansam5](https://github.com/megansam5))
 - Shayak Hussain ([@YakMan101](https://github.com/YakMan101))
 
-Additional contributions are welcome! Please fork this repository, write an issue using the provided template, and submit a pull request with your proposed changes. Kindly ensure that your code adheres to a high standard (> 8.0 `pylint` score), is well documented, and all associated unit tests pass.
+## How to Contribute 
+Additional contributions are welcome! Please fork this repository, write an issue using the [provided template](.github/ISSUE_TEMPLATE/user-story-issue-template.md), and submit a pull request with your proposed changes. Kindly ensure that your code adheres to a high standard (> 8.0 `pylint` score), is well documented, and all associated unit tests pass.
 
 ## 📜 License
 
