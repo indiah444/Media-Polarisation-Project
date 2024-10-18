@@ -99,8 +99,9 @@ def get_word_frequency(articles: list[str], custom_stopwords: list) -> dict:
     return word_freq
 
 
-def display_sidebar_options():
-    """Display sidebar options for time range and topics."""
+def display_sidebar_options() -> tuple[str, str]:
+    """Display sidebar options for time range and topics.
+    Returns the selected (time range, topic)."""
 
     time_range_options = ["Last hour", "Last 24 hours", "Last 7 days"]
     selected_time_range = st.sidebar.select_slider(
@@ -187,10 +188,6 @@ def run_app():
     selected_time_range, selected_topics = display_sidebar_options()
 
     st.write(f"Time Range Selected: {selected_time_range}")
-
-    unique_topics = get_topic_names()
-    selected_topics = st.sidebar.multiselect(
-        "Select topics", options=unique_topics)
 
     articles = get_all_article_content()
     filtered_articles = filter_articles_by_date_and_topics(
