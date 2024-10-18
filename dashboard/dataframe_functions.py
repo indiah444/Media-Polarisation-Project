@@ -11,7 +11,7 @@ def is_valid_time_interval(interval: str) -> None:
     if not interval or not interval[-1] == "h":
         raise ValueError(
             "The time interval should represent a string in hours.")
-    elif not interval[:-1].isnumeric():
+    if not interval[:-1].isnumeric():
         raise ValueError(
             "The time interval should start with a number"
         )
