@@ -22,11 +22,11 @@ class TestGetObjectNames(unittest.TestCase):
                 },
                 {
                     "Key": "not_correct_article_data.csv",
-                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=2)
+                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=50)
                 },
                 {
                     "Key": "another_not_correct_article_data.csv",
-                    "LastModified": datetime.now(timezone.utc) - timedelta(minutes=80)
+                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=80)
                 }
             ]
         }
@@ -74,7 +74,7 @@ class TestGetObjectNames(unittest.TestCase):
                 },
                 {
                     "Key": "not_correct_article_data.csv",
-                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=2)
+                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=50)
                 }
             ]
         }
@@ -91,7 +91,7 @@ class TestGetObjectNames(unittest.TestCase):
             "Contents": [
                 {
                     "Key": "not_correct_article_data.csv",
-                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=2)
+                    "LastModified": datetime.now(timezone.utc) - timedelta(hours=50)
                 }
             ]
         }
