@@ -2,7 +2,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 from streamlit.testing.v1.app_test import AppTest
-from streamlit_components import select_topic, select_granularity, construct_sidebar, construct_linegraphs_container
+from streamlit_components import select_topic, select_granularity, construct_sidebar, construct_linegraphs_container, add_settings_to_heatmaps_container, construct_heatmaps_container
 
 
 @pytest.fixture
@@ -76,3 +76,57 @@ def test_home_page():
     at = AppTest.from_file("pages/2_About.py")
     at.run()
     assert not at.exception
+
+
+@patch("streamlit.container")
+def test_construct_heatmaps_container(mock_container):
+    """Tests that a heatmaps container is constructed as expected"""
+    mock_heatmaps = MagicMock()
+    mock_container.return_value = mock_heatmaps
+
+    result = construct_heatmaps_container()
+
+    mock_heatmaps.header.assert_called_once_with(
+        "Heatmap of Average Polarity Scores")
+
+    assert result == mock_heatmaps
+
+
+def test_add_settings_to_heatmaps_container():
+    """Test for add_settings_to_heatmaps_container"""
+    mock_heatmaps_container = MagicMock()
+    years_available = ["2022", "2023"]
+    sources_available = ["Source 1", "Source 2"]
+
+    mock_heatmaps_container.selectbox.side_effect = ["2023", "Source 1"]
+
+    result = add_settings_to_heatmaps_container(
+        mock_heatmaps_container, years_available, sources_available)
+
+    assert "All" in sources_available
+
+    mock_heatmaps_container.selectbox.assert_any_call("Year:", years_available)
+    mock_heatmaps_container.selectbox.assert_any_call(
+        "Source:", sources_available)
+
+    assert result == ("2023", "Source 1")
+
+
+def test_add_settings_to_heatmaps_container_with_all_in_sources():
+    """Tests that the 'all' setting is handled correctly"""
+    mock_heatmaps_container = MagicMock()
+    years_available = ["2022", "2023"]
+    sources_available = ["Source 1", "Source 2", "All"]
+
+    mock_heatmaps_container.selectbox.side_effect = ["2022", "All"]
+
+    result = add_settings_to_heatmaps_container(
+        mock_heatmaps_container, years_available, sources_available)
+
+    assert sources_available.count("All") == 1
+
+    mock_heatmaps_container.selectbox.assert_any_call("Year:", years_available)
+    mock_heatmaps_container.selectbox.assert_any_call(
+        "Source:", sources_available)
+
+    assert result == ("2022", "All")
