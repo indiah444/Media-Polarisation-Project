@@ -189,10 +189,6 @@ def run_app():
 
     st.write(f"Time Range Selected: {selected_time_range}")
 
-    unique_topics = get_topic_names()
-    selected_topics = st.sidebar.multiselect(
-        "Select topics", options=unique_topics)
-
     articles = get_all_article_content()
     filtered_articles = filter_articles_by_date_and_topics(
         articles, selected_time_range, selected_topics)
