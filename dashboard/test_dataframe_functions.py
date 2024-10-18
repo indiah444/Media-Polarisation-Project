@@ -1,10 +1,25 @@
+# pylint: skip-file
 """Write unit tests for dataframe functions"""
 import pytest
 from unittest.mock import patch
 
 import pandas as pd
 
-from dataframe_functions import resample_dataframe, is_valid_time_interval
+from dataframe_functions import resample_dataframe, is_valid_time_interval, add_year_month_day_columns
+
+
+def test_add_year_month_day_columns(fake_date_published):
+    data_df = pd.DataFrame(fake_date_published)
+
+    result_df = add_year_month_day_columns(data_df.copy())
+
+    expected_columns = [
+        "year", "week_num", "month_name", "week_of_month",
+        "week_text", "weekday", "date_name"
+    ]
+
+    for col in expected_columns:
+        assert col in result_df.columns
 
 
 @patch("dataframe_functions.AGGREGATES", return_value=["mean", "count"])
