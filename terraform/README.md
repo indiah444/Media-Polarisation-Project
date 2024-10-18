@@ -71,7 +71,6 @@ The project is designed to be deployed on the cloud using AWS services via terra
     ```
     - Enter yes when it asks to approve changes.
     - Can be used to redeploy if resource definitions have been changed.
-    - Keep note of the `EC2_public_dns` output for step 4.
 
 4. Restrict the .pem key access:
     ```bash
