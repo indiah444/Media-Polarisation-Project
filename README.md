@@ -17,7 +17,7 @@ The overall system will:
 
 ## 🛠️ Installation and Setup
 
-This project is split into multiple components, each housed in a separate subfolder. To correctly set up this project and deploy to the cloud, please follow the instructions detailed in the [terraform folder README.md](./terraform/README.md).
+This project is split into multiple components, each housed in a separate subfolder. To correctly set up this project and deploy it to the cloud, please follow the instructions detailed in the [terraform folder README.md](./terraform/README.md).
 
 ## 👥 Contributors
 
