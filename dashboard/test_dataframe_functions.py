@@ -1,4 +1,7 @@
+# pylint: skip-file
+
 """Write unit tests for dataframe functions"""
+
 import pytest
 from unittest.mock import patch
 
