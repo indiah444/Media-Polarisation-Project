@@ -14,8 +14,8 @@ Optional:
 Create a `.env` file and fill with the following variables
 ```env
 # AWS Configuration
-AWS_ACCESS_KEY_BOUDICCA=<your_aws_access_key>
-AWS_ACCESS_SECRET_KEY_BOUDICCA=<your_aws_secret_access_key>
+AWS_ACCESS_KEY=<your_aws_access_key>
+AWS_SECRET_KEY=<your_aws_secret_access_key>
 
 # ECR Configuration
 ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>

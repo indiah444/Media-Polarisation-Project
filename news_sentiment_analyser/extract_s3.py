@@ -12,7 +12,7 @@ def get_object_names(s3_client: client, bucket_name: str) -> list[str]:
     """Returns a list of object names for a specific bucket, at a specific time."""
     objects = s3_client.list_objects(Bucket=bucket_name)
     now = datetime.now(timezone.utc)
-    one_hour_ago = now - timedelta(hours=1)
+    one_hour_ago = now - timedelta(hours=48)
 
     object_names = [o["Key"] for o in objects.get(
         "Contents", []) if o["LastModified"] >= one_hour_ago and o["Key"].endswith(
