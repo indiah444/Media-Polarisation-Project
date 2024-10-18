@@ -2,7 +2,7 @@
 
 ## ❓ Problem Statement
 
-In today's society, the media landscape is highly polarised. Different groups of people often receive radically different information or narratives depending on the media sources they consume. This divergence in coverage can make it difficult for the public to trust any particular source or easily identify bias. This project aims to address the challenge of understanding media bias across different outlets.
+In today's society, the media landscape is highly polarised. Different groups of people often receive radically different information or narratives depending on the media sources they consume. This divergence in coverage can make it difficult for the public to trust any particular source or easily identify bias. This project addresses the challenge of understanding media bias across different outlets.
 
 ## 🎯 Project Goal
 
