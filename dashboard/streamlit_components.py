@@ -25,7 +25,7 @@ def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
     st.sidebar.header("Settings")
     selected_topic = select_topic(topics_list)
     selected_granularity = select_granularity(GRANULARITY_TO_HOURS)
-    return topic, select_granularity
+    return selected_topic, selected_granularity
 
 
 def construct_linegraphs_container() -> list[list]:
