@@ -35,7 +35,7 @@ The project is designed to be deployed on the cloud using AWS services via terra
     AWS_SECRET_ACCESS_KEY = "your-aws-secret-key"
 
     # AWS Region and Network Config
-    REGION                = "the-AWS-region"
+    REGION                = "the-aws-region"
     VPC_ID                = "the-vpc-id"
     SUBNET_ID1            = "the-first-subnet-id"
     SUBNET_ID2            = "the-second-subnet-id"

@@ -16,7 +16,7 @@ data "aws_ecr_image" "fox_news_scraper_image" {
 }
 
 data "aws_ecr_image" "democracy_now_news_scraper_image" {
-    repository_name = var.DEMOCARCY_NOW_SCRAPER_ECR_REPO
+    repository_name = var.DEMOCRACY_NOW_SCRAPER_ECR_REPO
     image_tag       = "latest"
 }
 

@@ -14,7 +14,7 @@ variable "AWS_ACCESS_KEY" {type = string}
 variable "AWS_SECRET_ACCESS_KEY" {type = string}
 
 variable "FOX_NEWS_SCRAPER_ECR_REPO" {type = string}
-variable "DEMOCARCY_NOW_SCRAPER_ECR_REPO" {type = string}
+variable "DEMOCRACY_NOW_SCRAPER_ECR_REPO" {type = string}
 variable "ARTICLE_ANALYSER_ECR_REPO" {type = string}
 variable "DAILY_EMAIL_ECR_REPO" {type = string}
 variable "WEEKLY_EMAIL_ECR_REPO" {type = string}
