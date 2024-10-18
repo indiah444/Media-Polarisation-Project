@@ -1,7 +1,11 @@
+# pylint: disable=unused-import
+
 """
 A file to convert the data extracted from the RSS feed 
 into a CSV and load it into the S3 bucket.
 """
+
+import grequests  # This must be here to avoid file version errors
 
 from os import environ as ENV
 from datetime import datetime
