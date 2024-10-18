@@ -7,6 +7,18 @@ import pandas as pd
 
 
 @pytest.fixture
+def fake_date_published():
+    return {
+        "date_published": [
+            pd.Timestamp("2024-10-18"),  # A random date
+            pd.Timestamp("2020-02-29"),  # Leap year date
+            pd.Timestamp("2024-01-01"),  # Start of the year
+            pd.Timestamp("2024-12-31")   # End of the year
+        ]
+    }
+
+
+@pytest.fixture
 def fake_aggregated_data():
     return {
         'source_name': ['Fox News', 'Democracy Now!', 'Fox News'],
