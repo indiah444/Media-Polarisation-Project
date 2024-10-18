@@ -19,6 +19,21 @@ The overall system will:
 
 This project is split into multiple components, each housed in a separate subfolder. To correctly set up this project and deploy it to the cloud, please follow the instructions detailed in the [terraform folder README.md](./terraform/README.md).
 
+### Subcomponents
+- [Cloud Setup](./terraform/README.md).
+- [Database Setup](./database/README.md)
+- [News Sentiment Analysis](./news_sentiment_analyser/README.md)
+- Emailing:
+    - [Daily Emailing](./daily-emailing/README.md)
+    - [Weekly Emailing](./weekly-emailing/README.md)
+- [Dashboard](./dashboard/README.md)
+- Webscrapers:
+    - [Fox News Feed Extraction](./fox_news_scraper/README.md)
+    - [Democracy Now! Feed Extraction](./democracy_now_scraper/README.md)
+
+
+
+
 ## 👥 Contributors
 
 This project was made with major contributions from:
