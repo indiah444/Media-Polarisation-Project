@@ -6,7 +6,7 @@ In today's society, the media landscape is highly polarised. Different groups of
 
 ## 🎯 Project Goal
 
-This project aims to create a service that tracks and analyses how different media outlets cover various topics. The service will allow users to compare the frequency and sentiment of topic coverage between different media sources, enabling them to see not only _what_ is being covered, but also _how_ it is being discussed. This will provide valuable insights into media bias and narrative framing, helping users make more informed decisions about the information they consume.
+This project aims to create a service that tracks and analyses how different media outlets cover various topics. The service will allow users to compare the frequency and sentiment of topic coverage between different media sources, enabling them to see  _what_ is being covered and _how_ it is being discussed. This will provide valuable insights into media bias and narrative framing, helping users make more informed decisions about the information they consume.
 
 The overall system will:
 
