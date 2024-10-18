@@ -11,10 +11,10 @@ from graphs import create_whisker_plot
 def add_source_columns(df: pd.DataFrame) -> str:
     """Add the source names as column titles."""
 
-    html = ""
+    html = []
     for source in df.columns:
-        html += f"<th style='background-color: white;'>{source}</th>"
-    return html
+        html.append(f"<th style='background-color: white;'>{source}</th>")
+    return ''.join(html)
 
 
 def add_topic_rows(df: pd.DataFrame) -> str:
