@@ -2,17 +2,30 @@
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
+GRANULARITY_TO_HOURS = {"1 hour": "1h",
+                        "1 day": "24h", "1 week": str(24*7)+'h'}
+
+
+def select_topic(topics_list: list[str]) -> str:
+    """Returns the selected topic."""
+    topic = st.sidebar.selectbox("Topic", topics_list)
+    return topic
+
+
+def select_granularity(granularity_to_hours: dict) -> str:
+    """Returns the selected granularity as a formatted string."""
+    granularity = st.sidebar.selectbox(
+        "Granularity", granularity_to_hours.keys())
+    return granularity_to_hours[granularity]
+
 
 def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
     """Constructs the Sidebar for the streamlit page.
     Returns (topic, granularity)"""
     st.sidebar.header("Settings")
-    topic = st.sidebar.selectbox("Topic", topics_list)
-    granularity_to_hours = {"1 hour": "1h",
-                            "1 day": "24h", "1 week": str(24*7)+'h'}
-    granularity = st.sidebar.selectbox(
-        "Granularity", granularity_to_hours.keys())
-    return topic, granularity_to_hours[granularity]
+    selected_topic = select_topic(topics_list)
+    selected_granularity = select_granularity(GRANULARITY_TO_HOURS)
+    return topic, select_granularity
 
 
 def construct_linegraphs_container() -> list[list]:
