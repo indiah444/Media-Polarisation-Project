@@ -32,8 +32,6 @@ This project is split into multiple components, each housed in a separate subfol
     - [Democracy Now! Feed Extraction](./democracy_now_scraper/README.md)
 
 
-
-
 ## 👥 Contributors
 
 This project was made with major contributions from:
