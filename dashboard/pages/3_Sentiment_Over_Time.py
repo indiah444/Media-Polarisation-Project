@@ -50,6 +50,13 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
 
 
 if __name__ == "__main__":
+
+    st.set_page_config(
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
     topic_names = get_topic_names()
     selected_topic, sampling_rate = construct_sidebar(topic_names)
 

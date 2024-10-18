@@ -7,7 +7,30 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from dataframe_functions import resample_dataframe, is_valid_time_interval
+from dataframe_functions import resample_dataframe, is_valid_time_interval, add_year_month_day_columns
+
+
+def test_add_year_month_day_columns(fake_date_published):
+    data_df = pd.DataFrame(fake_date_published)
+
+    result_df = add_year_month_day_columns(data_df.copy())
+
+    expected_columns = [
+        "year", "week_num", "month_name", "week_of_month",
+        "week_text", "weekday", "date_name"
+    ]
+
+    for col in expected_columns:
+        assert col in result_df.columns
+
+
+def test_add_year_month_day_has_correct_year(fake_date_published):
+    data_df = pd.DataFrame(fake_date_published)
+
+    result_df = add_year_month_day_columns(data_df.copy())
+
+    assert result_df["year"].iloc[0] == 2024
+    assert result_df["year"].iloc[1] == 2020
 
 
 @patch("dataframe_functions.AGGREGATES", return_value=["mean", "count"])

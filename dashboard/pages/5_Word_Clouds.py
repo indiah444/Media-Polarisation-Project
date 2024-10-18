@@ -154,7 +154,6 @@ def generate_single_wordcloud(word_freq: dict, title: str, colormap: str):
     plt.figure(figsize=(10, 5), dpi=100)
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
-    plt.title(title, fontsize=20)
     st.pyplot(plt.gcf())
 
 
@@ -199,5 +198,11 @@ def run_app():
 
 
 if __name__ == "__main__":
+
+    st.set_page_config(
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
     run_app()
