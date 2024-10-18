@@ -4,12 +4,12 @@
 
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
-import altair as alt
 import pandas as pd
 
 from db_functions import get_scores_topic, get_topic_names
 from d_graphs import visualise_change_over_time, visualise_heatmap
 from dataframe_functions import resample_dataframe, add_year_month_day_columns
+from streamlit_components import construct_heatmaps_container, construct_linegraphs_container, add_settings_to_heatmaps_container, construct_sidebar
 
 
 def select_data_by_topic(topic_name: str) -> pd.DataFrame:
@@ -45,51 +45,7 @@ def construct_streamlit_heatmap(heatmaps_container: DeltaGenerator,
     header_text = "By Article Title" if sent_by_title else "By Article Content"
     heatmaps_container.subheader(header_text)
     heatmap = visualise_heatmap(weekly_data, sent_by_title, colour)
-    heatmaps_container.altair_chart(heatmap)
-
-
-def construct_sidebar(topics_list: list[str]) -> tuple[str, str]:
-    """Constructs the Sidebar for the streamlit page.
-    Returns (topic, granularity)"""
-    st.sidebar.header("Settings")
-    topic = st.sidebar.selectbox("Topic", topics_list)
-    granularity_to_hours = {"1 hour": "1h",
-                            "1 day": "24h", "1 week": str(24*7)+'h'}
-    granularity = st.sidebar.selectbox(
-        "Granularity", granularity_to_hours.keys())
-    return topic, granularity_to_hours[granularity]
-
-
-def construct_linegraphs_container() -> list[list]:
-    """Constructs a container for the linegraphs on the streamlit page. 
-    Returns the columns in the array arrangement they appear."""
-    line_graphs = st.container()
-    line_graphs.header("Polarity by Article Titles")
-    avg_by_title, count_by_title = line_graphs.columns(2)
-    line_graphs.header("Polarity by Article Content")
-    avg_by_content, count_by_content = line_graphs.columns(2)
-    line_graphs.header("Polarity by Article Content")
-    return [[avg_by_title, count_by_title], [avg_by_content, count_by_content]]
-
-
-def construct_heatmaps_container() -> DeltaGenerator:
-    """Constructs a container for the heatmaps on the streamlit page.
-    Returns the container."""
-    heatmaps = st.container()
-    heatmaps.header("Heatmap of Average Polarity Scores")
-    return heatmaps
-
-
-def add_settings_to_heatmaps_container(heatmaps_container: DeltaGenerator,
-                                       years_available: list[str],
-                                       sources_available: list[str]):
-    """Adds select boxes to heatmaps container.
-    Returns the resulting (year,source)"""
-    if not "All" in sources_available:
-        sources_available += ["All"]
-    year = heatmaps_container.selectbox("Year:", years_available)
-    source = heatmaps_container.selectbox("Source:", sources_available)
-    return year, source
+    heatmaps_container.altair_chart(heatmap, use_container_width=True)
 
 
 if __name__ == "__main__":
@@ -121,7 +77,7 @@ if __name__ == "__main__":
                                        sent_by_title=True,
                                        sampling=sampling_rate)
 
-        content_avg, content_count = line_graph_cols[0]
+        content_avg, content_count = line_graph_cols[1]
         construct_streamlit_time_graph(data,
                                        content_avg,
                                        content_count,
