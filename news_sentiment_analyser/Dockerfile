@@ -17,6 +17,7 @@ COPY transform_articles.py .
 COPY load_rds.py .
 COPY database_functions.py .
 COPY pipeline_analysis.py .
+COPY clean_content.py .
 
 # Runs pipeline
 CMD ["python3", "pipeline_analysis.py"]
