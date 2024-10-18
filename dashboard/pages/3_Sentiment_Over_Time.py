@@ -1,4 +1,4 @@
-# pylint: disable=C0103, E0401
+# pylint: disable=C0103, E0401, R0801
 
 """Script to create visualisations of changes over time"""
 

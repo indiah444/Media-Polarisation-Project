@@ -1,4 +1,4 @@
-# pylint skip-file
+# pylint: skip-file
 
 """Testing the d_graphs file"""
 
