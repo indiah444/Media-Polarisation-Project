@@ -9,6 +9,12 @@ from d_graphs import create_sentiment_distribution_chart, generate_html
 
 if __name__ == "__main__":
 
+    st.set_page_config(
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
     st.title("Welcome to the Media Polarisation Dashboard")
 
     st.markdown("""

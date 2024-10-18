@@ -11,6 +11,12 @@ from d_graphs import create_bubble_chart, create_scatter_graph
 
 if __name__ == "__main__":
 
+    st.set_page_config(
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
     st.title("Topic-Based Polarity Analysis with Altair")
 
     st.sidebar.header("Select Topic")

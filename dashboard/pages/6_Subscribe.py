@@ -37,6 +37,13 @@ def check_unsubscribe(email: str):
 
 
 if __name__ == "__main__":
+
+    st.set_page_config(
+        page_icon="📰",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
     st.title("Subscription Form")
     st.write("""Subscribe to our newsletters, either daily, weekly, or both!
              A daily newsletter sends you an email at 9am containing a
