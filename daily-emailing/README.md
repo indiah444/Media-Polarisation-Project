@@ -29,7 +29,7 @@ ECR_REGISTRY_ID=<id_of_ecr_repo_to_store_image>
 ECR_REPO_NAME=<name_of_ecr_repo_to_store_image>
 IMAGE_NAME=daily-email-image  # or any other appropriate name
 
-# EC2 Configuration
+# EC2 Configuration (Can be obtained after running terraform, otherwise a placeholder address can be specified)
 EC2_HOST=<the-ec2-dns-or-ip-address>
 
 # Database Configuration
