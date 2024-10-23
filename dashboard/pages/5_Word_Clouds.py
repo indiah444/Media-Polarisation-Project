@@ -64,7 +64,7 @@ def filter_articles_by_date(articles: list, time_range: str):
         cutoff_date = now - timedelta(days=1)
     elif time_range == 2:
         cutoff_date = now - timedelta(days=7)
-    else:
+    elif time_range == 3:
         return articles
 
     filtered_articles = [
@@ -103,11 +103,12 @@ def display_sidebar_options() -> tuple[str, str]:
     """Display sidebar options for time range and topics.
     Returns the selected (time range, topic)."""
 
-    time_range_options = ["Last hour", "Last 24 hours", "Last 7 days"]
+    time_range_options = ["Last hour",
+                          "Last 24 hours", "Last 7 days", "All time"]
     selected_time_range = st.sidebar.select_slider(
         "Select time range",
         options=time_range_options,
-        value="Last 7 days"
+        value="All time"
     )
 
     unique_topics = get_topic_names()
@@ -125,11 +126,15 @@ def filter_articles_by_date_and_topics(articles: list, time_range: str,
     time_range_mapping = {
         "Last hour": 0,
         "Last 24 hours": 1,
-        "Last 7 days": 2
+        "Last 7 days": 2,
+        "All time": 3
     }
     time_range_value = time_range_mapping[time_range]
 
-    filtered_articles = filter_articles_by_date(articles, time_range_value)
+    if time_range_value != 3:
+        filtered_articles = filter_articles_by_date(articles, time_range_value)
+    else:
+        filtered_articles = articles
 
     if selected_topics:
         filtered_articles = [
