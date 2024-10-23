@@ -55,6 +55,23 @@ if __name__ == "__main__":
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    st.markdown(
+        """
+    <style>
+
+    /* Set the font globally */
+    * {
+        font-family: 'EB Garamond', monospace;
+    }
+
+    /* Target specific header tags to ensure st.title and st.header use the font */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'EB Garamond', monospace;
+    }
+    </style>
+    """,
+        unsafe_allow_html=True
+    )
 
     topic_names = get_topic_names()
     selected_topic, sampling_rate = construct_sidebar(topic_names)
